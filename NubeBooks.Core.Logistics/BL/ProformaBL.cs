@@ -199,7 +199,8 @@ namespace NubeBooks.Core.Logistics.BL
                     NombreItem = x.Item.Codigo + x.Item.Nombre,
                     Descuento = x.Descuento,
                     Igv = x.Igv,
-                    PorcentajeIgv = x.PorcentajeIgv
+                    PorcentajeIgv = x.PorcentajeIgv,
+                    PorcentajeDescuento = x.PorcentajeDescuento
                 }).ToList();
                 return result;
             }
@@ -262,6 +263,7 @@ namespace NubeBooks.Core.Logistics.BL
                         deta.TipoCambio = detalle.TipoCambio;
                         deta.PorcentajeIgv = detalle.PorcentajeIgv;
                         deta.Igv = detalle.Igv;
+                        deta.PorcentajeDescuento = detalle.PorcentajeDescuento;
                         context.DetalleProforma.Add(deta);
                     }
                     context.SaveChanges();

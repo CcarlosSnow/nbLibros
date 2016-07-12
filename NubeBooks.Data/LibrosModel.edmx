@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="LibrosDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="LibrosDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Area">
           <Key>
             <PropertyRef Name="IdArea" />
@@ -131,6 +131,8 @@
           <Property Name="PorcentajeIgv" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Igv" Type="decimal" Precision="18" Scale="2" />
           <Property Name="UnidadMedida" Type="nvarchar" MaxLength="50" />
+          <Property Name="PorcentajeDescuento" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ItemServicio" Type="nvarchar" MaxLength="4" />
         </EntityType>
         <EntityType Name="Empresa">
           <Key>
@@ -1815,8 +1817,7 @@
             <End Role="Usuario" EntitySet="Usuario" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="LibrosDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1973,6 +1974,8 @@
           <Property Name="UnidadMedida" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Item" Relationship="Self.FK_DetalleProforma_Item" FromRole="DetalleProforma" ToRole="Item" />
           <NavigationProperty Name="Proforma" Relationship="Self.FK_DetalleProforma_Proforma" FromRole="DetalleProforma" ToRole="Proforma" />
+          <Property Name="PorcentajeDescuento" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ItemServicio" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Empresa">
           <Key>
@@ -3440,17 +3443,17 @@
             <End Role="Proyecto" EntitySet="Proyecto" />
           </AssociationSet>
           <FunctionImport Name="SP_ActualizarMontos">
-            <Parameter Name="IdCuentaB" Mode="In" Type="Int32" />
+          <Parameter Name="IdCuentaB" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="SP_ActualizarMontos_Empresa">
-            <Parameter Name="IdEmpresa" Mode="In" Type="Int32" />
+          <Parameter Name="IdEmpresa" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="SP_ActualizarPresupuestoPadre">
             <Parameter Name="IdCategoria" Mode="In" Type="Int32" />
             <Parameter Name="IdPeriodo" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="SP_Get_Arbol_Categoria" ReturnType="Collection(LibrosDBModel.SP_Get_Arbol_Categoria_Result)">
-            <Parameter Name="IdCategoria" Mode="In" Type="Int32" />
+          <Parameter Name="IdCategoria" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="SP_Get_CuentasPor_CobrarPagar" ReturnType="Collection(LibrosDBModel.SP_Get_CuentasPor_CobrarPagar_Result)">
             <Parameter Name="IdEmpresa" Mode="In" Type="Int32" />
@@ -3486,7 +3489,7 @@
             <Parameter Name="SerieLote" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="SP_Get_StockLotes_En_Empresa" ReturnType="Collection(LibrosDBModel.SP_Get_StockLotes_En_Empresa_Result)">
-            <Parameter Name="IdEmpresa" Mode="In" Type="Int32" />
+          <Parameter Name="IdEmpresa" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="SP_GetReporteDetalleMovimientos" ReturnType="Collection(LibrosDBModel.SP_GetReporteDetalleMovimientos_Result)">
             <Parameter Name="IdCuentaB" Mode="In" Type="Int32" />
@@ -3984,6 +3987,8 @@
           <EntitySetMapping Name="DetalleProforma">
             <EntityTypeMapping TypeName="LibrosDBModel.DetalleProforma">
               <MappingFragment StoreEntitySet="DetalleProforma">
+                <ScalarProperty Name="ItemServicio" ColumnName="ItemServicio" />
+                <ScalarProperty Name="PorcentajeDescuento" ColumnName="PorcentajeDescuento" />
                 <ScalarProperty Name="IdDetalleProforma" ColumnName="IdDetalleProforma" />
                 <ScalarProperty Name="IdProforma" ColumnName="IdProforma" />
                 <ScalarProperty Name="IdItem" ColumnName="IdItem" />

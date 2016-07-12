@@ -21,5 +21,7 @@ namespace NubeBooks.Core.Logistics.DTO
         public Nullable<decimal> PorcentajeIgv { get; set; }
         public Nullable<decimal> Igv { get; set; }
         public string UnidadMedida { get; set; }
+        public Nullable<decimal> PorcentajeDescuento { get; set; }
+        public string ItemServicio { get; set; }
     }
 }

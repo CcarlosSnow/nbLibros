@@ -33,26 +33,26 @@
 
             $('#IdEntidadResponsable').select2({ data: ConvertirClientes(jslstClientes) })
             $('#IdContacto').select2({ data: jslstContactos })
-            $('#ddlitem').select2({ data: ConvertirItems(jslstItems) })
+            $('#ddlitem').select2({
+                data: ConvertirItems(jslstItems), placeholder: '', initSelection: function (element, callback) {
+                }
+            });
             ListarContactos(0);
             jslstItems = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(Model.DetalleProforma)))');
         })
 
-        function ResetearValoresItems()
-        {
+        function ResetearValoresItems() {
             $("#txtcantidad").val(1);
             $("#txtprecio").val("0.00");
             $("#txtdescuento").val('0.00');
         }
 
-        function InsertarPrecio()
-        {
+        function InsertarPrecio() {
             var jsPrecio = parseFloat($("#ddlitem").select2('data').data.Precio).toFixed(2);
             $("#txtprecio").val(jsPrecio);
         }
 
-        function ListarContactos(cambio)
-        {
+        function ListarContactos(cambio) {
             var idEntidad = parseInt($('#IdEntidadResponsable').val());
             if (idEntidad > 0) {
                 if (cambio == 1) {
@@ -121,6 +121,7 @@
 
         function AgregarItem() {
             var jsIdItem = $('#ddlitem').val();
+
             if (jsIdItem != "") {
                 var cadena = '';
                 if ($("#txtcantidad").val() == "") cadena += "Debe de ingresar una cantidad\n";
@@ -128,11 +129,18 @@
                 if ($("#txtcantidad").val() == "0.00") cadena += "Debe de ingresar una cantidad mayor a cero\n";
                 if ($("#txtprecio").val() == "0.00") cadena += "Debe de ingresar un precio mayor a cero\n";
                 if (cadena != "") { alert(cadena); return; }
-                var items01 = $.grep(jslstItems, function (e, i) { return (e.IdItem == jsIdItem) })[0];
+
+                var precio = parseFloat($("#txtprecio").val());
+                var descuento = parseFloat($("#txtdescuento").val());
+
+                var items01 = $.grep(jslstItems, function (e, i) { return (e.IdItem == jsIdItem, e.PrecioUnidad == precio, e.PorcentajeDescuento == descuento) })[0];
+
+                console.log(items01);
+                console.log(descuento);
+                //console.log((e.Cantidad * e.PrecioUnidad) / e.Descuento);
+
                 if (items01 == undefined) {
                     var lista = {};
-                    var descuento = $("#txtdescuento").val();
-
                     lista.IdItem = jsIdItem;
                     lista.NombreItem = $('#ddlitem').select2('data').text;
                     lista.Cantidad = parseInt($("#txtcantidad").val());
@@ -140,16 +148,54 @@
                     lista.UnidadMedida = $("#ddlitem").select2('data').data.UnidadMedida;
                     lista.TipoCambio = 3.30;
                     lista.PorcentajeIgv = 18;
+                    lista.PorcentajeDescuento = descuento;
                     lista.Igv = ((lista.Cantidad * lista.PrecioUnidad) * (lista.PorcentajeIgv / 100)).toFixed(2);
                     lista.MontoTotal = (lista.Cantidad * lista.PrecioUnidad).toFixed(2);
                     lista.Descuento = (lista.MontoTotal * (descuento / 100)).toFixed(2);
                     lista.MontoTotal = (lista.MontoTotal - lista.Descuento).toFixed(2);
                     jslstItems.push(lista);
                     llenartabla();
-                    $('#ddlitem').val('').change();
+                    $("#ddlitem").select2("val", "");
+                    ResetearValoresItems();
                 }
                 else {
-                    alert('este producto ya esta en la lista');
+                    //var descuento = $("#txtdescuento").val();
+                    //var descuentoItem = (items01.Cantidad * items01.PrecioUnidad) / items01.Descuento;
+                    //console.log(descuento);
+                    //console.log(descuentoItem);
+                    //console.log(parseFloat($("#txtprecio").val()));
+                    //console.log(items01.PrecioUnidad);
+
+                    //if (items01.PrecioUnidad == parseFloat($("#txtprecio").val()) && descuentoItem == descuento) {
+                    items01.Cantidad = items01.Cantidad + parseInt($("#txtcantidad").val());
+                    items01.MontoTotal = (items01.Cantidad * items01.PrecioUnidad).toFixed(2);
+                    items01.Descuento = (items01.MontoTotal * (descuento / 100)).toFixed(2);
+                    items01.MontoTotal = (items01.MontoTotal - items01.Descuento).toFixed(2);
+                    llenartabla();
+                    $("#ddlitem").select2("val", "");
+                    ResetearValoresItems();
+                    alert('Se modificó la cantidad del Item ' + items01.IdItem);
+                    //}
+                    //else {
+                    //    var lista = {};
+                    //    var descuento = $("#txtdescuento").val();
+
+                    //    lista.IdItem = jsIdItem;
+                    //    lista.NombreItem = $('#ddlitem').select2('data').text;
+                    //    lista.Cantidad = parseInt($("#txtcantidad").val());
+                    //    lista.PrecioUnidad = parseFloat($("#txtprecio").val());
+                    //    lista.UnidadMedida = $("#ddlitem").select2('data').data.UnidadMedida;
+                    //    lista.TipoCambio = 3.30;
+                    //    lista.PorcentajeIgv = 18;
+                    //    lista.Igv = ((lista.Cantidad * lista.PrecioUnidad) * (lista.PorcentajeIgv / 100)).toFixed(2);
+                    //    lista.MontoTotal = (lista.Cantidad * lista.PrecioUnidad).toFixed(2);
+                    //    lista.Descuento = (lista.MontoTotal * (descuento / 100)).toFixed(2);
+                    //    lista.MontoTotal = (lista.MontoTotal - lista.Descuento).toFixed(2);
+                    //    jslstItems.push(lista);
+                    //    llenartabla();
+                    //    $("#ddlitem").select2("val", "");
+                    //    ResetearValoresItems();
+                    //}
                 }
             }
         }
@@ -251,7 +297,6 @@
 @{var cadena = "";}
 @if (Model == null || Model.IdProforma == 0) { cadena = "Nueva"; }
 else { cadena = "Actualizar"; }
-
 <div class="bg-light lter b-b wrapper-md">
     <h1 class="m-n font-thin h3">@cadena Proforma</h1>
 </div>
@@ -275,24 +320,24 @@ else { cadena = "Actualizar"; }
                         <div class="col-md-3">
                             <label class="control-label">Cliente</label>
                             @*<select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" onchange="ListarContactos(1)"
-                                    id="IdEntidadResponsable" name="IdEntidadResponsable" required>
-                                @{ var pCliente = Model != null ? Model.IdEntidadResponsable : 0;
-                                    List<EntidadResponsableDTO> listaClientes = ViewBag.lstClientes;
-                                }
-                                <option value=""></option>
-                                @foreach (var ent in listaClientes)
-                                {
-                                    <option value="@ent.IdEntidadResponsable" @(ent.IdEntidadResponsable == pCliente ? "selected=selected" : "")>@ent.Nombre</option>
-                                }
-                            </select>*@
+                                        id="IdEntidadResponsable" name="IdEntidadResponsable" required>
+                                    @{ var pCliente = Model != null ? Model.IdEntidadResponsable : 0;
+                                        List<EntidadResponsableDTO> listaClientes = ViewBag.lstClientes;
+                                    }
+                                    <option value=""></option>
+                                    @foreach (var ent in listaClientes)
+                                    {
+                                        <option value="@ent.IdEntidadResponsable" @(ent.IdEntidadResponsable == pCliente ? "selected=selected" : "")>@ent.Nombre</option>
+                                    }
+                                </select>*@
                             @Html.TextBoxFor(u => u.IdEntidadResponsable, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @required = "", @onchange = "ListarContactos(1)" })
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Contacto</label>
                             @Html.TextBoxFor(u => u.IdContacto, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @required = "" })
                             @*<select id="ddlconsultor" class="form-control">
-                                <option value="">Seleccione un contacto...</option>
-                            </select>*@
+                                    <option value="">Seleccione un contacto...</option>
+                                </select>*@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Validez de Oferta</label>
@@ -341,12 +386,12 @@ else { cadena = "Actualizar"; }
                         <div class="col-md-3">
                             <label class="control-label">Ítem / Servicio</label>
                             @*<select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" id="ddlitem" name="ddlitem" onchange="ResetearValoresItems(); InsertarPrecio();">
-                                <option value=""></option>
-                                @foreach (var nItem in (List<ItemDTO>)ViewBag.lstItems)
-                                {
-                                    <option value="@nItem.IdItem" data-precio="@nItem.Precio.GetValueOrDefault()">@nItem.Codigo</option>
-                                }
-                            </select>*@
+                                    <option value=""></option>
+                                    @foreach (var nItem in (List<ItemDTO>)ViewBag.lstItems)
+                                    {
+                                        <option value="@nItem.IdItem" data-precio="@nItem.Precio.GetValueOrDefault()">@nItem.Codigo</option>
+                                    }
+                                </select>*@
                             @Html.TextBox("ddlitem", "", new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @onchange = "ResetearValoresItems(); InsertarPrecio();" })
                         </div>
                         <div class="col-md-3">
@@ -449,10 +494,10 @@ else { cadena = "Actualizar"; }
                                 }
                             </select>
                             @*<select data-placeholder="Seleccione las cuentas bancarias..." ui-jq="chosen" multiple class="w-full">
-                                <option value="1">BBVA Continental SOLES 0011-0760-0200035723</option>
-                                <option value="2">Interbank SOLES 417-3075885320</option>
-                                <option value="3">Interbank DÓLARES 417-3075884993</option>
-                            </select>*@
+                                    <option value="1">BBVA Continental SOLES 0011-0760-0200035723</option>
+                                    <option value="2">Interbank SOLES 417-3075885320</option>
+                                    <option value="3">Interbank DÓLARES 417-3075884993</option>
+                                </select>*@
                         </div>
                     </div>
                 </div>
@@ -475,7 +520,7 @@ else { cadena = "Actualizar"; }
                                 }
                             </select>
                         </div>
-                        @{ 
+                        @{
                             var cOCompra = Model.Estado.GetValueOrDefault() == 2 ? "" : "hidden";
                         }
                         <div id="divOrdenCompra" class="col-md-3 @cOCompra">
@@ -509,21 +554,21 @@ else { cadena = "Actualizar"; }
                 </div>
 
                 @Html.TextBoxFor(u => u.CodigoProforma, new { @value = Model.CodigoProforma, @type = "hidden" })
-                @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
-                @Html.TextBoxFor(u => u.IdProforma, new { @value = Model.IdProforma != 0 ? Model.IdProforma.ToString() : "0", @type = "hidden" })
-                <div class="line line-dashed b-b line-lg pull-in"></div>
+                            @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                            @Html.TextBoxFor(u => u.IdProforma, new { @value = Model.IdProforma != 0 ? Model.IdProforma.ToString() : "0", @type = "hidden" })
+                            <div class="line line-dashed b-b line-lg pull-in"></div>
 
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            @{var btnName = (Model != null && Model.IdProforma > 0) ? "Guardar Cambios" : "Crear";}
-                            @if (!ViewBag.EsUsuarioExterno)
-                            {<button type="submit" class="btn btn-success" onclick="return SubirListaItems();">@btnName</button>}
-                            <a class="btn btn-default" href="@Url.Action("Index", "Proformas")">Cancelar</a>
-                        </div>
-                    </div>
-                </div>
-            }
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        @{var btnName = (Model != null && Model.IdProforma > 0) ? "Guardar Cambios" : "Crear";}
+                                        @if (!ViewBag.EsUsuarioExterno)
+                                        {<button type="submit" class="btn btn-success" onclick="return SubirListaItems();">@btnName</button>}
+                                        <a class="btn btn-default" href="@Url.Action("Index", "Proformas")">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+                                            }
         </div>
     </div>
 </div>
