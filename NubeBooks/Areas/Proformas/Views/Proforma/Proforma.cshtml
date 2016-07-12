@@ -1,0 +1,93 @@
+﻿@using NubeBooks.Core.Logistics.DTO
+@using System.Globalization
+@model ProformaDTO
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    CultureInfo[] cultures = { new CultureInfo("es-PE") };
+}
+
+@{var cadena = "";}
+@if (Model == null || Model.IdProforma == 0) { cadena = "Nueva"; }
+else { cadena = "Actualizar"; }
+
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">@cadena Proforma</h1>
+</div>
+<div class="wrapper-md" ng-controller="FormDemoCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @using (Html.BeginForm("AddProforma", "Proforma", new { Area = "Proformas" }, FormMethod.Post))
+            {
+                @Html.Partial("_showAlertMessages")
+                @Html.ValidationSummary(true)
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Fecha de Proforma</label>
+                            <div class="input-group date">
+                                @Html.TextBoxFor(u => u.FechaProforma, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text", @readonly = "true", @required="" })
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Cliente</label>
+                            <select id="ddlcliente" class="form-control">
+                                <option value="">Seleccione un cliente...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Contacto</label>
+                            <select id="ddlconsultor" class="form-control">
+                                <option value="">Seleccione un contacto...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Validez de Oferta</label>
+                            <select id="ddlvalidezoferta" class="form-control" required>
+                                <option value="">Seleccione la validez...</option>
+                                <option value="7">7 días</option>
+                                <option value="15">15 días</option>
+                                <option value="30">30 días</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Método de Pago</label>
+                            <input id="txtmetodopago" type="text" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Fecha de Entrega</label>
+                            <div class="input-group date">
+                                <input id="txtfechaentrega" type="text" class="form-control" placeholder="dd/mm/yyyy">
+                                <span class="input-group-addon">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Lugar de Entrega</label>
+                            <input id="txtlugarentrega" type="text" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Moneda</label>
+                            <select id="ddlmoneda" class="form-control" required>
+                                <option value="">Seleccione la moneda...</option>
+                                <option value="1">Soles</option>
+                                <option value="2">Dólares</option>
+                                <option value="3">Euros</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                @Html.TextBoxFor(u => u.CodigoProforma, new { @value = Model.CodigoProforma, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdProforma, new { @value = Model.IdProforma != 0 ? Model.IdProforma.ToString() : "", @type = "hidden" })
+                
+            }
+        </div>
+    </div>
+</div>

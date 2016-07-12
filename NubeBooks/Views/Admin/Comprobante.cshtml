@@ -1,0 +1,769 @@
+﻿@using NubeBooks.Core.DTO
+@using System.Globalization
+@model ComprobanteDTO
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@section Styles{
+    @Styles.Render("~/Content/themes/admin/js/select2/select2.css")
+    @Styles.Render("~/Content/themes/admin/js/select2/theme.css")
+}
+@section Scripts{
+    @Scripts.Render("~/Content/themes/admin/js/select2/select2.min.js")
+    <script type="text/javascript">
+        @{
+            var jss = new System.Web.Script.Serialization.JavaScriptSerializer();
+            var userInfoJson = jss.Serialize(ViewBag.Categorias);
+            var userInfoJson2 = jss.Serialize(ViewBag.Proyectos);
+        }
+        var mydata = JSON.parse('@Html.Raw(userInfoJson)');
+        var lstProyectos = JSON.parse('@Html.Raw(userInfoJson2)');
+
+        lstProyectos = ConvertirProyectos(lstProyectos);
+
+        var jsTipoCmp = '@Model.IdTipoComprobante';
+        var jUserExt = '@ViewBag.EsUsuarioExterno';
+        var miBaseUrl = '';
+
+        $(function () {
+            miBaseUrl = baseURL(window.location.pathname);
+            $('.input-group.date').datepicker();
+            $('.miselect2').select2();
+
+            $('.miselect2_clear').select2({
+                allowClear: true,
+                placeholder: "Seleccionar"
+            });
+
+            $('#IdCategoria').select2({
+                placeholder: "Seleccione una categoría",
+                data: mydata,
+                allowClear: true
+            })
+
+            $('#IdProyecto').select2({ data: lstProyectos })
+
+            ActualizarIGV();
+            BloquearTDocumentos();
+
+            if(jsTipoCmp == 1 || jsTipoCmp == 3) {
+                ListarProyectos(0); 
+            } else {
+                ListarProyectos2(0);
+            }
+            
+
+            $('.rol-accs').each(function () {
+                if (jUserExt == 'True') $(this).prop('disabled', true);
+            });
+        });
+
+        $("#add-monto").click(function () {
+            var existe = false;
+            
+            var valorArea = $('#IdAreaX :selected').val();
+            if (valorArea > 0) {
+                var txtArea = $('#IdAreaX :selected').text();
+                var txtMonto = parseFloat($('#MontoX').val());
+
+                $('#lstMontos option').each(function () {
+                    if ($(this).val() == valorArea) existe = true;
+                });
+                if (!existe) {
+                    $('#lstMontos').append($('<option>', {
+                        value: valorArea,
+                        text: txtArea + ' - ' + txtMonto
+                    }).attr('data-monto', txtMonto));
+
+                    $('#IdAreaX').select2("val", 0);
+                    $('#MontoX').val("");
+                    $('#MontoSinIGVX').val("");
+                    ActualizarMontos();
+                } else {
+                    alert("No se puede agregar el área " + txtArea + ", porque ya se encuentra agregado.");
+                }
+            } else {
+                alert("Por favor, seleccione otra área válido.");
+            }
+        });
+
+        $("#remove-monto").click(function () {
+            var val = $('#lstMontos :selected').val();
+            var text = $('#lstMontos :selected').text();
+
+            $('#lstMontos :selected').remove();
+            $('#MontoSinIGVX').val("");
+            $('#MontoX').val("");
+            ActualizarMontos();
+        });
+
+        function CheckNumericValue(e) {
+            var key = e.which ? e.which : e.keyCode;
+            //enter key  //backspace //tabkey      //escape key
+            if ((key >= 48 && key <= 57) || key == 13 || key == 8 || key == 9 || key == 27 || key == 46) {
+                return true;
+            }
+            else {
+                alert("Solo ingresar caracteres numericos");
+                return false;
+            }
+        }
+
+        function ActualizarMontoSinIGV() {
+            var montoSinIGV = 0;
+            
+            if($('#chkIGV').is(':checked'))
+            { montoSinIGV = Math.round(($('#Monto').val() / 1.18) * 100) / 100;}
+            else
+            { montoSinIGV = Math.round(($('#Monto').val() / 1) * 100) / 100; }
+
+            $('#MontoSinIGV').val(montoSinIGV);
+        }
+
+        function ActualizarMontoConIGV() {
+            var montoConIGV = 0;
+            if($('#chkIGV').is(':checked'))
+            { montoConIGV = Math.round(($('#MontoSinIGV').val() * 1.18) * 100) / 100; }
+            else
+            { montoConIGV = Math.round(($('#MontoSinIGV').val() / 1) * 100) / 100; }
+
+            $('#Monto').val(montoConIGV);
+        }
+
+        function ActualizarMontoSinIGV_X() {
+            var montoSinIGV = 0;
+
+            montoSinIGV = Math.round(($('#MontoX').val() / 1.18) * 100) / 100;
+
+            $('#MontoSinIGVX').val(montoSinIGV);
+        }
+
+        function ActualizarMontoConIGV_X() {
+            var montoConIGV = 0;
+            
+            montoConIGV = Math.round(($('#MontoSinIGVX').val() * 1.18) * 100) / 100;
+
+            $('#MontoX').val(montoConIGV);
+        }
+
+        function BloquearTDocumentos()
+        {
+            if(@Model.IdTipoComprobante == 1)
+            {
+                //Bloqueo de Staff
+                $("#IdTipoDocumento option[value='4']").attr('disabled', true);
+                //Bloqueo de Ordenes de Compra
+                $("#IdTipoDocumento option[value='10']").attr('disabled', true);
+            }
+            else
+            {
+                //Bloquear Proforma
+                $("#IdTipoDocumento option[value='9']").attr('disabled', true);
+            }
+        }
+
+        function ActualizarIGV()
+        {
+            var pTipoDocumento = parseInt($('#IdTipoDocumento').val());
+            //debugger;
+            switch(pTipoDocumento)
+            {
+                case 3: case 4: case 7:
+                    $('#chkIGV').prop('checked', false);
+                    $('#chkIGV').checked = false;
+                    $('#chkIGV').val('FALSE');
+                    break;
+                default:
+                    $('#chkIGV').prop('checked', true);
+                    $('#chkIGV').checked = true;
+                    $('#chkIGV').val('TRUE');
+                    break;
+            }
+        }
+
+        function ActualizarMontos()
+        {
+            var suma = 0;
+            $('#lstMontos option').each(function(){
+                suma += parseFloat($(this).data("monto"));
+            })
+            $('#Monto').val(suma);
+            ActualizarMontoSinIGV();
+        }
+
+        function ListaMontosAreas()
+        {
+            var lista = [];
+            $('#lstMontos option').each(function () {
+                var elem = {
+                    IdArea: $(this).val(),
+                    Monto: $(this).data("monto")
+                };
+                lista.push(elem);
+            });
+
+            lista = JSON.stringify({'lista': lista});
+
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/PasslstAreasXMontos',
+                data: lista,
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    return true;
+                },
+                error: function(xhr, status, error) {
+                    return false;
+                }
+            });
+        }
+
+        function ListarProyectos(cambio) {
+            if ($('#IdEntidadResponsable').val() != 0)
+            {
+                var idEntidad = parseInt($('#IdEntidadResponsable').val());
+                if(cambio == 1)
+                {
+                    $('#IdProyecto').select2("val", "");
+                }
+
+                GetProyectosAjax(idEntidad);
+                $('#IdProyecto').select2({
+                    allowClear: true,
+                    data: lstProyectos,
+                    placeholder: "Seleccionar"
+                })
+            }
+        }
+
+        function ConvertirProyectos(pLista) {
+            var lstProyectosAux = [];
+            $.each(pLista, function (index, item) {
+                lstProyectosAux.push({
+                    'id': item.IdProyecto,
+                    'text': item.Nombre,
+                    'data': item
+                });
+            });
+            return lstProyectosAux;
+        }
+
+
+        function CambiarCredito() {
+            var nCredito = $("#IdEntidadResponsable").select2().find(":selected").data("credito");
+
+            var jsFechaInicio = $("#FechaEmision").val().split("/"); 
+            jsFechaInicio = jsFechaInicio[2] + "/" + jsFechaInicio[1] + "/" + jsFechaInicio[0];
+
+            var jsFechaNeo = new Date(jsFechaInicio);
+            jsFechaNeo.setDate(jsFechaNeo.getDate() + nCredito);
+
+            $("#FechaConclusion").datepicker('setDate', jsFechaNeo);
+        }
+
+        function CambiarConsultor() {
+            var jsIdResponsable = $("#IdEntidadResponsable").select2().find(":selected").data("responsable");
+            $("#IdResponsable").select2("val", jsIdResponsable);
+        }
+
+        //Solo para Comprobantes de tipo 2 y 4
+        function ListarProyectos2(cambio) {
+            if ($('#IdEntidadResponsable2').val() != 0)
+            {
+                var idEntidad = parseInt($('#IdEntidadResponsable2').val());
+                if(cambio == 1)
+                {
+                    $('#IdProyecto').select2("val", "");
+                }
+
+                GetProyectosAjax(idEntidad);
+                $('#IdProyecto').select2({
+                    allowClear: true,
+                    data: lstProyectos,
+                    placeholder: "Seleccionar"
+                })
+            }
+        }
+
+        function GetProyectosAjax(idEntidad)
+        {
+            $.ajax({
+                type: "POST",
+                url: "/Admin/GetProyectos",
+                async: false,
+                cache: false,
+                data: { idEntidad: idEntidad },
+                dataType: 'json',
+                success: function (data) {
+                    lstProyectos = ConvertirProyectos(data.listaProyectos);
+                }
+            });
+        }
+
+        $("#IdProyecto").on('select2-selecting', function (e) {
+            var jsObj = e.object.data;
+            $("#IdResponsable").select2("val", jsObj.IdResponsable);
+        });
+
+        /*$("#IdProyecto").on('select2-clearing', function (e) {
+            debugger;
+            $("#IdResponsable").select2("val", "");
+        });*/
+
+        function AsociarProyecto()
+        {
+            if($('#IdProyecto').parent().hasClass('hidden'))
+            {
+                if(jsTipoCmp == 2 || jsTipoCmp == 4)
+                {
+                    $('#IdEntidadResponsable2').parent().toggleClass('hidden');
+                    $('#btn_proyecto span').text('Remover Cliente');
+                }
+                else
+                {
+                    $('#btn_proyecto span').text('Remover Proyecto');
+                }
+
+                $('#IdProyecto').parent().toggleClass('hidden');
+                $('#btn_proyecto i').toggleClass('fa-plus fa-minus');
+            }
+            else
+            {
+                if(jsTipoCmp == 2 || jsTipoCmp == 4)
+                {
+                    $('#IdEntidadResponsable2').select2("val", "");
+                    $('#IdEntidadResponsable2').parent().toggleClass('hidden');
+                    $('#btn_proyecto span').text('Asociar a Cliente');
+                }
+                else
+                {
+                    $('#btn_proyecto span').text('Asociar a Proyecto');
+                }
+
+                $('#IdProyecto').select2("val", "");
+                $('#IdProyecto').parent().toggleClass('hidden');
+                $('#btn_proyecto i').toggleClass('fa-plus fa-minus');
+            }
+        }
+    </script>
+}
+@{
+    string titulo = "", strTitulo = "", strFechaIni = "", strEntidad = "", strFechaFin = "";
+    if (Model != null)
+    {
+        switch (Model.IdTipoComprobante)
+        {
+            case 1:
+                strTitulo = "Ingreso";
+                strFechaIni = "Fecha Facturación";
+                strEntidad = "Cliente";
+                strFechaFin = "Estimada de Cobranza";
+                break;
+            case 2:
+                strTitulo = "Egreso";
+                strFechaIni = "Fecha Documento";
+                strEntidad = "Proveedor";
+                strFechaFin = "Estimada de Pago";
+                break;
+            case 3:
+                strTitulo = "Ingreso Anulado";
+                strFechaIni = "Fecha";
+                strEntidad = "Entidad";
+                strFechaFin = "Vencimiento";
+                break;
+            case 4:
+                strTitulo = "Egreso Anulado";
+                strFechaIni = "Fecha";
+                strEntidad = "Entidad";
+                strFechaFin = "Vencimiento";
+                break;
+        }
+    }
+    titulo = ((Model == null || Model.IdComprobante == 0) ? "Nuevo" : "Actualizar") + " Comprobante - " + strTitulo;
+}
+
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">@titulo</h1>
+</div>
+<div class="wrapper-md" ng-controller="FormDemoCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @using (Html.BeginForm("AddComprobante", "Admin", FormMethod.Post))
+            {
+                @Html.Partial("_showAlertMessages")
+                @Html.ValidationSummary(true)
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">@strFechaIni</label>
+                            <div class="input-group date">
+                                @Html.TextBoxFor(u => u.FechaEmision, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text", @readonly = "true" })
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Documento</label>
+                            <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" onchange = "ActualizarIGV(); ActualizarMontoConIGV();"
+                                    id="IdTipoDocumento" name="IdTipoDocumento" required>
+                                @{ var pTipoDoc = Model != null ? Model.IdTipoDocumento : 0;}
+                                <option value=""></option>
+                                @foreach (var iTipo in (List<TipoDocumentoDTO>)ViewBag.lstTipoDocumento)
+                                {
+                                    <option value="@iTipo.IdTipoDocumento" @(iTipo.IdTipoDocumento == pTipoDoc ? "selected=selected" : "")>@iTipo.Nombre</option>
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(u => u.IdTipoDocumento, "", new { @style = "color:red;" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Nro. Documento</label>
+                            @Html.TextBoxFor(u => u.NroDocumento, new { @class = "form-control rol-accs", @placeholder = "Documento", @type = "text" })
+                            @Html.ValidationMessageFor(u => u.NroDocumento, "", new { @style = "color:red;" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">@strEntidad</label>
+                            <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" onchange="ListarProyectos(1); CambiarCredito(); CambiarConsultor();"
+                                    id="IdEntidadResponsable" name="IdEntidadResponsable" required>
+                                @{ var pEntidad = Model != null ? Model.IdEntidadResponsable : 0;
+                                    List<EntidadResponsableDTO> listaEnt = Model.IdTipoComprobante == 1 || Model.IdTipoComprobante == 3 ? ViewBag.lstClientes : ViewBag.lstProveedores;
+                                }
+                                <option value=""></option>
+                                @foreach (var ent in listaEnt)
+                                {
+                                    <option value="@ent.IdEntidadResponsable" @(ent.IdEntidadResponsable == pEntidad ? "selected=selected" : "") data-credito="@ent.Credito" data-responsable="@ent.IdResponsable">@ent.Nombre</option>
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(u => u.IdEntidadResponsable, "", new { @style = "color:red;" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Fecha @strFechaFin</label>
+                            <div class="input-group date">
+                                @Html.TextBoxFor(u => u.FechaConclusion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha de cancelación", @type = "text", @readonly = "true" })
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                        @if (Model.IdTipoComprobante == 1 || Model.IdTipoComprobante == 3)
+                        {
+                            <div class="col-md-3">
+                                <label>Consultor</label>
+                                <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs"
+                                        id="IdResponsable" name="IdResponsable">
+                                    @{ var pResponsable = Model != null ? Model.IdResponsable : 0; }
+                                    <option value=""></option>
+                                    @foreach (var resp in (List<ResponsableDTO>)ViewBag.lstResponsables)
+                                    {
+                                        <option value="@resp.IdResponsable" @(resp.IdResponsable == pResponsable ? "selected=selected" : "")>@resp.Nombre</option>
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(u => u.IdResponsable, "", new { @style = "color:red;" })
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label">Modalidad de Pago</label>
+                                <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs"
+                                        id="IdHonorario" name="IdHonorario">
+                                    @{ var pHon = Model != null ? Model.IdHonorario : 0; }
+                                    <option value=""></option>
+                                    @foreach (var hon in (List<HonorarioDTO>)ViewBag.lstHonorarios)
+                                    {
+                                        <option value="@hon.IdHonorario" @(hon.IdHonorario == pHon ? "selected=selected" : "")>@hon.Nombre</option>
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(u => u.IdHonorario, "", new { @style = "color:red;" })
+                            </div>
+                                        }
+                        <div class="col-md-3">
+                            <label class="control-label">Partida de Presupuesto</label>
+                            @Html.TextBoxFor(u => u.IdCategoria, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs" })
+                            @Html.ValidationMessageFor(u => u.IdCategoria, "", new { @style = "color:red;" })
+                        </div>
+                        @if (Model.IdTipoComprobante == 2 || Model.IdTipoComprobante == 4)
+                        {
+                            <div class="col-md-3">
+                                <label class="control-label">Moneda</label>
+                                @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder miselect2 rol-accs" })
+                                @Html.ValidationMessageFor(u => u.IdMoneda, "", new { @style = "color:red;" })
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label">Tipo de Cambio</label>
+                                @Html.TextBoxFor(u => u.TipoCambio, "{0:0.00}", new { @class = "form-control rol-accs", @placeholder = "Tipo de Cambio", @type = "text", @onkeypress = "return CheckNumericValue(event)" })
+                                @Html.ValidationMessageFor(u => u.TipoCambio, "", new { @style = "color:red;" })
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        @if (Model.IdTipoComprobante == 1 || Model.IdTipoComprobante == 3)
+                        {
+                            <div class="col-md-3">
+                                <label class="control-label">Moneda</label>
+                                @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder miselect2 rol-accs" })
+                                @Html.ValidationMessageFor(u => u.IdMoneda, "", new { @style = "color:red;" })
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label">Tipo de Cambio</label>
+                                @Html.TextBoxFor(u => u.TipoCambio, "{0:0.00}", new { @class = "form-control rol-accs", @placeholder = "Tipo de Cambio", @type = "text", @onkeypress = "return CheckNumericValue(event)" })
+                                @Html.ValidationMessageFor(u => u.TipoCambio, "", new { @style = "color:red;" })
+                            </div>
+                                        }
+                        <div class="col-md-3">
+                            <label class="control-label">Área</label>
+                            <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs"
+                                    id="IdArea" name="IdArea">
+                                @{ var pArea = Model != null ? Model.IdArea : 0; }
+                                <option value=""></option>
+                                @foreach (var area in (List<AreaNDTO>)ViewBag.lstAreas)
+                                {
+                                    <option value="@area.IdArea" @(area.IdArea == pArea ? "selected=selected" : "")>@area.Nombre</option>
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(u => u.IdArea, "", new { @style = "color:red;" })
+                            <div class="text-left">
+                                <a class="text-info" onclick="$('#Area_X_Monto').show();$('#IdArea').select2('val', 0);$('#IdArea').prop('disabled', true);">¿Desea ingresar más de un área?</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Monto (sin IGV)</label>
+                            @Html.TextBoxFor(u => u.MontoSinIGV, "{0:#.00}", new { @class = "form-control rol-accs", @placeholder = "Monto Sin IGV", @type = "text", @onkeypress = "return CheckNumericValue(event)", @onkeyup = "ActualizarMontoConIGV()" })
+                            @Html.ValidationMessageFor(u => u.MontoSinIGV)
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Monto Total</label>
+                            @Html.TextBoxFor(u => u.Monto, "{0:#.00}", new { @class = "form-control rol-accs", @placeholder = "Ingrese el monto", @type = "text", @onkeypress = "return CheckNumericValue(event)", @onkeyup = "ActualizarMontoSinIGV()" })
+                            @Html.ValidationMessageFor(u => u.Monto)
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Afecto al IGV</label>
+                            @{ 
+                                bool miChk = true;
+                                if (Model.IdComprobante != 0)
+                                {
+                                    miChk = Model.Monto == Model.MontoSinIGV ? false : true;
+                                }
+                            }
+                            <div>
+                                <label class="i-switch m-t-xs m-r">
+                                    <input id="chkIGV" aria-checked="true" type="checkbox" value="@(miChk ? "true" : "false")" checked="@miChk" onchange="ActualizarMontoConIGV()">
+                                    <i></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="Area_X_Monto" hidden>
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Área</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Html.DropDownList("IdAreaX", new SelectList(ViewBag.lstAreas, "IdArea", "Nombre"), new { @id = "IdAreaX", @class = "col-xs-12 col-sm-12 col-md-12 no-padder miselect2 rol-accs" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Monto (sin IGV)</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input id="MontoSinIGVX" type="text" class="form-control rol-accs" placeholder="0.00" onkeypress="return CheckNumericValue(event)" onkeyup="ActualizarMontoConIGV_X()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Monto Total</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input id="MontoX" type="text" class="form-control rol-accs" placeholder="0.00" onkeypress="return CheckNumericValue(event)" onkeyup="ActualizarMontoSinIGV_X()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="text-right">
+                                            <button type="button" class="btn m-b-xs btn-sm btn-default btn-addon rol-accs" id="add-monto">
+                                                <i class="fa fa-plus"></i>Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <select name="@Html.NameFor(u => u.lstMontos)" id="@Html.IdFor(u => u.lstMontos)" name="@Html.NameFor(u => u.lstMontos)" multiple="multiple" class="form-control rol-accs">
+                                    @{List<AreaPorComprobanteDTO> listaMontos = ViewBag.Montos ?? new List<AreaPorComprobanteDTO>(); }
+                                    @foreach (var item in listaMontos)
+                                    {
+                                        <option value="@item.IdArea" data-monto="@item.Monto">@(item.NombreArea + " - " + item.Monto.ToString("#.00"))</option>
+                                    }
+                                </select>
+
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn m-b-xs btn-sm btn-default btn-addon rol-accs" id="remove-monto">
+                                    <i class="fa fa-minus"></i>Remover
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <a class="text-info" onclick="$('#Area_X_Monto').hide();$('#IdArea').select2('val', 0);$('#IdArea').prop('disabled', false);">¿Desea ingresar sólo un área?</a>
+                    </div>
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <div class="row">
+                        @{ var eProyecto = ""; var textProyecto = "";
+                            if (Model.IdProyecto > 0 || Model.IdEntidadResponsable2 > 0)
+                            {
+                                eProyecto = "";
+                                textProyecto = (Model.IdTipoComprobante == 1 || Model.IdTipoComprobante == 3) ? "Remover Proyecto" : "Remover Cliente";
+                            }
+                            else
+                            {
+                                eProyecto = "hidden";
+                                textProyecto = (Model.IdTipoComprobante == 1 || Model.IdTipoComprobante == 3) ? "Asociar a Proyecto" : "Asociar a Cliente";
+                            }
+                        }
+                        @if (Model.IdTipoComprobante == 2 || Model.IdTipoComprobante == 4)
+                        {
+                            <div class="col-md-3 @eProyecto">
+                                <label class="control-label">Cliente</label>
+                                <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" onchange="ListarProyectos2(1)"
+                                        id="IdEntidadResponsable2" name="IdEntidadResponsable2">
+                                    @{ var pCliente = Model != null ? Model.IdEntidadResponsable2.GetValueOrDefault() : 0;
+                                        List<EntidadResponsableDTO> listaClientes = ViewBag.lstClientes;
+                                    }
+                                    <option value=""></option>
+                                    @foreach (var ent in listaClientes)
+                                    {
+                                        <option value="@ent.IdEntidadResponsable" @(ent.IdEntidadResponsable == pCliente ? "selected=selected" : "")>@ent.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                        <div class="col-md-3 @eProyecto">
+                            <label class="control-label">Proyecto</label>
+                            @Html.TextBoxFor(u => u.IdProyecto, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs" })
+                            @Html.ValidationMessageFor(u => u.IdProyecto, "", new { @style = "color:red;" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">&nbsp;</label>
+                            <button type="button" id="btn_proyecto" class="form-control btn m-b-xs btn-md btn-default btn-addon" onclick="AsociarProyecto()"><i class="fa fa-@(eProyecto == "" ? "minus" : "plus")"></i><span>@textProyecto</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Comentarios</label>
+                            @Html.TextAreaFor(u => u.Comentario, new { @class = "form-control rol-accs", @placeholder = "Comentario", @type = "text", @rows = "3", @style = "resize: none;" })
+                            @Html.ValidationMessageFor(u => u.Comentario)
+                        </div>
+                    </div>
+                </div>
+
+                @Html.TextBoxFor(u => u.Estado, new { @value = true, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdTipoComprobante, new { @value = Model.IdTipoComprobante != 0 ? Model.IdTipoComprobante.ToString() : "", @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdComprobante, new { @value = Model.IdComprobante != 0 ? Model.IdComprobante.ToString() : "", @type = "hidden" })
+                @Html.TextBoxFor(u => u.UsuarioCreacion, new { @value = Model != null ? Model.UsuarioCreacion.ToString() : "", @type = "hidden" })
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            @{var btnName = (Model != null && Model.IdComprobante > 0) ? "Guardar Cambios" : "Crear";}
+                            @if (!ViewBag.EsUsuarioExterno && Model.IdTipoComprobante < 3)
+                            {<button type="submit" class="btn btn-success" onclick="return ListaMontosAreas();">@btnName</button>}
+                            @{string tipo = (Model.IdTipoComprobante == 1) ? "Ingreso" : (Model.IdTipoComprobante == 2) ? "Egreso" : "Anulados"; }
+                            <a class="btn btn-default" href="@Url.Action("Comprobantes" + tipo, "Admin")">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+                                                        }
+        </div>
+    </div>
+    @if (Model != null && Model.IdComprobante > 0)
+    {
+        <div class="line line-dashed line-lg pull-in"></div>
+        <div class="bg-light lter b-b wrapper-md">
+            <h1 class="m-n font-thin h4">Movimientos Asociados de cuentas bancarias</h1>
+        </div>
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table ui-jq="dataTable" ui-options="{
+    oLanguage: {
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sSearch: 'Buscar:',
+        sZeroRecords: 'No se encontraron registros que cumplan los términos de búsqueda.',
+        sLoadingRecords: 'Cargando...',
+        sInfo: 'Mostrando _START_-_END_ de _TOTAL_ registros.',
+        sInfoEmpty: 'Mostrando _END_ de _TOTAL_ registros',
+        sInfoFiltered: '(filtrados de un total _MAX_).',
+        sEmptyTable: 'No hay información disponible para mostrar.',
+        sProcessing: 'DataTables is currently busy',
+        oPaginate: {
+            sPrevious: 'Anterior',
+            sNext: 'Siguiente'
+        }
+    },
+}" class="table table-striped b-t b-b dataTable">
+                    <thead>
+                        <tr>
+                            <th width="7%">Fecha</th>
+                            <th>Cuenta Bancaria</th>
+                            <th>Detalle</th>
+                            <th class="text-center">Monto</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (((List<MovimientoDTO>)ViewBag.lstMovimientos).Count > 0)
+                        {
+                            foreach (var obj in (List<MovimientoDTO>)ViewBag.lstMovimientos)
+                            {
+                                <tr>
+                                    <td class="text-center">@obj.Fecha.ToString("yyyy/MM/dd", CultureInfo.CreateSpecificCulture("es-PE"))</td>
+                                    @{ var colorTipoMov = obj.IdTipoMovimiento == 1 ? "#27c24c" : "red";
+                                        var signo = obj.IdTipoMovimiento == 1 ? "" : "-";  }
+                                    <td>@obj.NombreCuenta</td>
+                                    <td>@obj.NroOperacion</td>
+                                    <td class="text-right" width="13%" style="color:@(colorTipoMov)">@(signo)@Model.SimboloMoneda @obj.Monto.ToString("N2", CultureInfo.InvariantCulture)</td>
+                                    @{var rEstado = obj.IdEstadoMovimiento == 1 ? "fa-square-o" : "fa-check-square-o";
+                                        var rColor = obj.IdEstadoMovimiento == 1 ? "red" : "green";
+                                        var rEstadoTexto = obj.IdEstadoMovimiento == 1 ? "P" : "R";}
+                                    <td class="text-center"><a class="mactivo" data-id="@obj.IdMovimiento"><span hidden>@rEstadoTexto</span><i class="fa @rEstado @rColor"></i></a></td>
+                                </tr>
+                                            }
+                                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+                                        }
+</div>

@@ -1,0 +1,123 @@
+﻿@using NubeBooks.Core.DTO
+@using System.Globalization;
+@model ResponsableDTO
+@{ 
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@{var cadena = "";}
+@if (Model == null || Model.IdResponsable == 0) { cadena = "Nueva"; }
+else { cadena = "Actualizar"; }
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">@cadena Consultor</h1>
+</div>
+<div class="wrapper-md" ng-controller="FormDemoCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @using (Html.BeginForm("AddResponsable", "Admin", FormMethod.Post))
+            {
+                @Html.Partial("_showAlertMessages")
+                @Html.ValidationSummary(true)
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Nombre del Consultor</label>
+                            @Html.TextBoxFor(u => u.Nombre, new { @class = "form-control", @placeholder = "Ingrese el nombre del área", @type = "text" })
+                            @Html.ValidationMessageFor(u => u.Nombre, "", new { @style = "color:red;" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Descripción</label>
+                            @Html.TextAreaFor(u => u.Descripcion, new { @class = "form-control", @placeholder = "Ingrese la descripción", @type = "text", @rows = "6", @style = "resize: none;" })
+                            @Html.ValidationMessageFor(u => u.Descripcion, "", new { @style = "color:red;" })
+                        </div>
+                    </div>
+                </div>
+                if (ViewBag.EsAdmin && Model != null && Model.IdResponsable > 0)
+                {
+                    <div class="line line-dashed line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Estado</label>
+                                <div>
+                                    <label class="i-switch m-t-xs m-r">
+                                        <input id="Estado" name="Estado" type="checkbox" value="@(Model.Estado ? "true" : "false")" checked="@Model.Estado" onchange="cb=$(this);cb.val(cb.prop('checked'));">
+                                        <i></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.TextBoxFor(u => u.Estado, new { @value = Model != null ? Model.Estado : false, @type = "hidden" })
+                }
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdResponsable, new { @value = Model.IdResponsable != 0 ? Model.IdResponsable.ToString() : "", @type = "hidden" })
+                var btnName = (Model != null && Model.IdResponsable > 0) ? "Guardar Cambios" : "Crear";
+                <button type="submit" class="btn btn-sm btn-success">@btnName</button>
+                <a class="btn btn-default" href="@Url.Action("Responsables", "Admin")">Cancelar</a>
+            }
+        </div>
+    </div>
+    @if (Model != null && Model.IdResponsable > 0)
+    {
+        <div class="line line-dashed line-lg pull-in"></div>
+        <div class="bg-light lter b-b wrapper-md">
+            <h1 class="m-n font-thin h4">Movimientos Asociados</h1>
+        </div>
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table ui-jq="dataTable" ui-options="{
+    oLanguage: {
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sSearch: 'Buscar:',
+        sZeroRecords: 'No se encontraron registros que cumplan los términos de búsqueda.',
+        sLoadingRecords: 'Cargando...',
+        sInfo: 'Mostrando _START_-_END_ de _TOTAL_ registros.',
+        sInfoEmpty: 'Mostrando _END_ de _TOTAL_ registros',
+        sInfoFiltered: '(filtrados de un total _MAX_).',
+        sEmptyTable: 'No hay información disponible para mostrar.',
+        sProcessing: 'DataTables is currently busy',
+        oPaginate: {
+            sPrevious: 'Anterior',
+            sNext: 'Siguiente'
+        }
+    },
+    pageLength: 25,
+}" class="table table-striped b-t b-b dataTable">
+                    <thead>
+                        <tr>
+                            <th style="width:10%">Fecha</th>
+                            <th style="width:10%">Documento</th>
+                            <th style="width:10%">Número</th>
+                            <th style="width:35%">Cliente</th>
+                            <th class="text-center" style="width:10%">Monto Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (((List<ComprobanteDTO>)ViewBag.lstComprobantes).Count > 0)
+                        {
+                            foreach (var item in (List<ComprobanteDTO>)ViewBag.lstComprobantes)
+                            {
+                                <tr>
+                                    <td>@item.FechaEmision.ToString("yyyy/MM/dd", CultureInfo.CreateSpecificCulture("es-PE"))</td>
+                                    <td>@item.NombreTipoDocumento</td>
+                                    <td>@item.NroDocumento</td>
+                                    <td>@item.NombreEntidad</td>
+                                    <td class="text-right">@item.SimboloMoneda @item.Monto.ToString("N2", CultureInfo.InvariantCulture)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,547 @@
+﻿@using NubeBooks.Core.DTO
+@using System.Globalization
+@model EntidadResponsableDTO
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@section Styles{
+    @Styles.Render("~/Content/themes/admin/js/select2/select2.css")
+    @Styles.Render("~/Content/themes/admin/js/select2/theme.css")
+}
+@section Scripts{
+    @Scripts.Render("~/Content/themes/admin/js/select2/select2.min.js")
+    <script type="text/javascript">
+        $(function () {
+            $('.miselect2').select2();
+
+            $('.miselect2_clear').select2({
+                allowClear: true,
+                placeholder: "Seleccionar"
+            });
+
+            $('#fechaInicio').datepicker({ format: 'dd/mm/yyyy' });
+            $('#fechaFin').datepicker({ format: 'dd/mm/yyyy' });
+
+            if ('@Model.TipoPersona' == 2) {
+                desactivarTiposIdentificacion();
+            }
+            else {
+                activarTiposIdentificacion();
+            }
+        });
+
+        $("input#exportar").click(function () {
+            window.location.href = exportarDetalle($('#fechaInicio').val(), $('#fechaFin').val());
+            $('#modal-form-exportar').modal('toggle');
+        });
+
+        function exportarDetalle(fechaInicio, fechaFin) {
+            var FechaInicio = fechaInicio.split("/"); FechaInicio = FechaInicio[2] + "/" + FechaInicio[1] + "/" + FechaInicio[0];
+            var FechaFin = fechaFin.split("/"); FechaFin = FechaFin[2] + "/" + FechaFin[1] + "/" + FechaFin[0];
+            var jsIdEntidad = '@Model.IdEntidadResponsable';
+
+            return miBaseUrl + "/ExportarComprobantesAsociados_EnEntidad/?idEntidad=" + jsIdEntidad + "&" + "FechaInicio=" + encodeURIComponent(FechaInicio) + "&" + "FechaFin=" + encodeURIComponent(FechaFin);
+        }
+
+        function CheckNumericValue(e) {
+            var key = e.which ? e.which : e.keyCode;
+            //enter key  //backspace //tabkey      //escape key
+            if ((key >= 48 && key <= 57) || key == 13 || key == 8 || key == 9 || key == 27 || key == 46) {
+                return true;
+            }
+            else {
+                alert("Solo ingresar un numero decimal");
+                return false;
+            }
+        }
+
+        function handleClick() {
+            debugger;
+            var sContacto = "", sProyecto = "";
+            sContacto = $('#chkContacto').val() ? "inactivosC=" + $('#chkContacto').val() : "";
+            sProyecto = $('#chkProyecto').val() ? "inactivosP=" + $('#chkProyecto').val() : "";
+            window.location.href = '@Url.Action("Entidad", "Admin", new { @id = Model.IdEntidadResponsable.GetValueOrDefault() })' + "?" + sContacto + "&" + sProyecto;
+        }
+
+        function cambioTipoPersona()
+        {
+            var jsTipoPersonaVal = $("#TipoPersona option:selected").val();
+            if (jsTipoPersonaVal == 1)
+            {
+                $('#lblNombre').text("Razón Social");
+                if ($('#divComercial').hasClass('hidden')) { $('#divComercial').removeClass('hidden'); $('#divEmail').addClass('hidden'); }
+                activarTiposIdentificacion();
+                if('@Model.IdTipoEntidad' == 2)
+                {
+                    if ($('#divDetraccion').hasClass('hidden')) { $('#divDetraccion').removeClass('hidden'); }
+                    if ($('#divTipo').hasClass('hidden')) { $('#divTipo').removeClass('hidden'); }
+                    if ($('#divCredito').hasClass('col-md-6')) { $('#divCredito').toggleClass("col-md-3 col-md-6") }
+                }
+            }
+            else
+            {
+                $('#lblNombre').text("Apellidos - Nombre");
+                if ($('#divEmail').hasClass('hidden')) { $('#divEmail').removeClass('hidden'); $('#divComercial').addClass('hidden'); }
+                desactivarTiposIdentificacion();
+                if ('@Model.IdTipoEntidad' == 2)
+                {
+                    if (!$('#divDetraccion').hasClass('hidden')) { $('#divDetraccion').addClass('hidden'); }
+                    if (!$('#divTipo').hasClass('hidden')) { $('#divTipo').addClass('hidden'); }
+                    if ($('#divCredito').hasClass('col-md-3')) { $('#divCredito').toggleClass("col-md-3 col-md-6") }
+                }
+            }
+        }
+
+        function activarTiposIdentificacion()
+        {
+            $("#IdTipoIdentificacion").select2("val", 1);
+            $("#IdTipoIdentificacion option[value='2']").attr('disabled', true);
+            $("#IdTipoIdentificacion option[value='3']").attr('disabled', true);
+            //$("#IdTipoIdentificacion option[value='4']").attr('disabled', true);
+        }
+        function desactivarTiposIdentificacion()
+        {
+            $("#IdTipoIdentificacion").select2("val", 2);
+            $("#IdTipoIdentificacion option[value='2']").attr('disabled', false);
+            $("#IdTipoIdentificacion option[value='3']").attr('disabled', false);
+            //$("#IdTipoIdentificacion option[value='4']").attr('disabled', false);
+        }
+    </script>
+}
+@{var cadena = "";}
+@if (Model == null || Model.IdEntidadResponsable.GetValueOrDefault() == 0) { cadena = "Nueva"; }
+else { cadena = "Actualizar"; }
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">@cadena Entidad</h1>
+</div>
+<div class="wrapper-md" ng-controller="FormDemoCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @using (Html.BeginForm("AddEntidad", "Admin", FormMethod.Post))
+            {
+                @Html.Partial("_showAlertMessages")
+                @Html.ValidationSummary(true)
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Tipo de Persona</label>
+                            <select class="form-control col-xs-12 col-sm-12 col-md-12 no-padder rol-accs" id="TipoPersona" name="TipoPersona" onchange="cambioTipoPersona()">
+                                @{
+                                    var pTipoPersona = Model.TipoPersona.GetValueOrDefault();
+                                    string sTipoPersona = "";
+                                    for (int i = 1; i <= 2; i++)
+                                    {
+                                        switch (i)
+                                        {
+                                            case 1:
+                                                sTipoPersona = "Jurídica";
+                                                break;
+                                            default:
+                                                sTipoPersona = "Natural";
+                                                break;
+                                        }
+                                        <option value="@i" @(i == pTipoPersona ? "selected=selected" : "")>@sTipoPersona</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            @*<label>Razón Social</label>*@
+                            <label id="lblNombre" >@(Model.IdTipoEntidad == 1 ? (Model.TipoPersona == 1 ? "Razón Social" : "Apellidos - Nombre") : "Razón Social")</label>
+                            @Html.TextBoxFor(u => u.Nombre, new { @class = "form-control", @placeholder = "Razón social", @type = "text" })
+                            @Html.ValidationMessageFor(u => u.Nombre, "", new { @style = "color:red;" })
+                        </div>
+                        @*@if (Model.IdTipoEntidad == 2)
+                        {
+                            <div class="col-md-3">
+                                <label>Nombre Comercial</label>
+                                @Html.TextBoxFor(u => u.NombreComercial, new { @class = "form-control", @placeholder = "Nombre comercial", @type = "text" })
+                                @Html.ValidationMessageFor(u => u.NombreComercial, "", new { @style = "color:red;" })
+                            </div>
+                        }*@
+                        <div class="col-md-3">
+                            <label>Identificación</label>
+                            @Html.DropDownListFor(u => u.IdTipoIdentificacion, new SelectList(ViewBag.TipoIdentificacion, "IdTipoIdentificacion", "Nombre", Model != null ? (Model.IdTipoIdentificacion != null ? Model.IdTipoIdentificacion : 0) : 0), new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder miselect2" })
+                            @Html.ValidationMessageFor(u => u.IdTipoIdentificacion, "", new { @style = "color:red;" })
+                        </div>
+                        <div class="col-md-3">
+                            <label>Nro. de Identificación</label>
+                            @Html.TextBoxFor(u => u.NroIdentificacion, new { @class = "form-control", @placeholder = "Ingrese el numero de identificación", @type = "text" })
+                            @Html.ValidationMessageFor(u => u.NroIdentificacion, "", new { @style = "color:red;" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        @{ 
+                            var hideEM = Model.TipoPersona == 2 ? "" : "hidden";
+                            var hideNC = Model.TipoPersona == 1 ? "" : "hidden";
+                        }
+                        <div id="divEmail" class="col-md-6 @hideEM">
+                            <label>Correo Electrónico</label>
+                            @Html.TextBoxFor(u => u.Email, new { @class = "form-control", @placeholder = "Ingrese el Correo Electrónico", @type = "email" })
+                        </div>
+                        <div id="divComercial" class="col-md-6 @hideNC">
+                            <label>Nombre Comercial</label>
+                            @Html.TextBoxFor(u => u.NombreComercial, new { @class = "form-control", @placeholder = "Nombre comercial", @type = "text" })
+                            @Html.ValidationMessageFor(u => u.NombreComercial, "", new { @style = "color:red;" })
+                        </div>
+                        <div class="col-md-3">
+                            <label>Teléfono 1</label>
+                            @Html.TextBoxFor(u => u.Telefono1, new { @class = "form-control", @placeholder = "Ingrese el telefono 1", @type = "text" })
+                        </div>
+                        <div class="col-md-3">
+                            <label>Teléfono 2</label>
+                            @Html.TextBoxFor(u => u.Telefono2, new { @class = "form-control", @placeholder = "Ingrese el telefono 2", @type = "text" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Dirección</label>
+                            @Html.TextBoxFor(u => u.Direccion, new { @class = "form-control", @placeholder = "Ingrese la dirección", @type = "text" })
+                        </div>
+                        @{
+                            var colCredito = 3;
+                            if(Model.IdTipoEntidad == 2)
+                            {
+                                colCredito = Model.TipoPersona == 1 ? 3 : 6;
+                            }
+                        }
+                        <div id="divCredito" class="col-md-@colCredito">
+                            <label>Crédito (Días)</label>
+                            <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs"
+                                    id="Credito" name="Credito">
+                                @{
+                                    var pCredito = Model != null ? (Model.Credito != null ? Model.Credito : null) : null;
+                                    List<int> lstCreditos = new List<int>() { 0, 7, 15, 30, 45, 60, 90 };
+                                }
+                                <option value=""></option>
+                                @foreach (var credito in lstCreditos)
+                                {
+                                    <option value="@credito" @(credito == pCredito ? "selected=selected" : "")>@credito</option>
+                                }
+                            </select>
+                        </div>
+                        @if (Model.IdTipoEntidad == 1)
+                        {
+                            <div class="col-md-3">
+                                <label>Consultor</label>
+                                <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs"
+                                        id="IdResponsable" name="IdResponsable">
+                                    @{ var pResponsable = Model != null ? Model.IdResponsable : 0; }
+                                    <option value=""></option>
+                                    @foreach (var resp in (List<ResponsableDTO>)ViewBag.lstResponsables)
+                                    {
+                                        <option value="@resp.IdResponsable" @(resp.IdResponsable == pResponsable ? "selected=selected" : "")>@resp.Nombre</option>
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(u => u.IdResponsable, "", new { @style = "color:red;" })
+                            </div>
+                        } else
+                        {
+                            var hideDS = Model.TipoPersona == 1 ? "" : "hidden";
+                            <div id="divDetraccion" class="col-md-1 @hideDS">
+                                <label>Detracción</label>
+                                @Html.TextBoxFor(u => u.Detraccion, new { @class = "form-control", @placeholder = "0.00%", @type = "text", @onkeypress = "return CheckNumericValue(event)" })
+                                @Html.ValidationMessageFor(u => u.Detraccion, "", new { @style = "color:red;" })
+                            </div>
+                            <div id="divTipo" class="col-md-2 @hideDS">
+                                <label>Tipo de bien o servicio</label>
+                                @Html.TextBoxFor(u => u.Tipo, new { @class = "form-control", @placeholder = "Nombre", @type = "text" })
+                                @Html.ValidationMessageFor(u => u.Tipo, "", new { @style = "color:red;" })
+                            </div>
+                        }
+                    </div>
+                </div>
+                if (Model != null && Model.IdTipoEntidad == 2)
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Banco</label>
+                                @Html.TextBoxFor(u => u.Banco, new { @class = "form-control", @placeholder = "Nombre del banco", @type = "text" })
+                                @Html.ValidationMessageFor(u => u.Banco, "", new { @style = "color:red;" })
+                            </div>
+                            <div class="col-md-3">
+                                <label>Cuenta en Soles</label>
+                                @Html.TextBoxFor(u => u.CuentaSoles, new { @class = "form-control", @placeholder = "Número de la cuenta en soles", @type = "text" })
+                                @Html.ValidationMessageFor(u => u.NombreComercial, "", new { @style = "color:red;" })
+                            </div>
+                            <div class="col-md-3">
+                                <label>Cuenta en Dólares</label>
+                                @Html.TextBoxFor(u => u.CuentaDolares, new { @class = "form-control", @placeholder = "Número de la cuenta en dólares", @type = "text" })
+                                @Html.ValidationMessageFor(u => u.NombreComercial, "", new { @style = "color:red;" })
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Comentario</label>
+                            @Html.TextAreaFor(u => u.Comentario, new { @class = "form-control", @placeholder = "Ingrese el comentario", @type = "text", @rows = "4", @style = "resize: none;" })
+                        </div>
+                    </div>
+                </div>
+                if (ViewBag.EsAdmin && Model != null && Model.IdEntidadResponsable.GetValueOrDefault() > 0)
+                {
+                    <div class="line line-dashed line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Estado</label>
+                                <div>
+                                    <label class="i-switch m-t-xs m-r">
+                                        <input id="Estado" name="Estado" type="checkbox" value="@(Model.Estado ? "true" : "false")" checked="@Model.Estado" onchange="cb=$(this);cb.val(cb.prop('checked'));">
+                                        <i></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.TextBoxFor(u => u.Estado, new { @value = Model != null ? Model.Estado : true, @type = "hidden" })
+                }
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdTipoEntidad, new { @value = Model.IdTipoEntidad != 0 ? Model.IdTipoEntidad.ToString() : "", @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdEntidadResponsable, new { @value = (Model.IdEntidadResponsable.GetValueOrDefault() != 0) ? Model.IdEntidadResponsable.GetValueOrDefault() : 0, @type = "hidden" })
+                var btnName = (Model != null && Model.IdEntidadResponsable.GetValueOrDefault() > 0) ? "Guardar Cambios" : "Crear";
+                <button type="submit" class="btn btn-sm btn-success">@btnName</button>
+                var sTipoEntidad = Model.IdTipoEntidad == 1 ? "Clientes" : "Proveedores";
+                <a class="btn btn-default" href="@Url.Action("Entidades" + sTipoEntidad, "Admin")">Cancelar</a>
+            }
+        </div>
+    </div>
+    @if (Model != null && Model.IdEntidadResponsable.GetValueOrDefault() != 0)
+    {
+        <div class="bg-light lter b-b wrapper-md">
+            @if (ViewBag.EsAdmin || ViewBag.EsUsuarioInterno)
+            {<a href="@Url.Action("Contacto", new { id = 0, idEntidad = Model.IdEntidadResponsable.GetValueOrDefault() })" class="btn m-b-xs btn-sm btn-success btn-addon pull-right"><i class="fa fa-plus"></i>Agregar Nuevo</a>}
+            <h1 class="m-n font-thin h4">Contactos</h1>
+        </div>
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table ui-jq="dataTable" ui-options="{
+    oLanguage: {
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sSearch: 'Buscar:',
+        sZeroRecords: 'No se encontraron registros que cumplan los términos de búsqueda.',
+        sLoadingRecords: 'Cargando...',
+        sInfo: 'Mostrando _START_-_END_ de _TOTAL_ registros.',
+        sInfoEmpty: 'Mostrando _END_ de _TOTAL_ registros',
+        sInfoFiltered: '(filtrados de un total _MAX_).',
+        sEmptyTable: 'No hay información disponible para mostrar.',
+        sProcessing: 'DataTables is currently busy',
+        oPaginate: {
+            sPrevious: 'Anterior',
+            sNext: 'Siguiente'
+        }
+    }
+}" class="table table-striped b-t b-b dataTable">
+                    <thead>
+                        <tr>
+                            <th width="15%">Nombre</th>
+                            <th class="text-center">Correo Electrónico</th>
+                            <th class="text-center">Cargo</th>
+                            <th class="text-center">Teléfono</th>
+                            <th class="text-center">Celular</th>
+                            <th class="text-center">Estado</th>
+                            <th style="width:7%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.lstContactos != null)
+                        {
+                            foreach (var obj in (List<ContactoDTO>)ViewBag.lstContactos)
+                            {
+                                var classInactive = ((ViewBag.EsAdmin || ViewBag.EsUsuarioInterno) && !obj.Estado) ? "class='inactive'" : "";
+                                <tr @Html.Raw(classInactive)>
+                                    <td>@obj.Nombre</td>
+                                    <td class="text-center">@obj.Email</td>
+                                    <td class="text-center">@obj.Cargo</td>
+                                    <td class="text-center">@obj.Telefono</td>
+                                    <td class="text-center">@obj.Celular</td>
+                                    @{ var eColor = obj.Estado ? "#27c24c" : "red"; }
+                                    <td class="text-center" style="color:@(eColor)">@(obj.Estado ? "Activo" : "Inactivo" )</td>
+                                    @if (ViewBag.EsAdmin || ViewBag.EsUsuarioInterno)
+                                    {
+                                        <td class="text-right" width="10%"><a href="@Url.Action("Contacto", new { id = obj.IdContacto, idEntidad = Model.IdEntidadResponsable.GetValueOrDefault() })"><i class="fa fa-pencil" title="Editar"></i></a></td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="checkbox">
+            <label class="i-checks">
+                <input id="chkContacto" type="checkbox" value="@(ViewBag.vbInactivosC == true ? "true" : "false")" checked="@ViewBag.vbInactivosC" onclick="cb = $(this); cb.val(cb.prop('checked')); handleClick();"><i></i> Mostrar Inactivos
+            </label>
+        </div>
+                                        }
+    @if (Model != null && Model.IdEntidadResponsable.GetValueOrDefault() != 0 && Model.IdTipoEntidad == 1)
+            {
+        <div class="bg-light lter b-b wrapper-md">
+            @if (ViewBag.EsAdmin || ViewBag.EsUsuarioInterno)
+            {<a href="@Url.Action("Proyecto", new { id = 0, idEntidad = Model.IdEntidadResponsable.GetValueOrDefault() })" class="btn m-b-xs btn-sm btn-success btn-addon pull-right"><i class="fa fa-plus"></i>Agregar Nuevo</a>}
+            <h1 class="m-n font-thin h4">Proyectos</h1>
+        </div>
+                <div class="panel panel-default">
+                    <div class="table-responsive">
+                        <table ui-jq="dataTable" ui-options="{
+    oLanguage: {
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sSearch: 'Buscar:',
+        sZeroRecords: 'No se encontraron registros que cumplan los términos de búsqueda.',
+        sLoadingRecords: 'Cargando...',
+        sInfo: 'Mostrando _START_-_END_ de _TOTAL_ registros.',
+        sInfoEmpty: 'Mostrando _END_ de _TOTAL_ registros',
+        sInfoFiltered: '(filtrados de un total _MAX_).',
+        sEmptyTable: 'No hay información disponible para mostrar.',
+        sProcessing: 'DataTables is currently busy',
+        oPaginate: {
+            sPrevious: 'Anterior',
+            sNext: 'Siguiente'
+        }
+    }
+}" class="table table-striped b-t b-b dataTable">
+                            <thead>
+                                <tr>
+                                    <th width="20%">Nombre</th>
+                                    <th class="text-center">Descripción</th>
+                                    <th class="text-center">Estado</th>
+                                    <th style="width:8%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.lstProyectos != null)
+                                {
+                                    foreach (var obj in (List<ProyectoDTO>)ViewBag.lstProyectos)
+                                    {
+                                        var classInactive = ((ViewBag.EsAdmin || ViewBag.EsUsuarioInterno) && !obj.Estado) ? "class='inactive'" : "";
+                                        <tr @Html.Raw(classInactive)>
+                                            <td width="20%">@obj.Nombre</td>
+                                            <td>@obj.Descripcion</td>
+                                            @{ var eColor = obj.Estado ? "#27c24c" : "red"; }
+                                            <td class="text-center" style="color:@(eColor)">@(obj.Estado ? "Activo" : "Inactivo" )</td>
+                                            @if (ViewBag.EsAdmin || ViewBag.EsUsuarioInterno)
+                                            {
+                                                <td class="text-center" width="10%"><a href="@Url.Action("Proyecto", new { id = obj.IdProyecto, idEntidad = Model.IdEntidadResponsable.GetValueOrDefault() })"><i class="fa fa-pencil" title="Editar"></i></a></td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="checkbox">
+                    <label class="i-checks">
+                        <input id="chkProyecto" type="checkbox" value="@(ViewBag.vbInactivosP == true ? "true" : "false")" checked="@ViewBag.vbInactivosP" onclick="cb = $(this); cb.val(cb.prop('checked')); handleClick();"><i></i> Mostrar Inactivos
+                    </label>
+                </div>
+                                                }
+    @if (Model != null && Model.IdEntidadResponsable > 0)
+    {
+        <div class="line line-dashed line-lg pull-in"></div>
+        <div class="bg-light lter b-b wrapper-md">
+            <button class="btn m-b-xs btn-sm btn-info btn-addon pull-right m-l open-modal" data-toggle="modal" data-target="#modal-form-exportar"><i class="fa fa-cloud-download"></i>Exportar</button>
+            <h1 class="m-n font-thin h4">Comprobantes Asociados</h1>
+        </div>
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table ui-jq="dataTable" ui-options="{
+    oLanguage: {
+        sLengthMenu: 'Mostrar _MENU_ registros',
+        sSearch: 'Buscar:',
+        sZeroRecords: 'No se encontraron registros que cumplan los términos de búsqueda.',
+        sLoadingRecords: 'Cargando...',
+        sInfo: 'Mostrando _START_-_END_ de _TOTAL_ registros.',
+        sInfoEmpty: 'Mostrando _END_ de _TOTAL_ registros',
+        sInfoFiltered: '(filtrados de un total _MAX_).',
+        sEmptyTable: 'No hay información disponible para mostrar.',
+        sProcessing: 'DataTables is currently busy',
+        oPaginate: {
+            sPrevious: 'Anterior',
+            sNext: 'Siguiente'
+        }
+    },
+    pageLength: 25,
+}" class="table table-striped b-t b-b dataTable">
+                        <thead>
+                            <tr>
+                                <th style="width:10%">Fecha</th>
+                                <th style="width:18%">Modalidad</th>
+                                <th style="width:18%">Documento</th>
+                                <th style="width:18%">Número</th>
+                                <th style="width:18%">Proyecto</th>
+                                <th class="text-right" >Monto Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (((List<ComprobanteDTO>)ViewBag.lstComprobantes).Count > 0)
+                            {
+                                foreach (var item in (List<ComprobanteDTO>)ViewBag.lstComprobantes)
+                                {
+                                    <tr>
+                                        <td>@item.FechaEmision.ToString("yyyy/MM/dd", CultureInfo.CreateSpecificCulture("es-PE"))</td>
+                                        @{ var eColor = item.IdTipoComprobante == 1 ? "#27c24c" : "red"; }
+                                        <td style="color:@(eColor)">@(item.IdTipoComprobante == 1 ? "Ingreso" : "Egreso")</td>
+                                        <td>@item.NombreTipoDocumento</td>
+                                        <td>@item.NroDocumento</td>
+                                        <td>@item.NombreProyecto</td>
+                                        <td class="text-right">@item.SimboloMoneda @item.Monto.ToString("N2", CultureInfo.InvariantCulture)</td>
+                                    </tr>
+                                                }
+                                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            }
+</div>
+
+<div class="modal fade modal-task" id="modal-form-exportar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Exportar Comprobantes Asociados</h4>
+            </div>
+            <div class="modal-body">
+                <form class="element" name="element">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="fechaInicio">Fecha Inicio:</label>
+                            <div class="form-group">
+                                <div class="input-group date">
+                                    <input type="text" name="fechaInicio" id="fechaInicio" readonly="readonly" class="form-control" value="@(new DateTime(DateTime.Now.Year, 1, 1).ToString("dd/MM/yyyy"))">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fechaFin">Fecha Fin:</label>
+                            <div class="form-group">
+                                <div class="input-group date">
+                                    <input type="text" name="fechaFin" id="fechaFin" readonly="readonly" class="form-control" value="@(new DateTime(DateTime.Now.Year, 12, 31).ToString("dd/MM/yyyy"))">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <input class="btn btn-success" type="submit" value="Exportar" id="exportar">
+            </div>
+        </div>
+    </div>
+</div>

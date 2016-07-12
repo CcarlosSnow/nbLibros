@@ -1,0 +1,559 @@
+﻿@using NubeBooks.Core.DTO
+@using NubeBooks.Helpers;
+<!DOCTYPE html>
+<html lang="es" class="app">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="~/Content/themes/admin-nb/libs/assets/animate.css/animate.css" type="text/css" />
+    <link rel="stylesheet" href="~/Content/themes/admin-nb/libs/assets/font-awesome/css/font-awesome.min.css" type="text/css" />
+    <link rel="stylesheet" href="~/Content/themes/admin-nb/libs/assets/simple-line-icons/css/simple-line-icons.css" type="text/css" />
+    <link rel="stylesheet" href="~/Content/themes/admin-nb/libs/jquery/bootstrap/dist/css/bootstrap.css" type="text/css" />
+    @Styles.Render("~/Content/themes/admin/js/datepicker/datepicker.css")
+
+    <link rel="stylesheet" href="~/Content/themes/admin-nb/css/font.css" type="text/css" />
+    <link rel="stylesheet" href="~/Content/themes/admin-nb/css/app.css" type="text/css" />
+    <link rel="stylesheet" href="~/Content/themes/admin-nb/css/custom.css" type="text/css" />
+    @Styles.Render("~/Content/themes/admin/js/select2/select2.css")
+    @Styles.Render("~/Content/themes/admin/js/select2/theme.css")
+    @RenderSection("styles", required: false)
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+</head>
+<body>
+    <div class="app app-header-fixed ">
+        <header id="header" class="app-header navbar" role="menu">
+            <!-- navbar header -->
+            <div class="navbar-header bg-dark">
+                <button class="pull-right visible-xs dk" ui-toggle-class="show" target=".navbar-collapse">
+                    <i class="glyphicon glyphicon-cog"></i>
+                </button>
+                <button class="pull-right visible-xs" ui-toggle-class="off-screen" target=".app-aside" ui-scroll="app">
+                    <i class="glyphicon glyphicon-align-justify"></i>
+                </button>
+                <!-- brand -->
+                <a href="@Url.Action("Index", "Admin", new { Area="" })" class="navbar-brand text-lt">
+                    @*<i class="fa fa-btc"></i>
+                    <img src="~/Content/themes/admin-nb/img/logo.png" alt="." class="hide">*@
+                    <span class="hidden-folded m-l-xs">@ViewBag.NombreEmpresa</span>
+                </a>
+                <!-- / brand -->
+            </div>
+            <!-- / navbar header -->
+            <!-- navbar collapse -->
+            <div class="collapse pos-rlt navbar-collapse box-shadow bg-white-only">
+                <!-- buttons -->
+                <div class="nav navbar-nav hidden-xs">
+                    <a href="#" class="btn no-shadow navbar-btn" ui-toggle-class="app-aside-folded" target=".app">
+                        <i class="fa fa-dedent fa-fw text"></i>
+                        <i class="fa fa-indent fa-fw text-active"></i>
+                    </a>
+                </div>
+                <!-- / buttons -->
+                <!-- search form -->
+                @*<form class="navbar-form navbar-form-sm navbar-left shift" ui-shift="prependTo" data-target=".navbar-collapse" role="search" ng-controller="TypeaheadDemoCtrl">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" ng-model="selected" typeahead="state for state in states | filter:$viewValue | limitTo:8" class="form-control input-sm bg-light no-border rounded padder" placeholder="Buscar...">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-sm bg-light rounded"><i class="fa fa-search"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </form>*@
+                <form class="navbar-form navbar-form-sm navbar-left shift" ui-shift="prependTo" data-target=".navbar-collapse" role="search" ng-controller="TypeaheadDemoCtrl">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input id="miBuscador" type="hidden" style="width:350px;"/>
+                        </div>
+                    </div>
+                </form>
+                <!-- / search form -->
+                <!-- nabar right -->
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        @{ var user = (NubeBooks.Core.DTO.UsuarioDTO)HttpContext.Current.Session["User"]; }
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle clear" data-toggle="dropdown">
+                            <span class="thumb-sm avatar pull-right m-t-n-sm m-b-n-sm m-l-sm">
+                                <img src="~/Content/themes/admin-nb/img/user.png" alt="...">
+                            </span>
+                            @user.Nombre &nbsp;<span class="hidden-sm hidden-md"></span><b class="caret"></b>
+                        </a>
+                        <!-- dropdown -->
+                        <ul class="dropdown-menu animated fadeInRight w">
+                            <li>
+                                <a href="@Url.Action("Usuario", "Admin", new { Area="", id = user.IdUsuario})" ui-sref="app.page.profile">Perfil</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Empresa", "Admin", new { Area="" })">Empresa</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="mailto:soporte@nube.la">Soporte</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="@Url.Action("Logout", "Admin", new { Area="" })" ui-sref="access.signin">Cerrar sesión</a>
+                            </li>
+                        </ul>
+                        <!-- / dropdown -->
+                    </li>
+                </ul>
+                <!-- / navbar right -->
+            </div>
+            <!-- / navbar collapse -->
+        </header>
+
+        <aside id="aside" class="app-aside hidden-xs bg-dark">
+            <div class="aside-wrap">
+                <div class="navi-wrap">
+                    <!-- nav -->
+                    <nav ui-nav class="navi clearfix">
+                        <ul class="nav">
+                            <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                                <span>Controles</span>
+                            </li>
+                            <li class="@ViewBag.navbar.lstOptions[0].cadena">
+                                <a href="@Url.Action("Index", "Admin", new { Area="" })">
+                                    <i class="fa fa-bar-chart"></i>
+                                    <span class="font-bold">Dashboard</span>
+                                </a>
+                            </li>
+
+                            <li class="@ViewBag.navbar.lstOptions[1].cadena">
+                                <a href="@Url.Action("ReportesGestion", "Admin", new { Area="" })" class="auto">
+                                    <span class="pull-right text-muted">
+                                        <i class="fa fa-fw fa-angle-right text"></i>
+                                        <i class="fa fa-fw fa-angle-down text-active"></i>
+                                    </span>
+                                    <i class="fa fa-download"></i>
+                                    <span class="font-bold">Reportes</span>
+                                </a>
+                                <ul class="nav nav-sub dk">
+                                    <li class="nav-sub-header">
+                                        <a href="@Url.Action("ReportesGestion", "Admin", new { Area="" })">
+                                            <span>Gestión</span>
+                                        </a>
+                                    </li>
+                                    @if (!ViewBag.EsUsuarioInterno)
+                                    {
+                                        <li class="@ViewBag.navbar.lstOptions[1].lstOptions[0].cadena">
+                                            <a href="@Url.Action("ReportesPresupuestos", "Admin", new { Area="" })">
+                                                <span>Presupuesto</span>
+                                            </a>
+                                        </li>
+                                    }
+                                    <li class="@ViewBag.navbar.lstOptions[1].lstOptions[1].cadena">
+                                        <a href="@Url.Action("ReportesGestion", "Admin", new { Area="" })">
+                                            <span>Gestión </span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[1].lstOptions[2].cadena">
+                                        <a href="@Url.Action("ReportesInventarios", "Admin", new { Area="" })">
+                                            <span>Inventarios</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="line dk"></li>
+
+                            <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                                <span>Mantenimiento</span>
+                            </li>
+                            <li class="@ViewBag.navbar.lstOptions[2].cadena">
+                                <a href="@Url.Action("LibrosBancarios", "Admin", new { Area="" })" class="auto">
+                                    <span class="pull-right text-muted">
+                                        <i class="fa fa-fw fa-angle-right text"></i>
+                                        <i class="fa fa-fw fa-angle-down text-active"></i>
+                                    </span>
+                                    <i class="fa fa-book"></i>
+                                    <span class="font-bold">Libros de Control</span>
+                                </a>
+                                <ul class="nav nav-sub dk">
+                                    <li class="nav-sub-header">
+                                        <a href="@Url.Action("LibrosBancarios", "Admin", new { Area="" })">
+                                            <span>Libros de Control</span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[2].lstOptions[1].cadena">
+                                        <a href="@Url.Action("LibrosAdministrativos", "Admin", new { Area="" })">
+                                            <span>Administrativos</span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[2].lstOptions[0].cadena">
+                                        <a href="@Url.Action("LibrosBancarios", "Admin", new { Area="" })">
+                                            <span>Bancarios</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="@ViewBag.navbar.lstOptions[3].cadena">
+                                <a href="@Url.Action("ComprobantesIngreso", "Admin", new { Area="" })" class="auto">
+                                    <span class="pull-right text-muted">
+                                        <i class="fa fa-fw fa-angle-right text"></i>
+                                        <i class="fa fa-fw fa-angle-down text-active"></i>
+                                    </span>
+                                    <i class="fa fa-book"></i>
+                                    <span class="font-bold">Comprobantes</span>
+                                </a>
+                                <ul class="nav nav-sub dk">
+                                    <li class="nav-sub-header">
+                                        <a href="@Url.Action("ComprobantesIngreso", "Admin", new { Area="" })">
+                                            <span>Comprobantes</span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[3].lstOptions[0].cadena">
+                                        <a href="@Url.Action("ComprobantesIngreso", "Admin", new { Area="" })">
+                                            <span>Ingresos</span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[3].lstOptions[1].cadena">
+                                        <a href="@Url.Action("ComprobantesEgreso", "Admin", new { Area="" })">
+                                            <span>Egresos</span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[3].lstOptions[2].cadena">
+                                        <a href="@Url.Action("ComprobantesAnulados", "Admin", new { Area="" })">
+                                            <span>Anulados</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="@ViewBag.navbar.lstOptions[9].cadena">
+                                <a href="@Url.Action("InventariosIngreso", "Admin", new { Area="" })" class="auto">
+                                    <span class="pull-right text-muted">
+                                        <i class="fa fa-fw fa-angle-right text"></i>
+                                        <i class="fa fa-fw fa-angle-down text-active"></i>
+                                    </span>
+                                    <i class="fa fa-book"></i>
+                                    <span class="font-bold">Inventarios</span>
+                                </a>
+                                <ul class="nav nav-sub dk">
+                                    <li class="nav-sub-header">
+                                        <a href="@Url.Action("InventariosIngreso", "Admin", new { Area="" })">
+                                            <span>Inventarios</span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[9].lstOptions[0].cadena">
+                                        <a href="@Url.Action("InventariosIngreso", "Admin", new { Area="" })">
+                                            <span>Ingresos</span>
+                                        </a>
+                                    </li>
+                                    <li class="@ViewBag.navbar.lstOptions[9].lstOptions[1].cadena">
+                                        <a href="@Url.Action("InventariosEgreso", "Admin", new { Area="" })">
+                                            <span>Egresos</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="line dk"></li>
+
+                            <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                                <span>Configuración</span>
+                            </li>
+                            @if (ViewBag.EsAdmin)
+                            {
+                                <li class="@ViewBag.navbar.lstOptions[4].cadena">
+                                    <a href="@Url.Action("Areas", "Admin", new { Area="" })">
+                                        <i class="fa fa-cog"></i>
+                                        <span>Áreas</span>
+                                    </a>
+                                </li>
+                                <li class="@ViewBag.navbar.lstOptions[5].cadena">
+                                    <a href="@Url.Action("Responsables", "Admin", new { Area="" })">
+                                        <i class="fa fa-cog"></i>
+                                        <span>Consultores</span>
+                                    </a>
+                                </li>
+                                <li class="@ViewBag.navbar.lstOptions[6].cadena">
+                                    <a href="@Url.Action("EntidadesClientes", "Admin", new { Area="" })" class="auto">
+                                        <span class="pull-right text-muted">
+                                            <i class="fa fa-fw fa-angle-right text"></i>
+                                            <i class="fa fa-fw fa-angle-down text-active"></i>
+                                        </span>
+                                        <i class="fa fa-cog"></i>
+                                        <span>Entidades</span>
+                                    </a>
+                                    <ul class="nav nav-sub dk">
+                                        <li class="nav-sub-header">
+                                            <a href="@Url.Action("EntidadesClientes", "Admin", new { Area="" })">
+                                                <span>Entidades</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[6].lstOptions[0].cadena">
+                                            <a href="@Url.Action("EntidadesClientes", "Admin", new { Area="" })">
+                                                <span>Clientes</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[6].lstOptions[1].cadena">
+                                            <a href="@Url.Action("EntidadesProveedores", "Admin", new { Area="" })">
+                                                <span>Proveedores</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="@ViewBag.navbar.lstOptions[10].cadena">
+                                    <a href="@Url.Action("Items", "Admin", new { Area="" })" class="auto">
+                                        <span class="pull-right text-muted">
+                                            <i class="fa fa-fw fa-angle-right text"></i>
+                                            <i class="fa fa-fw fa-angle-down text-active"></i>
+                                        </span>
+                                        <i class="fa fa-cog"></i>
+                                        <span>Items</span>
+                                    </a>
+                                    <ul class="nav nav-sub dk">
+                                        <li class="nav-sub-header">
+                                            <a href="@Url.Action("Items", "Admin", new { Area="" })">
+                                                <span>Items</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[10].lstOptions[0].cadena">
+                                            <a href="@Url.Action("Items", "Admin", new { Area="" })">
+                                                <span>Items</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[10].lstOptions[1].cadena">
+                                            <a href="@Url.Action("CategoriaItms", "Admin", new { Area="" })">
+                                                <span>Categorias</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[10].lstOptions[2].cadena">
+                                            <a href="@Url.Action("Ubicaciones", "Admin", new { Area="" })">
+                                                <span>Ubicaciones</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="@ViewBag.navbar.lstOptions[11].cadena">
+                                    <a href="@Url.Action("Servicios", "Admin", new { Area="" })">
+                                        <i class="fa fa-cog"></i>
+                                        <span>Servicios</span>
+                                    </a>
+                                </li>
+                                <li class="@ViewBag.navbar.lstOptions[7].cadena">
+                                    <a href="@Url.Action("Honorarios", "Admin", new { Area="" })">
+                                        <i class="fa fa-cog"></i>
+                                        <span>Forma de Pago</span>
+                                    </a>
+                                </li>
+                                <li class="@ViewBag.navbar.lstOptions[8].cadena">
+                                    <a href="@Url.Action("Categorias", "Admin", new { Area="" })" class="auto">
+                                        <span class="pull-right text-muted">
+                                            <i class="fa fa-fw fa-angle-right text"></i>
+                                            <i class="fa fa-fw fa-angle-down text-active"></i>
+                                        </span>
+                                        <i class="fa fa-cog"></i>
+                                        <span>Presupuesto</span>
+                                    </a>
+                                    <ul class="nav nav-sub dk">
+                                        <li class="nav-sub-header">
+                                            <a href="@Url.Action("Categorias", "Admin", new { Area="" })">
+                                                <span>Presupuesto</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[8].lstOptions[0].cadena">
+                                            <a href="@Url.Action("Categorias", "Admin", new { Area="" })">
+                                                <span>Partidas</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[8].lstOptions[1].cadena">
+                                            <a href="@Url.Action("Periodos", "Admin", new { Area="" })">
+                                                <span>Periodos</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="@ViewBag.navbar.lstOptions[9].cadena">
+                                    <a href="@Url.Action("Usuarios", "Admin", new { Area="" })">
+                                        <i class="fa fa-users"></i>
+                                        <span>Usuarios</span>
+                                    </a>
+                                </li>
+                            }
+                            else if (ViewBag.EsUsuarioInterno)
+                            {
+                                <li class="@ViewBag.navbar.lstOptions[6].cadena">
+                                    <a href="@Url.Action("EntidadesClientes", "Admin", new { Area="" })" class="auto">
+                                        <span class="pull-right text-muted">
+                                            <i class="fa fa-fw fa-angle-right text"></i>
+                                            <i class="fa fa-fw fa-angle-down text-active"></i>
+                                        </span>
+                                        <i class="fa fa-cog"></i>
+                                        <span>Entidades</span>
+                                    </a>
+                                    <ul class="nav nav-sub dk">
+                                        <li class="nav-sub-header">
+                                            <a href="@Url.Action("EntidadesClientes", "Admin", new { Area="" })">
+                                                <span>Entidades</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[6].lstOptions[0].cadena">
+                                            <a href="@Url.Action("EntidadesClientes", "Admin", new { Area="" })">
+                                                <span>Clientes</span>
+                                            </a>
+                                        </li>
+                                        <li class="@ViewBag.navbar.lstOptions[6].lstOptions[1].cadena">
+                                            <a href="@Url.Action("EntidadesProveedores", "Admin", new { Area="" })">
+                                                <span>Proveedores</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                            <li class="line dk hidden-folded"></li>
+                            <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                                <span>Archivos</span>
+                            </li>
+                            @*<li>
+                                <a href="@Url.Action("Index", "Proforma",new { Area="Proformas"})">
+                                    <i class="fa fa-file"></i>
+                                    <span>Proformas</span>
+                                </a>
+                            </li>*@
+                            <li class="@ViewBag.navbar.lstOptions[12].cadena">
+                                <a href="@Url.Action("Index", "Proformas",new { Area="Proformas"})">
+                                    <i class="fa icon-note"></i>
+                                    <span>Proformas</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- nav -->
+                </div>
+            </div>
+        </aside>
+        <!-- content -->
+        <div id="content" class="app-content ng-scope" role="main">
+            <div class="app-content-body ">
+                @RenderBody()
+            </div>
+        </div>
+
+        <footer id="footer" class="app-footer" role="footer">
+            <div class="wrapper b-t bg-light">
+                <span class="pull-right"><a href="#" ui-scroll="app" class="m-l-sm text-muted"><i class="fa fa-long-arrow-up"></i></a></span>
+                &copy; @(System.DateTime.Now.Year) Copyright.
+            </div>
+        </footer>
+    </div>
+    <!-- JQuery -->
+    <script src="~/Content/themes/admin-nb/libs/jquery/jquery/dist/jquery.js"></script>
+    <!-- Bootstrap -->
+    <script src="~/Content/themes/admin-nb/libs/jquery/bootstrap/dist/js/bootstrap.js"></script>
+    <!-- Angular -->
+    <script src="~/Content/themes/angular/myApp.js"></script>
+    <!-- Validation -->
+    @*<script src="~/Scripts/jquery.validate.min.js"></script>
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+    <!-- App -->
+    <script src="~/Content/themes/admin-nb/js/ui-load.js"></script>
+    <script src="~/Content/themes/admin-nb/js/ui-jp.config.js"></script>
+    <script src="~/Content/themes/admin-nb/js/ui-jp.js"></script>
+    <script src="~/Content/themes/admin-nb/js/ui-nav.js"></script>
+    <script src="~/Content/themes/admin-nb/js/ui-toggle.js"></script>
+    <script src="~/Content/themes/admin-nb/js/ui-client.js"></script>
+    @Scripts.Render("~/Content/themes/admin/js/datepicker/bootstrap-datepicker.js")
+    @Scripts.Render("~/Content/themes/admin/js/main.js")
+    @Scripts.Render("~/Content/themes/admin/js/select2/select2.min.js")
+
+    <script type="text/javascript">
+        var miBaseUrl = '';
+        $(function () {
+            miBaseUrl = baseURL(window.location.pathname);
+            $("#miBuscador").select2({
+                ajax: {
+                    type: 'GET',
+                    url: "/Admin/Buscar_Elementos",
+                    dataType: 'json',
+                    delay: 750,
+                    data: function (term, page) {
+                        return {
+                            texto: term, // search term
+                            page: page
+                        };
+                    },
+                    processResults: function (data, page) {
+                        page = page || 1;
+
+                        var myResults = [];
+                        $.each(data.elem.items, function (index, item) {
+                            myResults.push({
+                                'id': item.id,
+                                'text': item.nombre,
+                                'data': item
+                            });
+                        });
+
+                        return {
+                            results: myResults,
+                            pagination: {
+                                more: (page * 30) < data.total_count
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1,
+                formatResult: function (response) {
+                    data = response.data;
+                    //this.description = '<div class="padder"><div class="row"><strong>' + data.elemento + ':</strong> ' + data.nombre + '</div><div class="row">Cantidad:' + data.monto + '</div></div>';
+                    this.description = datosElemento(data);
+                    return this.description;
+                },
+                formatSelection: function (response) {
+                    data = response.data;
+                    return '<strong>' + data.elemento + ':</strong> ' + data.nombre + ' - ' + data.monto;
+                },
+            }); 
+        });
+
+        $("#miBuscador").on('select2-selecting', function (e) {
+            console.log(e.object.data);
+            
+            var jsObj = e.object.data;
+            var jsTipoElemento = "";
+            switch (jsObj.idElemento)
+            {
+                case 1: jsTipoElemento = "/Movimiento/" + jsObj.id + "?idLibro=" + jsObj.tipo;
+                    break;
+                case 2: jsTipoElemento = "/Comprobante/" + jsObj.id + "?idTipoComprobante=" + jsObj.tipo;
+                    break;
+                case 3: jsTipoElemento = "/MovimientoInv/" + jsObj.id + "?idTipo=" + jsObj.tipo;
+                    break;
+            }
+            window.location.href = miBaseUrl + jsTipoElemento;
+        });
+
+        function datosElemento(data) {
+            var jsCadena = '<div class="padder">';
+            switch (data.idElemento) {
+                case 1:
+                    jsCadena += '<div class="row"><strong>' + data.elemento + ' </strong> Nro: ' + data.nombre + ' Monto: ' + data.simboloMoneda + ' ' + data.monto + '</div>';
+                    jsCadena += '<div class="row">TDoc: ' + data.s2 + ' PP: ' + data.s1 + ' </div>'
+                    jsCadena += '<div class="row">NDoc:' + data.s3 + ' Ent:' + data.s4 + ' </div>'
+                    break;
+                case 2:
+                    jsCadena += '<div class="row"><strong>' + data.elemento + ' </strong> NroDoc: ' + data.nombre + ' Monto: ' + data.simboloMoneda + ' ' + data.monto + '</div>';
+                    jsCadena += '<div class="row">TDoc: ' + data.s1 + ' Ent: ' + data.s2 + ' </div>'
+                    break;
+                case 3:
+                    jsCadena += '<div class="row"><strong>' + data.elemento + ' </strong> NroDoc: ' + data.nombre + ' Cantidad: ' + data.monto + '</div>';
+                    jsCadena += '<div class="row">Item: ' + data.s1 + ' U. Med: ' + data.s2 + ' </div>'
+                    jsCadena += '<div class="row">Forma: ' + data.s3 + ' Lote: ' + data.s4 + ' </div>'
+                    break;
+            }
+            jsCadena += '</div>';
+
+            return jsCadena;
+        }
+
+    </script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>
