@@ -21,26 +21,26 @@
             </div>
             <div class="well m-t bg-light lt">
                 <div class="row">
-                    <label class="col-md-2">Atención:</label>
-                    <label class="col-md-4"><strong>@Model.Contacto.Nombre</strong></label>
+                    <label class="col-md-2">Empresa:</label>
+                    <label class="col-md-4"><strong>@Model.EntidadResponsable.Nombre</strong></label>
                     <label class="col-md-2">Fecha:</label>
                     <label class="col-md-4"><strong>@Model.FechaRegistro</strong></label>
                 </div>
                 <div class="row">
-                    <label class="col-md-2">Cargo:</label>
-                    <label class="col-md-4"><strong>@Model.Contacto.Cargo</strong></label>
-                    <label class="col-md-2">Empresa:</label>
-                    <label class="col-md-4"><strong>@Model.EntidadResponsable.Nombre</strong></label>
+                    <label class="col-md-2">Atención:</label>
+                    <label class="col-md-4"><strong>@Model.Contacto.Nombre</strong></label>
+                    <label class="col-md-2">Teléfono(s):</label>
+                    <label class="col-md-4"><strong>@Model.Contacto.Telefono &nbsp; @Model.Contacto.Celular</strong></label>
                 </div>
                 <div class="row">
-                    <label class="col-md-2">Email:</label>
-                    <label class="col-md-4"><strong>@Model.Contacto.Email</strong></label>
+                    <label class="col-md-2">Cargo:</label>
+                    <label class="col-md-4"><strong>@Model.Contacto.Cargo</strong></label>
                     <label class="col-md-2">Dirección:</label>
                     <label class="col-md-4"><strong>@Model.EntidadResponsable.Direccion</strong></label>
                 </div>
                 <div class="row">
-                    <label class="col-md-2">Teléfono(s):</label>
-                    <label class="col-md-4"><strong>@Model.Contacto.Telefono &nbsp; @Model.Contacto.Celular</strong></label>
+                    <label class="col-md-2">Email:</label>
+                    <label class="col-md-4"><strong>@Model.Contacto.Email</strong></label>
                     <label class="col-md-2">Validez:</label>
                     <label class="col-md-4"><strong>@Model.ValidezOferta día(s)</strong></label>
                 </div>

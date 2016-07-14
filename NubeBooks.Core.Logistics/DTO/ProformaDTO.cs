@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace NubeBooks.Core.Logistics.DTO
 {
@@ -26,7 +27,7 @@ namespace NubeBooks.Core.Logistics.DTO
 
         public DateTime? FechaFacturacion { get; set; }
         public DateTime? FechaCobranza { get; set; }
-                
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaRegistro { get; set; }
 
         public string ComentarioProforma { get; set; }

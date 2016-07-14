@@ -425,14 +425,14 @@ else { cadena = "Actualizar"; }
                     <table id="tblitem" class="table table-striped m-b-none">
                         <thead>
                             <tr>
-                                <th>Ítem</th>
-                                <th>Código</th>
-                                <th>Descripción</th>
-                                <th>Cantidad</th>
-                                <th>U/M</th>
-                                <th>Precio Unitario</th>
-                                <th>Descuento</th>
-                                <th class="text-right">Precio Total</th>
+                                <th class="text-center">Ítem</th>
+                                <th class="text-center">Código</th>
+                                <th class="text-left">Descripción</th>
+                                <th class="text-center">Cantidad</th>
+                                <th class="text-left">U/M</th>
+                                <th class="text-center">Precio Unitario</th>
+                                <th class="text-center">Descuento</th>
+                                <th class="text-center">Precio Total</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -443,14 +443,14 @@ else { cadena = "Actualizar"; }
                                 foreach (var jslstItems in Model.DetalleProforma)
                                 {
                                     <tr>
-                                        <td>@cont</td>
-                                        <td>@jslstItems.IdItem</td>
-                                        <td>@jslstItems.NombreItem</td>
-                                        <td>@jslstItems.Cantidad</td>
-                                        <td></td>
-                                        <td>@jslstItems.PrecioUnidad</td>
-                                        <td>@jslstItems.Descuento.GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture)</td>
-                                        <td class="text-right">@jslstItems.MontoTotal.GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture)</td>
+                                        <td class="text-center">@cont</td>
+                                        <td class="text-center">@jslstItems.IdItem</td>
+                                        <td class="text-left">@jslstItems.NombreItem</td>
+                                        <td class="text-center">@jslstItems.Cantidad</td>
+                                        <td class="text-left">@jslstItems.UnidadMedida</td>
+                                        <td class="text-center">@jslstItems.PrecioUnidad</td>
+                                        <td class="text-center">@jslstItems.Descuento.GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture)</td>
+                                        <td class="text-center">@jslstItems.MontoTotal.GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture)</td>
                                         <td><span class="glyphicon glyphicon-remove" data-id="@jslstItems.IdItem" style="cursor:pointer" onclick="deleteRow(this)"></span></td>
                                     </tr>
                                     cont++;

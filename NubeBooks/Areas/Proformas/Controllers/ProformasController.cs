@@ -279,8 +279,8 @@ namespace NubeBooks.Areas.Proformas.Controllers
             dt.Columns.Add("Atención");
             dt.Columns.Add("Cargo");
             dt.Columns.Add("Email");
-            dt.Columns.Add("Telefono");
-            dt.Columns.Add("Celular");
+            dt.Columns.Add("Telefono", typeof(String));
+            dt.Columns.Add("Celular", typeof(String));
             dt.Columns.Add("Fecha Registro");
             dt.Columns.Add("Fecha Proforma");
             dt.Columns.Add("Validez");
@@ -309,7 +309,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
                 row["Fecha Proforma"] = item.FechaProforma != null ? item.FechaProforma.GetValueOrDefault().ToString("dd/MMM/yyyy", CultureInfo.CreateSpecificCulture("en-GB")) : "";
                 row["Validez"] = item.ValidezOferta + "día(s)";
                 row["Método de Pago"] = item.MetodoPago;
-                row["Fecha de Entrega"] = item.FechaEntrega;
+                row["Fecha de Entrega"] = item.FechaEntrega != null ? item.FechaEntrega.GetValueOrDefault().ToString("dd/MMM/yyyy", CultureInfo.CreateSpecificCulture("en-GB")) : "";
                 row["Lugar de Entrega"] = item.LugarEntrega;
                 row["Sub Total"] = item.DetalleProforma.Sum(x => x.MontoTotal).GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture);
                 row["IGV"] = item.DetalleProforma.Sum(x => x.Igv).GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture);
