@@ -299,7 +299,7 @@ namespace NubeBooks.Core.Logistics.BL
 
                     List<Select2DTO_B> lista = result.Where(x => x.StockLote > 0).Select(x => new Select2DTO_B { text = x.SerieLote }).Distinct().ToList();
 
-                    if(!lista.Any(x => x.text == conLote)) { lista.Add(new Select2DTO_B() { text = conLote }); }
+                    if (!lista.Any(x => x.text == conLote)) { lista.Add(new Select2DTO_B() { text = conLote }); }
                     return lista;
                 }
             }
@@ -404,18 +404,47 @@ namespace NubeBooks.Core.Logistics.BL
                 else
                 {
                     var result = (from mov in context.MovimientoInv
-                                   join fmv in context.FormaMovimientoInv on mov.IdFormaMovimientoInv equals fmv.IdFormaMovimientoInv
-                                   join itm in context.Item on mov.IdItem equals itm.IdItem
-                                   where mov.IdEmpresa == idEmpresa && fmv.IdTipoMovimientoInv == 1
-                                   select new ItemDTO
-                                   {
-                                       IdItem = mov.IdItem,
-                                       Codigo = itm.Codigo + " - " + itm.Nombre,
-                                       Precio = itm.Precio ?? 0,
-                                       UnidadMedida = itm.UnidadMedida
-                                   }).Distinct().ToList();
+                                  join fmv in context.FormaMovimientoInv on mov.IdFormaMovimientoInv equals fmv.IdFormaMovimientoInv
+                                  join itm in context.Item on mov.IdItem equals itm.IdItem
+                                  where mov.IdEmpresa == idEmpresa && fmv.IdTipoMovimientoInv == 1
+                                  select new ItemDTO
+                                  {
+                                      IdItem = mov.IdItem,
+                                      Codigo = itm.Codigo + " - " + itm.Nombre,
+                                      Precio = itm.Precio ?? 0,
+                                      UnidadMedida = itm.UnidadMedida
+                                  }).Distinct().ToList();
                     return result;
                 }
+            }
+        }
+
+        public List<DetalleProformaDTO> getItemsServicios_Proforma(int idEmpresa)
+        {
+            using (var context = getContext())
+            {
+                var resultServicios = context.Servicio.Where(x => x.IdEmpresa == idEmpresa && x.Estado).Select(x => new DetalleProformaDTO
+                {
+                    IdItem = x.IdServicio,
+                    CodigoItem = x.Codigo + " - " + x.Nombre,
+                    PrecioUnidad = x.Precio ?? 0,
+                    UnidadMedida = "",
+                    ItemServicio = "0301"
+                }).OrderBy(x => x.CodigoItem).ToList();
+
+
+                var resultItems = context.Item.Where(x => x.IdEmpresa == idEmpresa && x.Estado).Select(x => new DetalleProformaDTO
+                {
+                    IdItem = x.IdItem,
+                    CodigoItem = x.Codigo + " - " + x.Nombre,
+                    PrecioUnidad = x.Precio ?? 0,
+                    UnidadMedida = x.UnidadMedida,
+                    ItemServicio = "0302"
+                }).OrderBy(x => x.CodigoItem).ToList();
+
+                var result = resultItems.Concat(resultServicios).ToList();
+
+                return result;
             }
         }
     }

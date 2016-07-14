@@ -100,7 +100,7 @@
             $.each(pLista, function (index, item) {
                 lstItemsAux.push({
                     'id': item.IdItem,
-                    'text': item.Codigo,
+                    'text': item.CodigoItem,
                     'data': item
                 });
             });
@@ -153,10 +153,12 @@
                     lista.MontoTotal = (lista.Cantidad * lista.PrecioUnidad).toFixed(2);
                     lista.Descuento = (lista.MontoTotal * (descuento / 100)).toFixed(2);
                     lista.MontoTotal = (lista.MontoTotal - lista.Descuento).toFixed(2);
+                    lista.ItemServicio = $('#ddlitem').select2('data').data.ItemServicio;
                     jslstItems.push(lista);
                     llenartabla();
                     $("#ddlitem").select2("val", "");
                     ResetearValoresItems();
+                    console.log(lista);
                 }
                 else {
                     //var descuento = $("#txtdescuento").val();

@@ -167,7 +167,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
             EmpresaBL empBL = new EmpresaBL();
             ViewBag.lstMonedas = empBL.getListaMonedasAll();
             MovimientoInvBL movItmBL = new MovimientoInvBL();
-            ViewBag.lstItems = movItmBL.getItemsEnEmpresa_PorTipoMov(user.IdEmpresa, 1);
+            ViewBag.lstItems = movItmBL.getItemsServicios_Proforma(user.IdEmpresa);
             CuentaBancariaBL cbBL = new CuentaBancariaBL();
             ViewBag.lstCuentasBancarias = cbBL.getCuentasBancariasActivasPorTipoEnEmpresa(user.IdEmpresa, 1);
             ViewBag.lstContactos = new List<ContactoDTO>();

@@ -12,6 +12,7 @@ namespace NubeBooks.Core.Logistics.DTO
         public Int32 IdDetalleProforma { get; set; }
         public Int32 IdProforma { get; set; }
         public Int32 IdItem { get; set; }
+        public string CodigoItem { get; set; }
         public string NombreItem { get; set; }
         public Int32 Cantidad { get; set; }
         public decimal PrecioUnidad { get; set; }
