@@ -186,7 +186,7 @@ namespace NubeBooks.Core.Logistics.BL
         {
             using (var context = getContext())
             {
-                var result = context.DetalleProforma.Where(x => x.IdProforma == idProforma).Select(x => new DetalleProformaDTO
+                var items = context.DetalleProforma.Where(x => x.IdProforma == idProforma && x.ItemServicio == "0302").Select(x => new DetalleProformaDTO
                 {
                     IdProforma = x.IdProforma,
                     IdItem = x.IdItem,
@@ -196,13 +196,34 @@ namespace NubeBooks.Core.Logistics.BL
                     MontoTotal = x.MontoTotal,
                     TipoCambio = x.TipoCambio,
                     //NombreItem = context.Item.FirstOrDefault(i => i.IdItem == x.IdItem).Nombre,
-                    NombreItem = x.Item.Codigo + x.Item.Nombre,
+                    NombreItem = x.Item.Codigo + " - " + x.Item.Nombre,
                     Descuento = x.Descuento,
                     Igv = x.Igv,
                     PorcentajeIgv = x.PorcentajeIgv,
-                    PorcentajeDescuento = x.PorcentajeDescuento
+                    PorcentajeDescuento = x.PorcentajeDescuento,
+                    ItemServicio = x.ItemServicio
                 }).ToList();
-                return result;
+
+                var servicios = context.DetalleProforma.Where(x => x.IdProforma == idProforma && x.ItemServicio == "0301").Select(x => new DetalleProformaDTO
+                {
+                    IdProforma = x.IdProforma,
+                    IdItem = x.IdItem,
+                    Cantidad = x.Cantidad,
+                    PrecioUnidad = x.PrecioUnidad,
+                    UnidadMedida = x.UnidadMedida,
+                    MontoTotal = x.MontoTotal,
+                    TipoCambio = x.TipoCambio,
+                    NombreItem = context.Servicio.Where(y => y.IdServicio == x.IdItem).Select(y => y.Codigo + " - " + y.Nombre).FirstOrDefault().ToString(),
+                    Descuento = x.Descuento,
+                    Igv = x.Igv,
+                    PorcentajeIgv = x.PorcentajeIgv,
+                    PorcentajeDescuento = x.PorcentajeDescuento,
+                    ItemServicio = x.ItemServicio
+                }).ToList();
+
+                var result = items.Concat(servicios);
+
+                return result.ToList();
             }
         }
         public bool SaveProforma(ProformaDTO proforma)
@@ -264,6 +285,7 @@ namespace NubeBooks.Core.Logistics.BL
                         deta.PorcentajeIgv = detalle.PorcentajeIgv;
                         deta.Igv = detalle.Igv;
                         deta.PorcentajeDescuento = detalle.PorcentajeDescuento;
+                        deta.ItemServicio = detalle.ItemServicio;
                         context.DetalleProforma.Add(deta);
                     }
                     context.SaveChanges();

@@ -14,6 +14,7 @@
 }
 @section Scripts{
     @Scripts.Render("~/Content/themes/admin/js/select2/select2.min.js")
+    <script src="~/Scripts/JSLINQ.js"></script>
     <script type="text/javascript">
         var miBaseUrl = '';
 
@@ -48,8 +49,10 @@
         }
 
         function InsertarPrecio() {
-            var jsPrecio = parseFloat($("#ddlitem").select2('data').data.Precio).toFixed(2);
+            var jsPrecio = parseFloat($("#ddlitem").select2('data').data.PrecioUnidad).toFixed(2);
+            var jsItemServicio = $("#ddlitem").select2('data').data.ItemServicio;
             $("#txtprecio").val(jsPrecio);
+            $("#hdfItemServicio").val(jsItemServicio);
         }
 
         function ListarContactos(cambio) {
@@ -60,7 +63,6 @@
                 }
 
                 GetClientesAjax(idEntidad);
-                //console.log(jslstContactos);
                 $('#IdContacto').select2({
                     allowClear: true,
                     data: jslstContactos,
@@ -132,14 +134,31 @@
 
                 var precio = parseFloat($("#txtprecio").val());
                 var descuento = parseFloat($("#txtdescuento").val());
+                var itemservicio = $("#hdfItemServicio").val();
 
-                var items01 = $.grep(jslstItems, function (e, i) { return (e.IdItem == jsIdItem, e.PrecioUnidad == precio, e.PorcentajeDescuento == descuento) })[0];
-
-                console.log(items01);
+                console.log(jsIdItem);
                 console.log(descuento);
-                //console.log((e.Cantidad * e.PrecioUnidad) / e.Descuento);
+                console.log(precio);
+                console.log(itemservicio);
 
-                if (items01 == undefined) {
+                var items01 = JSLINQ(jslstItems).Where(function (item) {
+                    return item.IdItem == jsIdItem &&
+                           item.ItemServicio == itemservicio &&
+                           item.PrecioUnidad == precio &&
+                           item.PorcentajeDescuento == descuento;
+                }).Select(function (item) { return item; });
+
+                //console.log(items01.items);
+
+                //var items01 = $.grep(jslstItems, function (e, i) {
+                //    return (e.ItemServicio == itemservicio, e.IdItem == jsIdItem, e.PorcentajeDescuento === descuento);
+                //});
+                //, e.PrecioUnidad == precio, e.PorcentajeDescuento == descuento, e.ItemServicio == itemservicio
+                //console.log(items01);
+                //console.log(items01.items.length);
+
+                //if (items01 == undefined) {
+                if (items01.items.length == 0) {
                     var lista = {};
                     lista.IdItem = jsIdItem;
                     lista.NombreItem = $('#ddlitem').select2('data').text;
@@ -158,9 +177,9 @@
                     llenartabla();
                     $("#ddlitem").select2("val", "");
                     ResetearValoresItems();
-                    console.log(lista);
                 }
                 else {
+                    items01 = items01.items[0];
                     //var descuento = $("#txtdescuento").val();
                     //var descuentoItem = (items01.Cantidad * items01.PrecioUnidad) / items01.Descuento;
                     //console.log(descuento);
@@ -414,6 +433,7 @@ else { cadena = "Actualizar"; }
                                 <span class="input-group-addon">%</span>
                             </div>
                         </div>
+                        @Html.Hidden("hdfItemServicio", "")
                     </div>
                 </div>
                 <div class="form-group">
