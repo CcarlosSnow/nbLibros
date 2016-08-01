@@ -53,8 +53,6 @@ public partial class LibrosDBEntities : DbContext
 
     public virtual DbSet<DetalleProforma> DetalleProforma { get; set; }
 
-    public virtual DbSet<Empresa> Empresa { get; set; }
-
     public virtual DbSet<EntidadResponsable> EntidadResponsable { get; set; }
 
     public virtual DbSet<EstadoMovimiento> EstadoMovimiento { get; set; }
@@ -104,6 +102,8 @@ public partial class LibrosDBEntities : DbContext
     public virtual DbSet<Ubicacion> Ubicacion { get; set; }
 
     public virtual DbSet<Usuario> Usuario { get; set; }
+
+    public virtual DbSet<Empresa> Empresa { get; set; }
 
 
     public virtual int SP_ActualizarMontos(Nullable<int> idCuentaB)

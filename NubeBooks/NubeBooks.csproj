@@ -213,7 +213,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Areas\Proformas\Controllers\ProformaController.cs" />
+    <Compile Include="Areas\Empresa\Controllers\EmpresaController.cs" />
+    <Compile Include="Areas\Empresa\EmpresaAreaRegistration.cs" />
     <Compile Include="Areas\Proformas\Controllers\ProformasController.cs" />
     <Compile Include="Areas\Proformas\ProformasAreaRegistration.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -930,13 +931,9 @@
     <Content Include="Content\themes\admin-nb\libs\._assets" />
     <Content Include="Content\themes\admin-nb\libs\._jquery" />
     <Content Include="Areas\Proformas\Views\web.config" />
-    <Content Include="Areas\Proformas\Views\Proforma\Index.cshtml" />
-    <Content Include="Areas\Proformas\Views\Proforma\NuevaProforma.cshtml" />
-    <Content Include="Areas\Proformas\Views\Proforma\Proforma.cshtml" />
-    <Content Include="Areas\Proformas\Views\Proforma\ProformaDetalle.cshtml" />
     <Content Include="Areas\Proformas\Views\Proformas\Index.cshtml" />
-    <Content Include="Areas\Proformas\Views\Proformas\Proforma.cshtml" />
-    <Content Include="Areas\Proformas\Views\Proformas\ProformaDetalle.cshtml" />
+    <Content Include="Areas\Proformas\Views\Proformas\Nuevo.cshtml" />
+    <Content Include="Areas\Proformas\Views\Proformas\Detalle.cshtml" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
     <None Include="Properties\PublishProfiles\NubeBooks.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -975,7 +972,7 @@
     <Content Include="Views\Admin\Comprobantes.cshtml" />
     <Content Include="Views\Admin\ComprobantesIngreso.cshtml" />
     <Content Include="Views\Admin\Contacto.cshtml" />
-    <Content Include="Views\Admin\Empresa.cshtml" />
+    <Content Include="Areas\Empresa\Views\Empresa\Index.cshtml" />
     <Content Include="Views\Admin\Entidad.cshtml" />
     <Content Include="Views\Admin\Entidades.cshtml" />
     <Content Include="Views\Admin\ForgotPassword.cshtml" />
@@ -1028,6 +1025,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Empresa\Models\" />
+    <Folder Include="Areas\Empresa\Scripts\" />
+    <Folder Include="Areas\Empresa\Views\Shared\" />
     <Folder Include="Areas\Proformas\Models\" />
     <Folder Include="Areas\Proformas\Views\Shared\" />
     <Folder Include="Content\themes\admin\less\" />

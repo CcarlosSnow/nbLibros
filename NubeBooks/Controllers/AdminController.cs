@@ -214,11 +214,11 @@ namespace NubeBooks.Controllers
             ViewBag.TotalDolaresOld = empresa.TotalDolaresOld.GetValueOrDefault();
 
             if (empresa.IdMoneda == 1)
-            { ViewBag.TotalConsolidado = empresa.TotalSoles.GetValueOrDefault() + empresa.TotalDolares.GetValueOrDefault() * empresa.TipoCambio; }
+            { ViewBag.TotalConsolidado = empresa.TotalSoles.GetValueOrDefault() + empresa.TotalDolares.GetValueOrDefault() * empresa.MontoTipoCambio; }
             else
-            { ViewBag.TotalConsolidado = empresa.TotalDolares.GetValueOrDefault() + empresa.TotalSoles.GetValueOrDefault() / empresa.TipoCambio; }
+            { ViewBag.TotalConsolidado = empresa.TotalDolares.GetValueOrDefault() + empresa.TotalSoles.GetValueOrDefault() / empresa.MontoTipoCambio; }
 
-            ViewBag.TipoCambio = empresa.TipoCambio;
+            ViewBag.TipoCambio = empresa.MontoTipoCambio;
             ViewBag.TipoMoneda = empresa.IdMoneda;
             ViewBag.sMoneda = empresa.SimboloMoneda;
             //Liquidez
@@ -260,67 +260,6 @@ namespace NubeBooks.Controllers
             return View();
         }
 
-        public ActionResult Empresa()
-        {
-            if (!this.currentUser()) { return RedirectToAction("Ingresar"); }
-            if (!this.isAdministrator()) { return RedirectToAction("Index"); }
-            MenuNavBarSelected(0);
-            UsuarioDTO currentUser = getCurrentUser();
-
-            EmpresaBL objBL = new EmpresaBL();
-            ViewBag.lstMonedas = objBL.getListaMonedas();
-
-            var objSent = TempData["Empresa"];
-            if (objSent != null) { TempData["Empresa"] = null; return View(objSent); }
-            
-            EmpresaDTO obj = objBL.getEmpresaBasic(getCurrentUser().IdEmpresa);
-            if (obj == null) return RedirectToAction("Index");
-            return View(obj);
-        }
-
-        [HttpPost]
-        public ActionResult AddEmpresa(EmpresaDTO dto)
-        {
-            if (!this.currentUser()) { return RedirectToAction("Ingresar"); }
-            try
-            {
-                EmpresaBL objBL = new EmpresaBL();
-                if (dto.IdEmpresa == 0)
-                {
-                    if (objBL.add(dto))
-                    {
-                        createResponseMessage(CONSTANTES.SUCCESS);
-                        return RedirectToAction("Index");
-                    }
-                }
-                else if (dto.IdEmpresa != 0)
-                {
-                    if (objBL.update(dto))
-                    {
-                        createResponseMessage(CONSTANTES.SUCCESS);
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        createResponseMessage(CONSTANTES.ERROR, CONSTANTES.ERROR_UPDATE_MESSAGE);
-                    }
-
-                }
-                else
-                {
-                    createResponseMessage(CONSTANTES.ERROR, CONSTANTES.ERROR_INSERT_MESSAGE);
-                }
-            }
-            catch (Exception e)
-            {
-                if (dto.IdEmpresa != 0)
-                    createResponseMessage(CONSTANTES.ERROR, CONSTANTES.ERROR_UPDATE_MESSAGE);
-                else createResponseMessage(CONSTANTES.ERROR, CONSTANTES.ERROR_INSERT_MESSAGE);
-            }
-            TempData["Empresa"] = dto;
-            return RedirectToAction("Empresa");
-        }
-
         public ActionResult Libros(int? idTipoCuenta = null)
         {
             if (!this.currentUser()) { return RedirectToAction("Ingresar"); }
@@ -337,7 +276,7 @@ namespace NubeBooks.Controllers
             if (miUsuario.IdEmpresa != 0)
             {
                 EmpresaBL empBL = new EmpresaBL();
-                Decimal miTipoCambio = empBL.getEmpresa((int)miUsuario.IdEmpresa).TipoCambio;
+                Decimal miTipoCambio = empBL.getEmpresa((int)miUsuario.IdEmpresa).MontoTipoCambio;
 
                 listaLibros = objBL.getCuentasBancariasEnEmpresa(miUsuario.IdEmpresa);
                 ViewBag.TotalSoles = DameTotalSoles(listaLibros);
@@ -784,7 +723,7 @@ namespace NubeBooks.Controllers
                 MovimientoDTO nuevo = new MovimientoDTO();
                 nuevo.IdCuentaBancaria = (int)idLibro;
                 nuevo.Fecha = DateTime.Now;
-                nuevo.TipoCambio = (new EmpresaBL()).getEmpresa(miUsuario.IdEmpresa).TipoCambio;
+                nuevo.TipoCambio = (new EmpresaBL()).getEmpresa(miUsuario.IdEmpresa).MontoTipoCambio;
                 nuevo.NumeroDocumento = null;
                 //nuevo.Comentario = "No existe comentario";
                 nuevo.Estado = true;
@@ -1445,7 +1384,7 @@ namespace NubeBooks.Controllers
             }
             obj = new ComprobanteDTO();
             obj.IdEmpresa = currentUser.IdEmpresa;
-            obj.TipoCambio = (new EmpresaBL()).getEmpresa(currentUser.IdEmpresa).TipoCambio;
+            obj.TipoCambio = (new EmpresaBL()).getEmpresa(currentUser.IdEmpresa).MontoTipoCambio;
             obj.UsuarioCreacion = currentUser.IdUsuario;
             obj.FechaEmision = DateTime.Now;
 
@@ -5212,7 +5151,7 @@ namespace NubeBooks.Controllers
 
             EmpresaBL objBL = new EmpresaBL();
             UsuarioDTO miUsuario = getCurrentUser();
-            EmpresaDTO obj = new EmpresaDTO() { IdEmpresa = miUsuario.IdEmpresa, TipoCambio = tipoCambio };
+            EmpresaDTO obj = new EmpresaDTO() { IdEmpresa = miUsuario.IdEmpresa, MontoTipoCambio = tipoCambio };
             if (objBL.updateTipoCambio(obj))
             {
                 return "true";

@@ -45,8 +45,6 @@ public partial class Categoria
 
 
 
-    public virtual Empresa Empresa { get; set; }
-
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
     public virtual ICollection<CategoriaPorPeriodo> CategoriaPorPeriodo { get; set; }
@@ -58,6 +56,8 @@ public partial class Categoria
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
     public virtual ICollection<Movimiento> Movimiento { get; set; }
+
+    public virtual Empresa Empresa { get; set; }
 
 }
 

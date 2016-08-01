@@ -75,9 +75,9 @@ public partial class Proforma
 
     public virtual ICollection<DetalleProforma> DetalleProforma { get; set; }
 
-    public virtual Empresa Empresa { get; set; }
-
     public virtual EntidadResponsable EntidadResponsable { get; set; }
+
+    public virtual Empresa Empresa { get; set; }
 
 }
 

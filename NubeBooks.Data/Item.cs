@@ -57,13 +57,13 @@ public partial class Item
 
     public virtual ICollection<DetalleProforma> DetalleProforma { get; set; }
 
-    public virtual Empresa Empresa { get; set; }
-
     public virtual Moneda Moneda { get; set; }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
     public virtual ICollection<MovimientoInv> MovimientoInv { get; set; }
+
+    public virtual Empresa Empresa { get; set; }
 
 }
 

@@ -99,6 +99,7 @@
     <Compile Include="DTO\LiquidezDTO.cs" />
     <Compile Include="DTO\MonedaDTO.cs" />
     <Compile Include="DTO\MovimientoDTO.cs" />
+    <Compile Include="DTO\ParametroDTO.cs" />
     <Compile Include="DTO\PeriodoDTO.cs" />
     <Compile Include="DTO\ProyectoDTO.cs" />
     <Compile Include="DTO\ResetPasswordDTO.cs" />

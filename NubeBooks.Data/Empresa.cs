@@ -63,8 +63,6 @@ public partial class Empresa
 
     public string RUC { get; set; }
 
-    public decimal TipoCambio { get; set; }
-
     public Nullable<decimal> IGV { get; set; }
 
     public Nullable<int> IdPeriodo { get; set; }
@@ -80,6 +78,18 @@ public partial class Empresa
     public Nullable<decimal> TotalDolaresOld { get; set; }
 
     public Nullable<System.DateTime> FechaConciliacion { get; set; }
+
+    public string RazonSocial { get; set; }
+
+    public string IngresoTipoCambio { get; set; }
+
+    public decimal MontoTipoCambio { get; set; }
+
+    public string ActividadPrincipal { get; set; }
+
+    public string BienServicioPrincipal { get; set; }
+
+    public string Logotipo { get; set; }
 
 
 

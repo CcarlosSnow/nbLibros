@@ -49,8 +49,6 @@ public partial class CuentaBancaria
 
 
 
-    public virtual Empresa Empresa { get; set; }
-
     public virtual Moneda Moneda { get; set; }
 
     public virtual TipoCuenta TipoCuenta { get; set; }
@@ -62,6 +60,8 @@ public partial class CuentaBancaria
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
     public virtual ICollection<Proforma> Proforma { get; set; }
+
+    public virtual Empresa Empresa { get; set; }
 
 }
 

@@ -24,7 +24,7 @@ namespace NubeBooks.Core.BL
                     Estado = x.Estado,
                     Descripcion = x.Descripcion,
                     RUC = x.RUC,
-                    TipoCambio = x.TipoCambio,
+                    MontoTipoCambio = x.MontoTipoCambio,
                     IdPeriodo = x.IdPeriodo
                 }).OrderBy(x => x.Nombre).ToList();
                 return result;
@@ -42,7 +42,7 @@ namespace NubeBooks.Core.BL
                     Estado = x.Estado,
                     Descripcion = x.Descripcion,
                     RUC = x.RUC,
-                    TipoCambio = x.TipoCambio,
+                    MontoTipoCambio = x.MontoTipoCambio,
                     IdPeriodo = x.IdPeriodo,
                     IdMoneda = x.IdMoneda,
                     SimboloMoneda = x.Moneda.Simbolo,
@@ -68,7 +68,6 @@ namespace NubeBooks.Core.BL
                         Estado = x.Estado,
                         Descripcion = x.Descripcion,
                         RUC = x.RUC,
-                        TipoCambio = x.TipoCambio,
                         IdPeriodo = x.IdPeriodo,
                         IdMoneda = x.IdMoneda,
                         SimboloMoneda = x.Moneda.Simbolo,
@@ -76,7 +75,11 @@ namespace NubeBooks.Core.BL
                         TotalDolares = x.TotalDolares,
                         TotalSolesOld = x.TotalSolesOld,
                         TotalDolaresOld = x.TotalDolaresOld,
-                        FechaConciliacion = x.FechaConciliacion
+                        FechaConciliacion = x.FechaConciliacion,
+                        RazonSocial = x.RazonSocial,
+                        MontoTipoCambio = x.MontoTipoCambio,
+                        Logotipo = x.Logotipo
+                        
                     }).SingleOrDefault();
                 return result;
             }
@@ -92,7 +95,7 @@ namespace NubeBooks.Core.BL
                         IdEmpresa = x.IdEmpresa,
                         Nombre = x.Nombre,
                         RUC = x.RUC,
-                        TipoCambio = x.TipoCambio,
+                        MontoTipoCambio = x.MontoTipoCambio,
                         IdMoneda = x.IdMoneda
                     }).SingleOrDefault();
                 return result;
@@ -110,7 +113,7 @@ namespace NubeBooks.Core.BL
                     nuevo.Estado = true;
                     nuevo.Descripcion = Empresa.Descripcion;
                     nuevo.RUC = Empresa.RUC;
-                    nuevo.TipoCambio = Empresa.TipoCambio == 0 ? 1 : Empresa.TipoCambio;
+                    nuevo.MontoTipoCambio = Empresa.MontoTipoCambio == 0 ? 1 : Empresa.MontoTipoCambio;
                     nuevo.IdPeriodo = Empresa.IdPeriodo;
                     context.Empresa.Add(nuevo);
                     context.SaveChanges();
@@ -133,7 +136,7 @@ namespace NubeBooks.Core.BL
                     row.Estado = true;
                     //row.Descripcion = Empresa.Descripcion;
                     row.RUC = Empresa.RUC;
-                    row.TipoCambio = Empresa.TipoCambio;
+                    row.MontoTipoCambio = Empresa.MontoTipoCambio;
                     row.IdMoneda = Empresa.IdMoneda;
                     //row.IdPeriodo = Empresa.IdPeriodo;
                     context.SaveChanges();
@@ -153,7 +156,7 @@ namespace NubeBooks.Core.BL
                 try
                 {
                     var row = context.Empresa.Where(x => x.IdEmpresa == Empresa.IdEmpresa).SingleOrDefault();
-                    row.TipoCambio = Empresa.TipoCambio;
+                    row.MontoTipoCambio = Empresa.MontoTipoCambio;
                     context.SaveChanges();
                     return true;
                 }

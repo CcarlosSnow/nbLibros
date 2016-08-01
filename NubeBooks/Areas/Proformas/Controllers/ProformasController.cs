@@ -153,7 +153,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
 
             return View(lista);
         }
-        public ActionResult Proforma(int? id)
+        public ActionResult Nuevo(int? id)
         {
             if (!this.currentUser()) { return RedirectToAction("Ingresar", "Admin", new { Area = string.Empty }); }
             ViewBag.Title += "Proforma";
@@ -189,7 +189,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
             return View(obj);
         }
 
-        public ActionResult ProformaDetalle(int id)
+        public ActionResult Detalle(int id)
         {
             if (!this.currentUser()) { return RedirectToAction("Ingresar", "Admin", new { Area = string.Empty }); }
             ViewBag.Title += "Detalle Proforma";
@@ -246,7 +246,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
                 else createResponseMessage(CONSTANTES.ERROR, CONSTANTES.ERROR_INSERT_MESSAGE);
             }
             TempData["Proforma"] = dto;
-            return RedirectToAction("Proforma", "Proformas", new { id = dto.IdProforma });
+            return RedirectToAction("Nuevo", "Proformas", new { id = dto.IdProforma });
         }
 
         [HttpPost]

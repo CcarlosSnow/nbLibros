@@ -95,8 +95,6 @@ public partial class EntidadResponsable
 
     public virtual ICollection<Contacto> Contacto { get; set; }
 
-    public virtual Empresa Empresa { get; set; }
-
     public virtual Responsable Responsable { get; set; }
 
     public virtual TipoEntidad TipoEntidad { get; set; }
@@ -118,6 +116,8 @@ public partial class EntidadResponsable
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
     public virtual ICollection<Proyecto> Proyecto { get; set; }
+
+    public virtual Empresa Empresa { get; set; }
 
 }
 

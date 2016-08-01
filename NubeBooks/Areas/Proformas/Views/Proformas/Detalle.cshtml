@@ -54,9 +54,11 @@
                     <tr>
                         <th style="width: 60px">ÍTEM</th>
                         <th>DESCRIPCIÓN</th>
-                        <th style="width: 140px">CANTIDAD</th>
-                        <th style="width: 140px">PRECIO UNITARIO</th>
-                        <th style="width: 140px">MONTO TOTAL</th>
+                        <th style="width: 120px" class="text-center">U/M</th>
+                        <th style="width: 80px" class="text-center">CANT.</th>
+                        <th style="width: 140px" class="text-center">PRECIO UNIT.</th>
+                        <th style="width: 100px" class="text-center">DESCUENTO</th>
+                        <th style="width: 150px" class="text-center">MONTO TOTAL</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,29 +71,32 @@
                         <tr class="text-center">
                             <td>@cont</td>
                             <td class="text-left">@item.NombreItem</td>
-                            <td>@item.Cantidad</td>
-                            <td class="text-right">@item.PrecioUnidad</td>
-                            <td class="text-right">@item.MontoTotal</td>
+                            <td class="text-center">@item.UnidadMedida</td>
+                            <td class="text-center">@item.Cantidad</td>
+                            <td class="text-center">@item.PrecioUnidad</td>
+                            <td class="text-center">@item.Descuento</td>
+                            <td class="text-center">@item.MontoTotal</td>
                         </tr>
                     }
+                    <tr>
+                        <td></td>
+                        <td colspan="5" class="text-right"><strong>Sub Total</strong></td>
+                        <td class="text-center"><strong>@total</strong></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="5" class="text-right no-border"><strong>IGV</strong></td>
+                        <td class="text-center">@igv</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="5" class="text-right no-border"><strong>Total</strong></td>
+                        <td class="text-center"><strong>@(total + igv)</strong></td>
+                    </tr>
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td></td>
-                        <td colspan="3" class="text-right"><strong>Sub Total</strong></td>
-                        <td class="text-right"><strong>@total</strong></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td colspan="3" class="text-right no-border"><strong>IGV</strong></td>
-                        <td class="text-right">@igv</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td colspan="3" class="text-right no-border"><strong>Total</strong></td>
-                        <td class="text-right"><strong>@(total + igv)</strong></td>
-                    </tr>
-                </tfoot>
+                @*<tfoot>
+
+                    </tfoot>*@
             </table>
             <p>
                 <strong>DATOS BANCARIOS</strong><br>

@@ -85,8 +85,6 @@ public partial class Comprobante
 
     public virtual Categoria Categoria { get; set; }
 
-    public virtual Empresa Empresa { get; set; }
-
     public virtual EntidadResponsable EntidadResponsable { get; set; }
 
     public virtual EntidadResponsable EntidadResponsable1 { get; set; }
@@ -112,6 +110,8 @@ public partial class Comprobante
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
     public virtual ICollection<Proyecto> Proyecto { get; set; }
+
+    public virtual Empresa Empresa { get; set; }
 
 }
 

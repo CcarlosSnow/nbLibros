@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="1837014ab44e4df8ad3a0ad5c0cb6836" Name="Diagram1">
+      <Diagram DiagramId="1837014ab44e4df8ad3a0ad5c0cb6836" Name="Diagram1" ZoomLevel="100">
         <EntityTypeShape EntityType="LibrosDBModel.Area" Width="1.5" PointX="11.25" PointY="23.625" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.AreaPorComprobante" Width="1.5" PointX="13.5" PointY="29.25" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.Categoria" Width="1.5" PointX="11.25" PointY="26.625" IsExpanded="true" />
@@ -14,7 +14,6 @@
         <EntityTypeShape EntityType="LibrosDBModel.Contacto" Width="1.5" PointX="15.75" PointY="42.625" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.CuentaBancaria" Width="1.5" PointX="6" PointY="30.875" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.DetalleProforma" Width="1.5" PointX="18.75" PointY="36" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Empresa" Width="1.5" PointX="9" PointY="29.375" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.EntidadResponsable" Width="1.5" PointX="13.5" PointY="40.5" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.EstadoMovimiento" Width="1.5" PointX="14.25" PointY="32.125" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.FormaMovimiento" Width="1.5" PointX="14.25" PointY="19.625" IsExpanded="true" />
@@ -40,17 +39,13 @@
         <EntityTypeShape EntityType="LibrosDBModel.TipoMovimientoInv" Width="1.5" PointX="17" PointY="46.625" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.Ubicacion" Width="1.5" PointX="11.25" PointY="47.625" IsExpanded="true" />
         <EntityTypeShape EntityType="LibrosDBModel.Usuario" Width="1.5" PointX="19.25" PointY="30.625" IsExpanded="true" />
-        <AssociationConnector Association="LibrosDBModel.FK_Area_Empresa" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_AreaPorComprobante_Area" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_AreaPorComprobante_Comprobante" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Categoria_Empresa" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_CategoriaPorPeriodo_Categoria" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Comprobante_Categoria" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Movimiento_Categoria" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_CategoriaItm_Empresa" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Item_CategoriaItm" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_CategoriaPorPeriodo_Periodo" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Comprobante_Empresa" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Comprobante_EntidadResponsable" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Comprobante_EntidadResponsable1" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Comprobante_Honorario" ManuallyRouted="false" />
@@ -63,23 +58,12 @@
         <AssociationConnector Association="LibrosDBModel.FK_Movimiento_Comprobante" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Contacto_EntidadResponsable1" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Proforma_Contacto" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_CuentaBancaria_Empresa" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_CuentaBancaria_Moneda" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_CuentaBancaria_TipoCuenta" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Movimiento_CuentaBancaria" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Proforma_CuentaBancaria" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_DetalleProforma_Item" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_DetalleProforma_Proforma" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Empresa_Moneda" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Empresa_Periodo" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_EntidadResponsable_Empresa" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Honorario_Empresa" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Item_Empresa" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_MovimientoInv_Empresa" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Proforma_Empresa" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Responsable_Empresa" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Ubicacion_Empresa" ManuallyRouted="false" />
-        <AssociationConnector Association="LibrosDBModel.FK_Usuario_Empresa" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_EntidadResponsable_Responsable" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_EntidadResponsable_TipoEntidad" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_EntidadResponsable_TipoIdentificacion" ManuallyRouted="false" />
@@ -104,6 +88,22 @@
         <AssociationConnector Association="LibrosDBModel.FK_Proyecto_Responsable" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Usuario_Rol" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.ComprobantePorProyecto" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="LibrosDBModel.Empresa" Width="1.5" PointX="9" PointY="26.875" />
+        <AssociationConnector Association="LibrosDBModel.FK_Area_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Categoria_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_CategoriaItm_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Comprobante_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_CuentaBancaria_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Empresa_Moneda" />
+        <AssociationConnector Association="LibrosDBModel.FK_Empresa_Periodo" />
+        <AssociationConnector Association="LibrosDBModel.FK_EntidadResponsable_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Honorario_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Item_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_MovimientoInv_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Proforma_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Responsable_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Ubicacion_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Usuario_Empresa" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -26,11 +26,11 @@ public partial class Moneda
 
         this.CuentaBancaria = new HashSet<CuentaBancaria>();
 
-        this.Empresa = new HashSet<Empresa>();
-
         this.Item = new HashSet<Item>();
 
         this.Servicio = new HashSet<Servicio>();
+
+        this.Empresa = new HashSet<Empresa>();
 
     }
 
@@ -53,15 +53,15 @@ public partial class Moneda
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
-    public virtual ICollection<Empresa> Empresa { get; set; }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-
     public virtual ICollection<Item> Item { get; set; }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
     public virtual ICollection<Servicio> Servicio { get; set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+    public virtual ICollection<Empresa> Empresa { get; set; }
 
 }
 

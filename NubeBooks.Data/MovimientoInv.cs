@@ -54,8 +54,6 @@ public partial class MovimientoInv
 
 
 
-    public virtual Empresa Empresa { get; set; }
-
     public virtual EntidadResponsable EntidadResponsable { get; set; }
 
     public virtual FormaMovimientoInv FormaMovimientoInv { get; set; }
@@ -67,6 +65,8 @@ public partial class MovimientoInv
     public virtual Ubicacion Ubicacion { get; set; }
 
     public virtual Usuario Usuario { get; set; }
+
+    public virtual Empresa Empresa { get; set; }
 
 }
 
