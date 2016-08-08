@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace NubeBooks.Areas.Proformas
+namespace NubeBooks.Areas.Empresa
 {
     public class EmpresaAreaRegistration : AreaRegistration
     {

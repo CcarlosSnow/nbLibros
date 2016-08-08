@@ -186,7 +186,7 @@ namespace NubeBooks.Core.Logistics.BL
         {
             using (var context = getContext())
             {
-                var items = context.DetalleProforma.Where(x => x.IdProforma == idProforma && x.ItemServicio == "0302").Select(x => new DetalleProformaDTO
+                var items = context.DetalleProforma.Where(x => x.IdProforma == idProforma && x.ItemServicio == "0502").Select(x => new DetalleProformaDTO
                 {
                     IdProforma = x.IdProforma,
                     IdItem = x.IdItem,
@@ -204,7 +204,7 @@ namespace NubeBooks.Core.Logistics.BL
                     ItemServicio = x.ItemServicio
                 }).ToList();
 
-                var servicios = context.DetalleProforma.Where(x => x.IdProforma == idProforma && x.ItemServicio == "0301").Select(x => new DetalleProformaDTO
+                var servicios = context.DetalleProforma.Where(x => x.IdProforma == idProforma && x.ItemServicio == "0501").Select(x => new DetalleProformaDTO
                 {
                     IdProforma = x.IdProforma,
                     IdItem = x.IdItem,

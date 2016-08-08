@@ -130,6 +130,9 @@
     <Compile Include="MovimientoInv.cs">
       <DependentUpon>LibrosModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Parametro.cs">
+      <DependentUpon>LibrosModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Periodo.cs">
       <DependentUpon>LibrosModel.tt</DependentUpon>
     </Compile>
@@ -253,7 +256,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.Config" />
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
     <EntityDeploy Include="LibrosModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>LibrosModel.Designer.cs</LastGenOutput>

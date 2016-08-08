@@ -16,44 +16,152 @@
                 return false;
             }
         }
+        $(document).ready(function () {
+            $("#updLogo").change(function () {
+                var val = $(this).val();
+                $("#Logotipo").val(val);
+            });
+        });
+        function BloqueaMontoTipoCambio(objeto) {
+            $("#IngresoTipoCambio").prop("checked", false);
+            var radio = $(objeto).find("input[type=radio]");
+            radio.prop("checked", true);
+            var divMontoTipoCambio = $("#divMontoTipoCambio");
+            var textBoxMontoTipoCambio = divMontoTipoCambio.find("input[type=text]");
+            if (radio.prop("value") == "0202") {
+                divMontoTipoCambio.find("button").attr("disabled", "disabled");
+                textBoxMontoTipoCambio.attr("readonly", "readonly");
+                $.ajax({
+                    type: "POST",
+                    url: "/Empresa/Empresa/GetTipoCambioSunat",
+                    contentType: "json",
+                    dataType: "json",
+                    success: function (response) {
+                        var ConvertToJSON = JSON.parse(response);
+                        var UltimaPosicion = ConvertToJSON.data.length;
+                        if (UltimaPosicion == 0) {
+                            var radioMANUAL;
+                            $("#IngresoTipoCambio").each(function () {
+                                if ($(this).prop("value") == "0201") {
+                                    radioMANUAL = $(this);
+                                }
+                                if ($(this).prop("value") == "0202") {
+                                    $(this).parent().removeClass("active");
+                                }
+                            });
+                            $("#IngresoTipoCambio").prop("checked", false);
+                            radioMANUAL.prop("checked", true);
+                            radioMANUAL.parent().addClass("active");
+                            textBoxMontoTipoCambio.attr("readonly");
+                        }
+                        else {
+                            textBoxMontoTipoCambio.val(ConvertToJSON.data[UltimaPosicion - 1].venta);
+                        }
+                    },
+                    error: function (response) {
+                        alert(response);
+                    }
+                });
+            }
+            else {
+                divMontoTipoCambio.find("button").removeAttr("disabled");
+                textBoxMontoTipoCambio.removeAttr("readonly");
+            }
+        }
+
+        function SeleccionaRadioActividadPrincipal(objeto) {
+            $("#ActividadPrincipal").prop("checked", false);
+            var radio = $(objeto).find("input[type=radio]");
+            radio.prop("checked", true);
+        }
     </script>
 }
 <div class="bg-light lter b-b wrapper-md">
-    <h1 class="m-n font-thin h3">Actualizar Empresa</h1>
+    <h1 class="m-n font-thin h3">Configuración de Empresa</h1>
 </div>
 <div class="wrapper-md" ng-controller="FormDemoCtrl">
     <div class="panel panel-default">
         <div class="panel-body">
-            @using (Html.BeginForm("AddEmpresa", "Admin", FormMethod.Post))
+            @using (Html.BeginForm("AddEmpresa", "Empresa", new { Area = "Empresa" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.Partial("_showAlertMessages")
                 @Html.ValidationSummary(true)
                 <div class="form-group">
                     <div class="row">
                         <div class="col-md-3">
-                            <label>Nombre</label>
+                            <label class="control-label">RUC</label>
+                            @Html.TextBoxFor(u => u.RUC, new { @class = "form-control", @placeholder = "RUC", @type = "text" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Razón Social</label>
+                            @Html.TextBoxFor(u => u.RazonSocial, new { @class = "form-control", @placeholder = "Razón Social", @type = "text" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Nombre Comercial</label>
                             @Html.TextBoxFor(u => u.Nombre, new { @class = "form-control", @placeholder = "Nombre de la Empresa", @type = "text" })
                             @Html.ValidationMessageFor(u => u.Nombre, "", new { @style = "color:red;" })
                         </div>
                         <div class="col-md-3">
-                            <label>RUC</label>
-                            @Html.TextBoxFor(u => u.RUC, new { @class = "form-control", @placeholder = "RUC", @type = "text" })
-                        </div>
-                        <div class="col-md-3">
-                            <label>Tipo de Cambio</label>
-                            @Html.TextBoxFor(u => u.TipoCambio, new { @class = "form-control", @placeholder = "Tipo de Cambio", @type = "text", @onkeypress = "return CheckNumericValue(event)" })
-                            @Html.ValidationMessageFor(u => u.TipoCambio, "", new { @style = "color:red;" })
-                        </div>
-                        <div class="col-md-3">
-                            <label>Moneda</label>
-                            @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), new { @class = "form-control miselect2 rol-accs" })
+                            <label class="control-label">Moneda Principal</label>
+                            @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), "Elija una moneda...", new { @class = "form-control" })
                             @Html.ValidationMessageFor(u => u.IdMoneda, "", new { @style = "color:red;" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Ingreso del Tipo de Cambio</label>
+                            <div class="btn-group m-r w-full" data-toggle="buttons">
+                                <label onclick="BloqueaMontoTipoCambio(this);" class="btn btn-default @(Model != null ? (Model.IngresoTipoCambio != "" ? (Model.IngresoTipoCambio == "0202" ? "active" : "") : "") : "") " style="width: 50%">
+                                    @Html.RadioButtonFor(u => u.IngresoTipoCambio, "0202", new { @type = "radio", @name = "options", autocomplete = "off", @checked = (Model != null ? (Model.IngresoTipoCambio != "" ? (Model.IngresoTipoCambio == "0202" ? "true" : "false") : "false") : "false") }) SUNAT
+                                </label>
+                                <label onclick="BloqueaMontoTipoCambio(this);" class="btn btn-default @(Model != null ? (Model.IngresoTipoCambio != "" ? (Model.IngresoTipoCambio == "0201" ? "active" : "") : "") : "")" style="width: 50%">
+                                    @Html.RadioButtonFor(u => u.IngresoTipoCambio, "0201", new { @type = "radio", @name = "options", autocomplete = "off", @checked = (Model != null ? (Model.IngresoTipoCambio != "" ? (Model.IngresoTipoCambio == "0201" ? "true" : "false") : "false") : "false") }) Manual
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Tipo de Cambio</label>
+                            <div class="input-group bootstrap-touchspin" id="divMontoTipoCambio">
+                                @Html.TextBoxFor(u => u.MontoTipoCambio, new { @ui_jq = "TouchSpin", @type = "text", @class = "form-control", data_min = "0", data_max = "10", data_step = "0.01", data_decimals = "2", data_prefix = "S/.", style = "display: block;" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Actividad Principal</label>
+                            <div class="btn-group m-r w-full" data-toggle="buttons">
+                                <label onclick="SeleccionaRadioActividadPrincipal(this);" class="btn btn-default @(Model != null ? (Model.ActividadPrincipal != "" ? (Model.ActividadPrincipal == "0301" ? "active" : "") : "") : "")" style="width: 50%">
+                                    @Html.RadioButtonFor(u => u.ActividadPrincipal, "0301", new { @type = "radio", @name = "options", autocomplete = "off", @checked = Model != null ? (Model.ActividadPrincipal != "" ? (Model.ActividadPrincipal == "0301" ? true : false) : false) : false }) Ventas
+                                </label>
+                                <label onclick="SeleccionaRadioActividadPrincipal(this);" class="btn btn-default @(Model != null ? (Model.ActividadPrincipal != "" ? (Model.ActividadPrincipal == "0302" ? "active" : "") : "") : "")" style="width: 50%">
+                                    @Html.RadioButtonFor(u => u.ActividadPrincipal, "0302", new { @type = "radio", @name = "options", autocomplete = "off", @checked = Model != null ? (Model.ActividadPrincipal != "" ? (Model.ActividadPrincipal == "0302" ? true : false) : false) : false }) Servicios
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Tipo de Bien o Servicio Principal</label>
+                            @Html.DropDownListFor(u => u.BienServicioPrincipal, new SelectList(ViewBag.lstBienServicioPrincipal, "IdParametro", "Nombre", Model != null ? (Model.BienServicioPrincipal != "0" ? Model.BienServicioPrincipal : "0") : "0"), "Elija un tipo...", new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Logotipo</label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(u => u.Logotipo, new { @class = "form-control", @type = "text", @readonly = "readonly" })
+                                <label class="input-group-btn">
+                                    <span class="btn btn-default">
+                                        <i class="fa fa-folder-open" aria-hidden="true"></i>&nbsp;Buscar... <input id="updLogo" name="updLogo" type="file" accept="image/x-png, image/jpeg" style="display: none;" multiple="" value="@Model.Logotipo">
+                                    </span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="line line-dashed b-b line-lg pull-in"></div>
                 @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa != 0 ? Model.IdEmpresa.ToString() : "", @type = "hidden" })
-                <button type="submit" class="btn btn-sm btn-success">Guardar Cambios</button>
+                <button type="submit" class="btn btn-success">Guardar Cambios</button>
                 <a class="btn btn-default" href="@Url.Action("Index", "Admin")">Cancelar</a>
             }
         </div>

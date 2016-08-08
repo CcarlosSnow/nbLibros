@@ -276,7 +276,7 @@ namespace NubeBooks.Controllers
             if (miUsuario.IdEmpresa != 0)
             {
                 EmpresaBL empBL = new EmpresaBL();
-                Decimal miTipoCambio = empBL.getEmpresa((int)miUsuario.IdEmpresa).MontoTipoCambio;
+                Decimal? miTipoCambio = empBL.getEmpresa((int)miUsuario.IdEmpresa).MontoTipoCambio;
 
                 listaLibros = objBL.getCuentasBancariasEnEmpresa(miUsuario.IdEmpresa);
                 ViewBag.TotalSoles = DameTotalSoles(listaLibros);
@@ -723,7 +723,7 @@ namespace NubeBooks.Controllers
                 MovimientoDTO nuevo = new MovimientoDTO();
                 nuevo.IdCuentaBancaria = (int)idLibro;
                 nuevo.Fecha = DateTime.Now;
-                nuevo.TipoCambio = (new EmpresaBL()).getEmpresa(miUsuario.IdEmpresa).MontoTipoCambio;
+                nuevo.TipoCambio = Convert.ToDecimal((new EmpresaBL()).getEmpresa(miUsuario.IdEmpresa).MontoTipoCambio);
                 nuevo.NumeroDocumento = null;
                 //nuevo.Comentario = "No existe comentario";
                 nuevo.Estado = true;
@@ -1384,7 +1384,7 @@ namespace NubeBooks.Controllers
             }
             obj = new ComprobanteDTO();
             obj.IdEmpresa = currentUser.IdEmpresa;
-            obj.TipoCambio = (new EmpresaBL()).getEmpresa(currentUser.IdEmpresa).MontoTipoCambio;
+            obj.TipoCambio = Convert.ToDecimal((new EmpresaBL()).getEmpresa(currentUser.IdEmpresa).MontoTipoCambio);
             obj.UsuarioCreacion = currentUser.IdUsuario;
             obj.FechaEmision = DateTime.Now;
 
@@ -5108,7 +5108,7 @@ namespace NubeBooks.Controllers
             }
             return Total;
         }
-        private static Decimal DameTotalConsolidado(List<CuentaBancariaDTO> listaLibros, Decimal TipoCambio)
+        private static Decimal DameTotalConsolidado(List<CuentaBancariaDTO> listaLibros, Decimal? TipoCambio)
         {
             Decimal Total = 0;
 
@@ -5123,7 +5123,7 @@ namespace NubeBooks.Controllers
             {
                 if (libro.IdMoneda.GetValueOrDefault() == 2 && libro.Estado && libro.IdTipoCuenta == 1) //Dolares
                 {
-                    Total += libro.SaldoDisponible * TipoCambio;
+                    Total += libro.SaldoDisponible * Convert.ToDecimal(TipoCambio);
                 }
             }
 

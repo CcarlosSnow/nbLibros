@@ -73,6 +73,7 @@
     <Compile Include="BL\HonorarioBL.cs" />
     <Compile Include="BL\MonedaBL.cs" />
     <Compile Include="BL\MovimientoBL.cs" />
+    <Compile Include="BL\ParametroBL.cs" />
     <Compile Include="BL\PeriodoBL.cs" />
     <Compile Include="BL\ProyectoBL.cs" />
     <Compile Include="BL\ReportesBL.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="DTO\LiquidezDTO.cs" />
     <Compile Include="DTO\MonedaDTO.cs" />
     <Compile Include="DTO\MovimientoDTO.cs" />
-    <Compile Include="DTO\ParametroDTO.cs" />
     <Compile Include="DTO\PeriodoDTO.cs" />
     <Compile Include="DTO\ProyectoDTO.cs" />
     <Compile Include="DTO\ResetPasswordDTO.cs" />
@@ -115,6 +115,7 @@
     <Compile Include="DTO\TipoIdentificacionDTO.cs" />
     <Compile Include="DTO\TipoMovimientoDTO.cs" />
     <Compile Include="DTO\UsuarioDTO.cs" />
+    <Compile Include="DTO\ParametroDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

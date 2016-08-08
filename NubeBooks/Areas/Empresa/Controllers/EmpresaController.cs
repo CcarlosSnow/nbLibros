@@ -11,6 +11,9 @@ using System.Web.UI;
 using System.Web.Mvc;
 using System.Globalization;
 using System.Data;
+using System.Net;
+using System.IO;
+using System.Text;
 
 namespace NubeBooks.Areas.Empresa.Controllers
 {
@@ -144,26 +147,29 @@ namespace NubeBooks.Areas.Empresa.Controllers
 
         public ActionResult Index()
         {
-            if (!this.currentUser()) { return RedirectToAction("Ingresar","Admin", new { Area = string.Empty }); }
-            if (!this.isAdministrator()) { return RedirectToAction("Index","Admin", new { Area = string.Empty }); }
+            if (!this.currentUser()) { return RedirectToAction("Ingresar", "Admin", new { Area = string.Empty }); }
+            if (!this.isAdministrator()) { return RedirectToAction("Index", "Admin", new { Area = string.Empty }); }
             MenuNavBarSelected(0);
             UsuarioDTO currentUser = getCurrentUser();
 
             EmpresaBL objBL = new EmpresaBL();
             ViewBag.lstMonedas = objBL.getListaMonedas();
 
+            ParametroBL oParametroBL = new ParametroBL();
+            ViewBag.lstBienServicioPrincipal = oParametroBL.ListByCodigo("04");
+
             var objSent = TempData["Empresa"];
             if (objSent != null) { TempData["Empresa"] = null; return View(objSent); }
 
             EmpresaDTO obj = objBL.getEmpresaBasic(getCurrentUser().IdEmpresa);
-            if (obj == null) return RedirectToAction("Index","Admin", new { Area = string.Empty });
+            if (obj == null) return RedirectToAction("Index", "Admin", new { Area = string.Empty });
             return View(obj);
         }
 
         [HttpPost]
         public ActionResult AddEmpresa(EmpresaDTO dto)
         {
-            if (!this.currentUser()) { return RedirectToAction("Ingresar","Admnin", new { Area = string.Empty }); }
+            if (!this.currentUser()) { return RedirectToAction("Ingresar", "Admnin", new { Area = string.Empty }); }
             try
             {
                 EmpresaBL objBL = new EmpresaBL();
@@ -172,15 +178,29 @@ namespace NubeBooks.Areas.Empresa.Controllers
                     if (objBL.add(dto))
                     {
                         createResponseMessage(CONSTANTES.SUCCESS);
-                        return RedirectToAction("Index", "Admin");
+                        return RedirectToAction("Index", "Admin", new { Area = string.Empty });
                     }
                 }
                 else if (dto.IdEmpresa != 0)
                 {
+                    string FileSave = "";
+                    if (Request.Files.Count > 0)
+                    {
+                        HttpPostedFileBase file = Request.Files[0];
+                        
+                        if (file != null && file.ContentLength > 0)
+                        {
+                            string Extension = System.IO.Path.GetExtension(file.FileName);
+                            FileSave = Server.MapPath("~/" + CONSTANTES.FolderUploadLogo + dto.IdEmpresa.ToString() + Extension);
+                            file.SaveAs(FileSave);
+                        }
+                    }
+                    dto.Logotipo = FileSave;
                     if (objBL.update(dto))
                     {
+                        
                         createResponseMessage(CONSTANTES.SUCCESS);
-                        return RedirectToAction("Index", "Admin");
+                        return RedirectToAction("Index", "Admin", new { Area = string.Empty });
                     }
                     else
                     {
@@ -200,7 +220,32 @@ namespace NubeBooks.Areas.Empresa.Controllers
                 else createResponseMessage(CONSTANTES.ERROR, CONSTANTES.ERROR_INSERT_MESSAGE);
             }
             TempData["Empresa"] = dto;
-            return RedirectToAction("Index","Empresa");
+            return RedirectToAction("Index", "Empresa", new { Area = "Empresa" });
+        }
+
+        [HttpPost]
+        public JsonResult GetTipoCambioSunat()
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://code.staffsystems.us/webservices/tipo-de-cambio/serverside.php?work=get_sunat&mes=" + DateTime.Now.Month.ToString() + "&anho=" + DateTime.Now.Year.ToString());
+            try
+            {
+                WebResponse response = request.GetResponse();
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    return Json(reader.ReadToEnd());
+                }
+            }
+            catch (WebException ex)
+            {
+                WebResponse errorResponse = ex.Response;
+                using (Stream responseStream = errorResponse.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
+                    String errorText = reader.ReadToEnd();
+                }
+                throw;
+            }
         }
     }
 }

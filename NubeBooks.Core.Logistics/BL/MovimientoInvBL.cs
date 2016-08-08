@@ -429,7 +429,7 @@ namespace NubeBooks.Core.Logistics.BL
                     CodigoItem = x.Codigo + " - " + x.Nombre,
                     PrecioUnidad = x.Precio ?? 0,
                     UnidadMedida = "",
-                    ItemServicio = "0301"
+                    ItemServicio = "0501"
                 }).OrderBy(x => x.CodigoItem).ToList();
 
 
@@ -439,7 +439,7 @@ namespace NubeBooks.Core.Logistics.BL
                     CodigoItem = x.Codigo + " - " + x.Nombre,
                     PrecioUnidad = x.Precio ?? 0,
                     UnidadMedida = x.UnidadMedida,
-                    ItemServicio = "0302"
+                    ItemServicio = "0502"
                 }).OrderBy(x => x.CodigoItem).ToList();
 
                 var result = resultItems.Concat(resultServicios).ToList();

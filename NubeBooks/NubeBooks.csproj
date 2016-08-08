@@ -223,6 +223,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ImageHandler.ashx.cs">
+      <DependentUpon>ImageHandler.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Models\InfoSItem.cs" />
     <Compile Include="Models\Navbar.cs" />
     <Compile Include="Models\SelectItem.cs" />
@@ -696,6 +699,11 @@
     <Content Include="Content\themes\admin\js\datatables\languageConf.js" />
     <Content Include="Content\themes\admin\js\datepicker\bootstrap-datepicker.js" />
     <Content Include="Content\themes\admin\js\datepicker\datepicker.css" />
+    <Content Include="Content\themes\admin\js\datetimepicker\css\bootstrap-datetimepicker.css" />
+    <Content Include="Content\themes\admin\js\datetimepicker\js\bootstrap-datetimepicker.js" />
+    <Content Include="Content\themes\admin\js\datetimepicker\js\bootstrap-datetimepicker.min.js" />
+    <Content Include="Content\themes\admin\js\datetimepicker\js\locale-es.js" />
+    <Content Include="Content\themes\admin\js\datetimepicker\js\moment.js" />
     <Content Include="Content\themes\admin\js\flot-chart\jquery.flot.axislabels.js" />
     <Content Include="Content\themes\admin\js\flot-chart\jquery.flot.grow.js" />
     <Content Include="Content\themes\admin\js\flot-chart\jquery.flot.min.js" />
@@ -934,6 +942,8 @@
     <Content Include="Areas\Proformas\Views\Proformas\Index.cshtml" />
     <Content Include="Areas\Proformas\Views\Proformas\Nuevo.cshtml" />
     <Content Include="Areas\Proformas\Views\Proformas\Detalle.cshtml" />
+    <Content Include="Areas\Empresa\Views\web.config" />
+    <Content Include="ImageHandler.ashx" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
     <None Include="Properties\PublishProfiles\NubeBooks.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -1032,6 +1042,7 @@
     <Folder Include="Areas\Proformas\Views\Shared\" />
     <Folder Include="Content\themes\admin\less\" />
     <Folder Include="Content\themes\admin\src\" />
+    <Folder Include="FilesUpload\Logos\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1054,6 +1065,9 @@
       <Project>{e8f3cfce-f96e-41ff-a311-9b9d5f496acd}</Project>
       <Name>NubeBooks.Helpers</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

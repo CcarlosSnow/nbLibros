@@ -8,7 +8,14 @@ namespace NubeBooks.Core.DTO
 {
     public class ParametroDTO
     {
-        public int IdParametro { get; set; }
+        public string IdParametro { get; set; }
         public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public string Valor { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public string UsuarioCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public string UsuarioModificacion { get; set; }
+        public bool Eliminado { get; set; }
     }
 }

@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="~/Content/themes/admin-nb/libs/assets/font-awesome/css/font-awesome.min.css" type="text/css" />
     <link rel="stylesheet" href="~/Content/themes/admin-nb/libs/assets/simple-line-icons/css/simple-line-icons.css" type="text/css" />
     <link rel="stylesheet" href="~/Content/themes/admin-nb/libs/jquery/bootstrap/dist/css/bootstrap.css" type="text/css" />
-    @Styles.Render("~/Content/themes/admin/js/datepicker/datepicker.css")
+    @Styles.Render("~/Content/themes/admin/js/datetimepicker/css/bootstrap-datetimepicker.css")
 
     <link rel="stylesheet" href="~/Content/themes/admin-nb/css/font.css" type="text/css" />
     <link rel="stylesheet" href="~/Content/themes/admin-nb/css/app.css" type="text/css" />
@@ -37,7 +37,7 @@
                 <!-- brand -->
                 <a href="@Url.Action("Index", "Admin", new { Area="" })" class="navbar-brand text-lt">
                     @*<i class="fa fa-btc"></i>
-                    <img src="~/Content/themes/admin-nb/img/logo.png" alt="." class="hide">*@
+                        <img src="~/Content/themes/admin-nb/img/logo.png" alt="." class="hide">*@
                     <span class="hidden-folded m-l-xs">@ViewBag.NombreEmpresa</span>
                 </a>
                 <!-- / brand -->
@@ -55,19 +55,19 @@
                 <!-- / buttons -->
                 <!-- search form -->
                 @*<form class="navbar-form navbar-form-sm navbar-left shift" ui-shift="prependTo" data-target=".navbar-collapse" role="search" ng-controller="TypeaheadDemoCtrl">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <input type="text" ng-model="selected" typeahead="state for state in states | filter:$viewValue | limitTo:8" class="form-control input-sm bg-light no-border rounded padder" placeholder="Buscar...">
-                            <span class="input-group-btn">
-                                <button type="submit" class="btn btn-sm bg-light rounded"><i class="fa fa-search"></i></button>
-                            </span>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" ng-model="selected" typeahead="state for state in states | filter:$viewValue | limitTo:8" class="form-control input-sm bg-light no-border rounded padder" placeholder="Buscar...">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-sm bg-light rounded"><i class="fa fa-search"></i></button>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </form>*@
+                    </form>*@
                 <form class="navbar-form navbar-form-sm navbar-left shift" ui-shift="prependTo" data-target=".navbar-collapse" role="search" ng-controller="TypeaheadDemoCtrl">
                     <div class="form-group">
                         <div class="input-group">
-                            <input id="miBuscador" type="hidden" style="width:350px;"/>
+                            <input id="miBuscador" type="hidden" style="width:350px;" />
                         </div>
                     </div>
                 </form>
@@ -409,11 +409,11 @@
                                 <span>Archivos</span>
                             </li>
                             @*<li>
-                                <a href="@Url.Action("Index", "Proforma",new { Area="Proformas"})">
-                                    <i class="fa fa-file"></i>
-                                    <span>Proformas</span>
-                                </a>
-                            </li>*@
+                                    <a href="@Url.Action("Index", "Proforma",new { Area="Proformas"})">
+                                        <i class="fa fa-file"></i>
+                                        <span>Proformas</span>
+                                    </a>
+                                </li>*@
                             <li class="@ViewBag.navbar.lstOptions[12].cadena">
                                 <a href="@Url.Action("Index", "Proformas",new { Area="Proformas"})">
                                     <i class="fa icon-note"></i>
@@ -456,9 +456,14 @@
     <script src="~/Content/themes/admin-nb/js/ui-nav.js"></script>
     <script src="~/Content/themes/admin-nb/js/ui-toggle.js"></script>
     <script src="~/Content/themes/admin-nb/js/ui-client.js"></script>
-    @Scripts.Render("~/Content/themes/admin/js/datepicker/bootstrap-datepicker.js")
     @Scripts.Render("~/Content/themes/admin/js/main.js")
     @Scripts.Render("~/Content/themes/admin/js/select2/select2.min.js")
+
+    @Scripts.Render("~/Content/themes/admin/js/datetimepicker/js/moment.js")
+    @Scripts.Render("~/Content/themes/admin/js/datetimepicker/js/locale-es.js")
+    @Scripts.Render("~/Content/themes/admin/js/datetimepicker/js/bootstrap-datetimepicker.min.js")
+    @Scripts.Render("~/Content/themes/admin/js/datetimepicker/js/bootstrap-datetimepicker.js")
+
 
     <script type="text/javascript">
         var miBaseUrl = '';
@@ -508,16 +513,15 @@
                     data = response.data;
                     return '<strong>' + data.elemento + ':</strong> ' + data.nombre + ' - ' + data.monto;
                 },
-            }); 
+            });
         });
 
         $("#miBuscador").on('select2-selecting', function (e) {
             console.log(e.object.data);
-            
+
             var jsObj = e.object.data;
             var jsTipoElemento = "";
-            switch (jsObj.idElemento)
-            {
+            switch (jsObj.idElemento) {
                 case 1: jsTipoElemento = "/Movimiento/" + jsObj.id + "?idLibro=" + jsObj.tipo;
                     break;
                 case 2: jsTipoElemento = "/Comprobante/" + jsObj.id + "?idTipoComprobante=" + jsObj.tipo;
@@ -550,6 +554,14 @@
 
             return jsCadena;
         }
+
+        $(function () {
+            $('.date').datetimepicker({
+                locale: 'es',
+                format: 'DD/MM/YYYY',
+                allowInputToggle: true
+            });
+        });
 
     </script>
 

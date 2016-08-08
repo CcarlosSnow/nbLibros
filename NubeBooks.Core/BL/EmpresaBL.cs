@@ -93,10 +93,15 @@ namespace NubeBooks.Core.BL
                     .Select(x => new EmpresaDTO
                     {
                         IdEmpresa = x.IdEmpresa,
-                        Nombre = x.Nombre,
                         RUC = x.RUC,
+                        RazonSocial = x.RazonSocial,
+                        Nombre = x.Nombre,
+                        IdMoneda = x.IdMoneda,
+                        IngresoTipoCambio = x.IngresoTipoCambio,
                         MontoTipoCambio = x.MontoTipoCambio,
-                        IdMoneda = x.IdMoneda
+                        ActividadPrincipal = x.ActividadPrincipal,
+                        BienServicioPrincipal = x.BienServicioPrincipal,
+                        Logotipo = x.Logotipo
                     }).SingleOrDefault();
                 return result;
             }
@@ -132,13 +137,16 @@ namespace NubeBooks.Core.BL
                 try
                 {
                     var row = context.Empresa.Where(x => x.IdEmpresa == Empresa.IdEmpresa).SingleOrDefault();
+                    row.RUC = Empresa.RUC;
+                    row.RazonSocial = Empresa.RazonSocial;
                     row.Nombre = Empresa.Nombre;
                     row.Estado = true;
-                    //row.Descripcion = Empresa.Descripcion;
-                    row.RUC = Empresa.RUC;
-                    row.MontoTipoCambio = Empresa.MontoTipoCambio;
                     row.IdMoneda = Empresa.IdMoneda;
-                    //row.IdPeriodo = Empresa.IdPeriodo;
+                    row.IngresoTipoCambio = Empresa.IngresoTipoCambio;
+                    row.MontoTipoCambio = Empresa.MontoTipoCambio;
+                    row.ActividadPrincipal = Empresa.ActividadPrincipal;
+                    row.BienServicioPrincipal = Empresa.BienServicioPrincipal;
+                    row.Logotipo = Empresa.Logotipo;
                     context.SaveChanges();
                     return true;
                 }
@@ -259,7 +267,7 @@ namespace NubeBooks.Core.BL
             }
         }
 
-        public List<LiquidezDTO> getRentabilidadEnEmpresaSegunMoneda(int idEmpresa, int Moneda)
+        public List<LiquidezDTO> getRentabilidadEnEmpresaSegunMoneda(int idEmpresa, int? Moneda)
         {
             using (var context = getContext())
             {
@@ -322,7 +330,7 @@ namespace NubeBooks.Core.BL
             }
         }
 
-        public List<LiquidezDTO> getFacturacionEnEmpresaPorMoneda(int idEmpresa, int Moneda, DateTime fecha)
+        public List<LiquidezDTO> getFacturacionEnEmpresaPorMoneda(int idEmpresa, int? Moneda, DateTime fecha)
         {
             using (var context = getContext())
             {
@@ -418,7 +426,7 @@ namespace NubeBooks.Core.BL
 
 
 
-        public Decimal getEjecucionDePresupuestoEnEmpresa(int idEmpresa, int idMoneda, int idPeriodo, int tipo)
+        public Decimal getEjecucionDePresupuestoEnEmpresa(int idEmpresa, int? idMoneda, int idPeriodo, int tipo)
         {
             using (var context = getContext())
             {

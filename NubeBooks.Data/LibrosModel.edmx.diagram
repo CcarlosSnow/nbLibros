@@ -4,41 +4,42 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="1837014ab44e4df8ad3a0ad5c0cb6836" Name="Diagram1" ZoomLevel="100">
-        <EntityTypeShape EntityType="LibrosDBModel.Area" Width="1.5" PointX="11.25" PointY="23.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.AreaPorComprobante" Width="1.5" PointX="13.5" PointY="29.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Categoria" Width="1.5" PointX="11.25" PointY="26.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.CategoriaItm" Width="1.5" PointX="11.25" PointY="30.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.CategoriaPorPeriodo" Width="1.5" PointX="13.5" PointY="26.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Comprobante" Width="1.5" PointX="3" PointY="28.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Contacto" Width="1.5" PointX="15.75" PointY="42.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.CuentaBancaria" Width="1.5" PointX="6" PointY="30.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.DetalleProforma" Width="1.5" PointX="18.75" PointY="36" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.EntidadResponsable" Width="1.5" PointX="13.5" PointY="40.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.EstadoMovimiento" Width="1.5" PointX="14.25" PointY="32.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.FormaMovimiento" Width="1.5" PointX="14.25" PointY="19.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.FormaMovimientoInv" Width="1.5" PointX="19.25" PointY="46.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Honorario" Width="1.5" PointX="11.25" PointY="41.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Item" Width="1.5" PointX="16.5" PointY="35.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.LogUsuario" Width="1.5" PointX="0.75" PointY="23.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Moneda" Width="1.5" PointX="0.75" PointY="31.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Movimiento" Width="1.5" PointX="16.5" PointY="28.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.MovimientoInv" Width="1.5" PointX="21.5" PointY="36.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Periodo" Width="1.5" PointX="6.75" PointY="27.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Proforma" Width="1.5" PointX="11.25" PointY="33.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Proyecto" Width="1.5" PointX="13.5" PointY="36.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Responsable" Width="1.5" PointX="11.25" PointY="44.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Rol" Width="1.5" PointX="17" PointY="25.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Servicio" Width="1.5" PointX="3" PointY="63.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.TipoComprobante" Width="1.5" PointX="0.75" PointY="26.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.TipoCuenta" Width="1.5" PointX="3.75" PointY="25.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.TipoDocumento" Width="1.5" PointX="0.75" PointY="35.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.TipoEntidad" Width="1.5" PointX="11.25" PointY="51" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.TipoIdentificacion" Width="1.5" PointX="11.25" PointY="53.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.TipoMovimiento" Width="1.5" PointX="12" PointY="19.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.TipoMovimientoInv" Width="1.5" PointX="17" PointY="46.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Ubicacion" Width="1.5" PointX="11.25" PointY="47.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibrosDBModel.Usuario" Width="1.5" PointX="19.25" PointY="30.625" IsExpanded="true" />
+      <Diagram DiagramId="1fe9170f57b1421d9d2fa15b4705d8d4" Name="Diagram1" ZoomLevel="74">
+        <EntityTypeShape EntityType="LibrosDBModel.Area" Width="1.5" PointX="5.25" PointY="22.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.AreaPorComprobante" Width="1.5" PointX="7.5" PointY="22.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Categoria" Width="1.5" PointX="5.25" PointY="25.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.CategoriaItm" Width="1.5" PointX="5.25" PointY="29" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.CategoriaPorPeriodo" Width="1.5" PointX="7.5" PointY="25.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Comprobante" Width="1.5" PointX="7.5" PointY="33.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Contacto" Width="1.5" PointX="12.75" PointY="38.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.CuentaBancaria" Width="1.5" PointX="5.25" PointY="32.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.DetalleProforma" Width="1.5" PointX="15.75" PointY="29.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.EntidadResponsable" Width="1.5" PointX="10.5" PointY="36.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.EstadoMovimiento" Width="1.5" PointX="10.5" PointY="21.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.FormaMovimiento" Width="1.5" PointX="10.5" PointY="17.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.FormaMovimientoInv" Width="1.5" PointX="13.5" PointY="46.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Honorario" Width="1.5" PointX="5.25" PointY="44.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Item" Width="1.5" PointX="10.5" PointY="29.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.LogUsuario" Width="1.5" PointX="5.25" PointY="37.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Moneda" Width="1.5" PointX="5.25" PointY="40.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Movimiento" Width="1.5" PointX="12.75" PointY="30.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.MovimientoInv" Width="1.5" PointX="15.75" PointY="34.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Parametro" Width="1.5" PointX="0.75" PointY="29.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Periodo" Width="1.5" PointX="5.25" PointY="14.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Proforma" Width="1.5" PointX="18" PointY="32.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Proyecto" Width="1.5" PointX="12.75" PointY="42.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Responsable" Width="1.5" PointX="5.25" PointY="47.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Rol" Width="1.5" PointX="8" PointY="29.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Servicio" Width="1.5" PointX="7.5" PointY="48.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.TipoComprobante" Width="1.5" PointX="5.25" PointY="18.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.TipoCuenta" Width="1.5" PointX="3" PointY="36.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.TipoDocumento" Width="1.5" PointX="5.25" PointY="54.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.TipoEntidad" Width="1.5" PointX="8.25" PointY="42.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.TipoIdentificacion" Width="1.5" PointX="8.25" PointY="45" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.TipoMovimiento" Width="1.5" PointX="8.25" PointY="17.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.TipoMovimientoInv" Width="1.5" PointX="11.25" PointY="46.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Ubicacion" Width="1.5" PointX="5.25" PointY="50.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibrosDBModel.Usuario" Width="1.5" PointX="10.25" PointY="24.25" IsExpanded="true" />
         <AssociationConnector Association="LibrosDBModel.FK_AreaPorComprobante_Area" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_AreaPorComprobante_Comprobante" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_CategoriaPorPeriodo_Categoria" ManuallyRouted="false" />
@@ -88,12 +89,15 @@
         <AssociationConnector Association="LibrosDBModel.FK_Proyecto_Responsable" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.FK_Usuario_Rol" ManuallyRouted="false" />
         <AssociationConnector Association="LibrosDBModel.ComprobantePorProyecto" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="LibrosDBModel.Empresa" Width="1.5" PointX="9" PointY="26.875" />
+        <EntityTypeShape EntityType="LibrosDBModel.Empresa" Width="1.5" PointX="13.5" PointY="20.625" />
         <AssociationConnector Association="LibrosDBModel.FK_Area_Empresa" />
         <AssociationConnector Association="LibrosDBModel.FK_Categoria_Empresa" />
         <AssociationConnector Association="LibrosDBModel.FK_CategoriaItm_Empresa" />
         <AssociationConnector Association="LibrosDBModel.FK_Comprobante_Empresa" />
         <AssociationConnector Association="LibrosDBModel.FK_CuentaBancaria_Empresa" />
+        <AssociationConnector Association="LibrosDBModel.FK_Empresa_ActividadPrincipal" />
+        <AssociationConnector Association="LibrosDBModel.FK_Empresa_BienServicioPrincipal" />
+        <AssociationConnector Association="LibrosDBModel.FK_Empresa_IngresoTipoCambio" />
         <AssociationConnector Association="LibrosDBModel.FK_Empresa_Moneda" />
         <AssociationConnector Association="LibrosDBModel.FK_Empresa_Periodo" />
         <AssociationConnector Association="LibrosDBModel.FK_EntidadResponsable_Empresa" />
@@ -104,7 +108,7 @@
         <AssociationConnector Association="LibrosDBModel.FK_Responsable_Empresa" />
         <AssociationConnector Association="LibrosDBModel.FK_Ubicacion_Empresa" />
         <AssociationConnector Association="LibrosDBModel.FK_Usuario_Empresa" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

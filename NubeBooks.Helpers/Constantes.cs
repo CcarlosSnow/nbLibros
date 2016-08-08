@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace NubeBooks.Helpers
 {
@@ -60,6 +61,14 @@ namespace NubeBooks.Helpers
         public static int ROL_USUARIO_EXT = 4;
 
         public static string ERROR_SELECT_RESPONSABLE = "<strong>Hubo un error.</strong> Por favor, seleccione al menos un responsable.";
+
+        public static string FolderUploadLogo
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["FolderUploadLogo"];
+            }
+        }
     }
 
 }

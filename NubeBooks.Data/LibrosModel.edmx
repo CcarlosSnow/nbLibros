@@ -146,14 +146,14 @@
           <Property Name="RUC" Type="nvarchar" MaxLength="20" />
           <Property Name="IGV" Type="numeric" Precision="18" Scale="2" />
           <Property Name="IdPeriodo" Type="int" />
-          <Property Name="IdMoneda" Type="int" Nullable="false" />
+          <Property Name="IdMoneda" Type="int" />
           <Property Name="TotalSoles" Type="numeric" Precision="18" Scale="2" />
           <Property Name="TotalDolares" Type="numeric" Precision="18" Scale="2" />
           <Property Name="TotalSolesOld" Type="numeric" Precision="18" Scale="2" />
           <Property Name="TotalDolaresOld" Type="numeric" Precision="18" Scale="2" />
           <Property Name="FechaConciliacion" Type="datetime" />
           <Property Name="RazonSocial" Type="varchar" MaxLength="250" />
-          <Property Name="IngresoTipoCambio" Type="char" MaxLength="4" />
+          <Property Name="IngresoTipoCambio" Type="char" MaxLength="4" Nullable="false" />
           <Property Name="MontoTipoCambio" Type="numeric" Precision="18" Scale="3" Nullable="false" />
           <Property Name="ActividadPrincipal" Type="char" MaxLength="4" />
           <Property Name="BienServicioPrincipal" Type="char" MaxLength="4" />
@@ -299,6 +299,20 @@
           <Property Name="UsuarioCreacion" Type="int" Nullable="false" />
           <Property Name="IdEmpresa" Type="int" Nullable="false" />
           <Property Name="IdLogUsuario" Type="int" />
+        </EntityType>
+        <EntityType Name="Parametro">
+          <Key>
+            <PropertyRef Name="IdParametro" />
+          </Key>
+          <Property Name="IdParametro" Type="char" MaxLength="4" Nullable="false" />
+          <Property Name="Nombre" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Descripcion" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="Valor" Type="nvarchar" MaxLength="10" />
+          <Property Name="FechaCreacion" Type="datetime" Nullable="false" />
+          <Property Name="UsuarioCreacion" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="FechaModificacion" Type="datetime" />
+          <Property Name="UsuarioModificacion" Type="nvarchar" MaxLength="10" />
+          <Property Name="Eliminado" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Periodo">
           <Key>
@@ -771,8 +785,44 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Empresa_ActividadPrincipal">
+          <End Role="Parametro" Type="Self.Parametro" Multiplicity="0..1" />
+          <End Role="Empresa" Type="Self.Empresa" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parametro">
+              <PropertyRef Name="IdParametro" />
+            </Principal>
+            <Dependent Role="Empresa">
+              <PropertyRef Name="ActividadPrincipal" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Empresa_BienServicioPrincipal">
+          <End Role="Parametro" Type="Self.Parametro" Multiplicity="0..1" />
+          <End Role="Empresa" Type="Self.Empresa" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parametro">
+              <PropertyRef Name="IdParametro" />
+            </Principal>
+            <Dependent Role="Empresa">
+              <PropertyRef Name="BienServicioPrincipal" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Empresa_IngresoTipoCambio">
+          <End Role="Parametro" Type="Self.Parametro" Multiplicity="1" />
+          <End Role="Empresa" Type="Self.Empresa" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parametro">
+              <PropertyRef Name="IdParametro" />
+            </Principal>
+            <Dependent Role="Empresa">
+              <PropertyRef Name="IngresoTipoCambio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Empresa_Moneda">
-          <End Role="Moneda" Type="Self.Moneda" Multiplicity="1" />
+          <End Role="Moneda" Type="Self.Moneda" Multiplicity="0..1" />
           <End Role="Empresa" Type="Self.Empresa" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Moneda">
@@ -1546,6 +1596,7 @@
           <EntitySet Name="Moneda" EntityType="Self.Moneda" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Movimiento" EntityType="Self.Movimiento" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MovimientoInv" EntityType="Self.MovimientoInv" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Parametro" EntityType="Self.Parametro" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Periodo" EntityType="Self.Periodo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Proforma" EntityType="Self.Proforma" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Proyecto" EntityType="Self.Proyecto" Schema="dbo" store:Type="Tables" />
@@ -1664,6 +1715,18 @@
           <AssociationSet Name="FK_DetalleProforma_Proforma" Association="Self.FK_DetalleProforma_Proforma">
             <End Role="Proforma" EntitySet="Proforma" />
             <End Role="DetalleProforma" EntitySet="DetalleProforma" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Empresa_ActividadPrincipal" Association="Self.FK_Empresa_ActividadPrincipal">
+            <End Role="Parametro" EntitySet="Parametro" />
+            <End Role="Empresa" EntitySet="Empresa" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Empresa_BienServicioPrincipal" Association="Self.FK_Empresa_BienServicioPrincipal">
+            <End Role="Parametro" EntitySet="Parametro" />
+            <End Role="Empresa" EntitySet="Empresa" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Empresa_IngresoTipoCambio" Association="Self.FK_Empresa_IngresoTipoCambio">
+            <End Role="Parametro" EntitySet="Parametro" />
+            <End Role="Empresa" EntitySet="Empresa" />
           </AssociationSet>
           <AssociationSet Name="FK_Empresa_Moneda" Association="Self.FK_Empresa_Moneda">
             <End Role="Moneda" EntitySet="Moneda" />
@@ -1977,10 +2040,10 @@
           <Property Name="PorcentajeIgv" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Igv" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="UnidadMedida" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Item" Relationship="Self.FK_DetalleProforma_Item" FromRole="DetalleProforma" ToRole="Item" />
-          <NavigationProperty Name="Proforma" Relationship="Self.FK_DetalleProforma_Proforma" FromRole="DetalleProforma" ToRole="Proforma" />
           <Property Name="PorcentajeDescuento" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ItemServicio" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Item" Relationship="Self.FK_DetalleProforma_Item" FromRole="DetalleProforma" ToRole="Item" />
+          <NavigationProperty Name="Proforma" Relationship="Self.FK_DetalleProforma_Proforma" FromRole="DetalleProforma" ToRole="Proforma" />
         </EntityType>
         <EntityType Name="EntidadResponsable">
           <Key>
@@ -2170,6 +2233,23 @@
           <NavigationProperty Name="Usuario" Relationship="Self.FK_MovimientoInv_Usuario" FromRole="MovimientoInv" ToRole="Usuario" />
           <NavigationProperty Name="Empresa" Relationship="LibrosDBModel.FK_MovimientoInv_Empresa" FromRole="MovimientoInv" ToRole="Empresa" />
         </EntityType>
+        <EntityType Name="Parametro">
+          <Key>
+            <PropertyRef Name="IdParametro" />
+          </Key>
+          <Property Name="IdParametro" Type="String" MaxLength="4" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Descripcion" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Valor" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="FechaCreacion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UsuarioCreacion" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FechaModificacion" Type="DateTime" Precision="3" />
+          <Property Name="UsuarioModificacion" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Eliminado" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Empresa" Relationship="LibrosDBModel.FK_Empresa_ActividadPrincipal" FromRole="Parametro" ToRole="Empresa" />
+          <NavigationProperty Name="Empresa1" Relationship="LibrosDBModel.FK_Empresa_BienServicioPrincipal" FromRole="Parametro" ToRole="Empresa" />
+          <NavigationProperty Name="Empresa2" Relationship="LibrosDBModel.FK_Empresa_IngresoTipoCambio" FromRole="Parametro" ToRole="Empresa" />
+          </EntityType>
         <EntityType Name="Periodo">
           <Key>
             <PropertyRef Name="IdPeriodo" />
@@ -2960,6 +3040,7 @@
           <EntitySet Name="Moneda" EntityType="Self.Moneda" />
           <EntitySet Name="Movimiento" EntityType="Self.Movimiento" />
           <EntitySet Name="MovimientoInv" EntityType="Self.MovimientoInv" />
+          <EntitySet Name="Parametro" EntityType="Self.Parametro" />
           <EntitySet Name="Periodo" EntityType="Self.Periodo" />
           <EntitySet Name="Proforma" EntityType="Self.Proforma" />
           <EntitySet Name="Proyecto" EntityType="Self.Proyecto" />
@@ -3323,6 +3404,18 @@
             <End Role="Empresa" EntitySet="Empresa" />
             <End Role="CuentaBancaria" EntitySet="CuentaBancaria" />
           </AssociationSet>
+          <AssociationSet Name="FK_Empresa_ActividadPrincipal" Association="LibrosDBModel.FK_Empresa_ActividadPrincipal">
+            <End Role="Parametro" EntitySet="Parametro" />
+            <End Role="Empresa" EntitySet="Empresa" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Empresa_BienServicioPrincipal" Association="LibrosDBModel.FK_Empresa_BienServicioPrincipal">
+            <End Role="Parametro" EntitySet="Parametro" />
+            <End Role="Empresa" EntitySet="Empresa" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Empresa_IngresoTipoCambio" Association="LibrosDBModel.FK_Empresa_IngresoTipoCambio">
+            <End Role="Parametro" EntitySet="Parametro" />
+            <End Role="Empresa" EntitySet="Empresa" />
+          </AssociationSet>
           <AssociationSet Name="FK_Empresa_Moneda" Association="LibrosDBModel.FK_Empresa_Moneda">
             <End Role="Moneda" EntitySet="Moneda" />
             <End Role="Empresa" EntitySet="Empresa" />
@@ -3363,7 +3456,7 @@
             <End Role="Empresa" EntitySet="Empresa" />
             <End Role="Usuario" EntitySet="Usuario" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <ComplexType Name="SP_Get_Arbol_Categoria_Result">
           <Property Type="Int32" Name="IdCategoria" Nullable="true" />
           <Property Type="Int32" Name="IdCategoriaPadre" Nullable="true" />
@@ -3671,15 +3764,15 @@
           <Property Name="RUC" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="IGV" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="IdPeriodo" Type="Int32" />
-          <Property Name="IdMoneda" Type="Int32" Nullable="false" />
+          <Property Name="IdMoneda" Type="Int32" />
           <Property Name="TotalSoles" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="TotalDolares" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="TotalSolesOld" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="TotalDolaresOld" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="FechaConciliacion" Type="DateTime" Precision="3" />
           <Property Name="RazonSocial" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="IngresoTipoCambio" Type="String" MaxLength="4" FixedLength="true" Unicode="false" />
-          <Property Name="MontoTipoCambio" Type="Decimal" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="IngresoTipoCambio" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
+          <Property Name="MontoTipoCambio" Type="Decimal" Nullable="false" Precision="18" Scale="3" />
           <Property Name="ActividadPrincipal" Type="String" MaxLength="4" FixedLength="true" Unicode="false" />
           <Property Name="BienServicioPrincipal" Type="String" MaxLength="4" FixedLength="true" Unicode="false" />
           <Property Name="Logotipo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -3688,6 +3781,9 @@
           <NavigationProperty Name="CategoriaItm" Relationship="LibrosDBModel.FK_CategoriaItm_Empresa" FromRole="Empresa" ToRole="CategoriaItm" />
           <NavigationProperty Name="Comprobante" Relationship="LibrosDBModel.FK_Comprobante_Empresa" FromRole="Empresa" ToRole="Comprobante" />
           <NavigationProperty Name="CuentaBancaria" Relationship="LibrosDBModel.FK_CuentaBancaria_Empresa" FromRole="Empresa" ToRole="CuentaBancaria" />
+          <NavigationProperty Name="Parametro" Relationship="LibrosDBModel.FK_Empresa_ActividadPrincipal" FromRole="Empresa" ToRole="Parametro" />
+          <NavigationProperty Name="Parametro1" Relationship="LibrosDBModel.FK_Empresa_BienServicioPrincipal" FromRole="Empresa" ToRole="Parametro" />
+          <NavigationProperty Name="Parametro2" Relationship="LibrosDBModel.FK_Empresa_IngresoTipoCambio" FromRole="Empresa" ToRole="Parametro" />
           <NavigationProperty Name="Moneda" Relationship="LibrosDBModel.FK_Empresa_Moneda" FromRole="Empresa" ToRole="Moneda" />
           <NavigationProperty Name="Periodo" Relationship="LibrosDBModel.FK_Empresa_Periodo" FromRole="Empresa" ToRole="Periodo" />
           <NavigationProperty Name="EntidadResponsable" Relationship="LibrosDBModel.FK_EntidadResponsable_Empresa" FromRole="Empresa" ToRole="EntidadResponsable" />
@@ -3759,8 +3855,44 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Empresa_ActividadPrincipal">
+          <End Type="LibrosDBModel.Parametro" Role="Parametro" Multiplicity="0..1" />
+          <End Type="LibrosDBModel.Empresa" Role="Empresa" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parametro">
+              <PropertyRef Name="IdParametro" />
+            </Principal>
+            <Dependent Role="Empresa">
+              <PropertyRef Name="ActividadPrincipal" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Empresa_BienServicioPrincipal">
+          <End Type="LibrosDBModel.Parametro" Role="Parametro" Multiplicity="0..1" />
+          <End Type="LibrosDBModel.Empresa" Role="Empresa" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parametro">
+              <PropertyRef Name="IdParametro" />
+            </Principal>
+            <Dependent Role="Empresa">
+              <PropertyRef Name="BienServicioPrincipal" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Empresa_IngresoTipoCambio">
+          <End Type="LibrosDBModel.Parametro" Role="Parametro" Multiplicity="1" />
+          <End Type="LibrosDBModel.Empresa" Role="Empresa" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parametro">
+              <PropertyRef Name="IdParametro" />
+            </Principal>
+            <Dependent Role="Empresa">
+              <PropertyRef Name="IngresoTipoCambio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Empresa_Moneda">
-          <End Type="LibrosDBModel.Moneda" Role="Moneda" Multiplicity="1" />
+          <End Type="LibrosDBModel.Moneda" Role="Moneda" Multiplicity="0..1" />
           <End Type="LibrosDBModel.Empresa" Role="Empresa" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Moneda">
@@ -3879,7 +4011,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -3997,8 +4129,6 @@
           <EntitySetMapping Name="DetalleProforma">
             <EntityTypeMapping TypeName="LibrosDBModel.DetalleProforma">
               <MappingFragment StoreEntitySet="DetalleProforma">
-                <ScalarProperty Name="ItemServicio" ColumnName="ItemServicio" />
-                <ScalarProperty Name="PorcentajeDescuento" ColumnName="PorcentajeDescuento" />
                 <ScalarProperty Name="IdDetalleProforma" ColumnName="IdDetalleProforma" />
                 <ScalarProperty Name="IdProforma" ColumnName="IdProforma" />
                 <ScalarProperty Name="IdItem" ColumnName="IdItem" />
@@ -4010,6 +4140,8 @@
                 <ScalarProperty Name="PorcentajeIgv" ColumnName="PorcentajeIgv" />
                 <ScalarProperty Name="Igv" ColumnName="Igv" />
                 <ScalarProperty Name="UnidadMedida" ColumnName="UnidadMedida" />
+                <ScalarProperty Name="PorcentajeDescuento" ColumnName="PorcentajeDescuento" />
+                <ScalarProperty Name="ItemServicio" ColumnName="ItemServicio" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -4161,6 +4293,21 @@
                 <ScalarProperty Name="UsuarioCreacion" ColumnName="UsuarioCreacion" />
                 <ScalarProperty Name="IdEmpresa" ColumnName="IdEmpresa" />
                 <ScalarProperty Name="IdLogUsuario" ColumnName="IdLogUsuario" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parametro">
+            <EntityTypeMapping TypeName="LibrosDBModel.Parametro">
+              <MappingFragment StoreEntitySet="Parametro">
+                <ScalarProperty Name="IdParametro" ColumnName="IdParametro" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Valor" ColumnName="Valor" />
+                <ScalarProperty Name="FechaCreacion" ColumnName="FechaCreacion" />
+                <ScalarProperty Name="UsuarioCreacion" ColumnName="UsuarioCreacion" />
+                <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
+                <ScalarProperty Name="UsuarioModificacion" ColumnName="UsuarioModificacion" />
+                <ScalarProperty Name="Eliminado" ColumnName="Eliminado" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -24,7 +24,15 @@
 
         $(function () {
             miBaseUrl = baseURL(window.location.pathname);
-            $('.input-group.date').datepicker();
+
+            $(function () {
+                $('.datepicker').datetimepicker({
+                    locale: 'es',
+                    format: 'DD/MM/YYYY',
+                    allowInputToggle: true
+                });
+            });
+
             $('.miselect2').select2();
 
             $('.miselect2_clear').select2({
@@ -334,7 +342,7 @@ else { cadena = "Actualizar"; }
                         <div class="col-md-3">
                             <label class="control-label">Fecha de Proforma</label>
                             <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaProforma, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text", @readonly = "true", @required = "" })
+                                @Html.TextBoxFor(u => u.FechaProforma, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/mm/yyyy", @type = "text", @required = "" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
                         </div>
@@ -387,7 +395,7 @@ else { cadena = "Actualizar"; }
                         <div class="col-md-3">
                             <label class="control-label">Fecha de Entrega</label>
                             <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaEntrega, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text", @readonly = "true", @required = "" })
+                                @Html.TextBoxFor(u => u.FechaEntrega, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/mm/yyyy", @type = "text", @required = "" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
                         </div>
@@ -397,7 +405,7 @@ else { cadena = "Actualizar"; }
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Moneda</label>
-                            @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder miselect2 rol-accs" })
+                            @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), new { @class = "form-control" })
                         </div>
                     </div>
                 </div>
@@ -552,14 +560,14 @@ else { cadena = "Actualizar"; }
                         <div id="divFechaFacturacion" class="col-md-3 @cOCompra">
                             <label class="control-label">Fecha Estimada de Facturación</label>
                             <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaFacturacion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text", @readonly = "", @onchange = "ActualizarFechaCobranza()" })
+                                @Html.TextBoxFor(u => u.FechaFacturacion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text", @readonly = "", @onchange = "ActualizarFechaCobranza()" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
                         </div>
                         <div id="divFechaCobranza" class="col-md-3 @cOCompra">
                             <label class="control-label">Fecha Estimada de Cobranza</label>
                             <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaCobranza, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text", @readonly = "" })
+                                @Html.TextBoxFor(u => u.FechaCobranza, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text", @readonly = "" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
                         </div>
