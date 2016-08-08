@@ -23,14 +23,14 @@
         var miBaseUrl = '';
         $(function () {
             miBaseUrl = baseURL(window.location.pathname);
-            $('.input-group.date').datepicker();
+            //$('.input-group.date').datepicker();
             $('.rol-accs').each(function () {
                 if (jUserExt == 'True') $(this).prop('disabled', true);
             });
         });
 
-        $('#fechaInicio').datepicker({ format: 'dd/mm/yyyy' });
-        $('#fechaFin').datepicker({ format: 'dd/mm/yyyy' });
+        //$('#fechaInicio').datepicker({ format: 'dd/mm/yyyy' });
+        //$('#fechaFin').datepicker({ format: 'dd/mm/yyyy' });
 
         $("input#exportar").click(function () {
             window.location.href = exportarDetalle($('#IdCuentaBancaria').val());
@@ -251,6 +251,7 @@ else { cadena = "Actualizar"; }
                             <th>Entidad</th>
                             <th class="text-center">Estado</th>
                             <th class="text-center">Monto</th>
+                            <th class="text-center">Saldo Bancario</th>
                             <th style="width:30px"></th>
                         </tr>
                     </thead>
@@ -276,6 +277,7 @@ else { cadena = "Actualizar"; }
                                         var rEstadoTexto = obj.IdEstadoMovimiento == 1 ? "P" : "R";}
                                     <td class="text-center"><a class="mactivo" data-id="@obj.IdMovimiento"><span hidden>@rEstadoTexto</span><i class="fa @rEstado @rColor"></i></a></td>
                                     <td class="text-right @colorTipoMov" width="13%">@(signo)@Model.SimboloMoneda @obj.Monto.ToString("N2", CultureInfo.InvariantCulture)</td>
+                                    <td class="text-right">@(obj.SaldoBancario == null ? "" : Model.SimboloMoneda + " " + decimal.Parse(obj.SaldoBancario.ToString()).ToString("N2", CultureInfo.InvariantCulture))</td>
                                     @{ var rIcon = ViewBag.EsUsuarioExterno ? "search" : "pencil"; var rTitle = ViewBag.EsUsuarioExterno ? "Visualizar" : "Editar"; }
                                     <td class="text-center">
                                         <a href="@Url.Action("Movimiento", new { id = obj.IdMovimiento, idLibro = Model.IdCuentaBancaria })"><i class="fa fa-@rIcon" title="@rTitle"></i></a>&nbsp;
@@ -328,7 +330,7 @@ else { cadena = "Actualizar"; }
                             <label for="fechaInicio">Fecha Inicio:</label>
                             <div class="form-group">
                                 <div class="input-group date">
-                                    <input type="text" name="fechaInicio" id="fechaInicio" readonly="readonly" class="form-control" value="@(new DateTime(DateTime.Now.Year, 1, 1).ToString("dd/MM/yyyy"))">
+                                    <input type="text" name="fechaInicio" id="fechaInicio" class="form-control" value="@(new DateTime(DateTime.Now.Year, 1, 1).ToString("dd/MM/yyyy"))">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
@@ -337,7 +339,7 @@ else { cadena = "Actualizar"; }
                             <label for="fechaFin">Fecha Fin:</label>
                             <div class="form-group">
                                 <div class="input-group date">
-                                    <input type="text" name="fechaFin" id="fechaFin" readonly="readonly" class="form-control" value="@(new DateTime(DateTime.Now.Year, 12, 31).ToString("dd/MM/yyyy"))">
+                                    <input type="text" name="fechaFin" id="fechaFin" class="form-control" value="@(new DateTime(DateTime.Now.Year, 12, 31).ToString("dd/MM/yyyy"))">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>

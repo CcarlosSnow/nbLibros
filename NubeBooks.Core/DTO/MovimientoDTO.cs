@@ -45,5 +45,6 @@ namespace NubeBooks.Core.DTO
 
         public string NumeroDocumento2 { get; set; }
 
+        public Decimal? SaldoDisponible { get; set; }
     }
 }

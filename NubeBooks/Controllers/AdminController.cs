@@ -785,8 +785,11 @@ namespace NubeBooks.Controllers
                 }
                 else if (dto.IdMovimiento != 0)
                 {
-                    if (objBL.update(dto))
+                    DateTime FechaAnterior = DateTime.Parse(Request.Form["hdFechaAnterior"]);
+                    Decimal MontoAnterior = Decimal.Parse(Request.Form["hdMontoAnterior"]);
+                    if (objBL.update(dto, FechaAnterior, MontoAnterior))
                     {
+
                         if (dto.IdComprobante.GetValueOrDefault() != 0)
                         {
                             if (Decimal.Round(dto.cmpMontoPendiente.GetValueOrDefault(), 0) == 0) { ActualizarEjecucionComprobante(dto.IdComprobante.GetValueOrDefault(), true, dto.Fecha); }

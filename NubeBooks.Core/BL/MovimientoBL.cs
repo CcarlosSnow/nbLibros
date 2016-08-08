@@ -150,7 +150,7 @@ namespace NubeBooks.Core.BL
                     //Actualizar saldos del Libro
                     ActualizarSaldos(Movimiento.IdCuentaBancaria);
                     //Actualizar saldo Bancario en Movimiento
-                    ActualizarSaldoBancarioEnMovimiento(nuevo.IdMovimiento);
+                    ActualizarSaldoBancarioEnMovimiento(nuevo.IdMovimiento, Movimiento.IdCuentaBancaria, null, null, 1);
                     //Actualizar Fecha de Ultima Fecha de Conciliacion en la Empresa
                     //ActualizarFechaConciliacionEnEmpresa(Movimiento.IdCuentaBancaria);
                     return true;
@@ -161,7 +161,7 @@ namespace NubeBooks.Core.BL
                 }
             }
         }
-        public bool update(MovimientoDTO Movimiento)
+        public bool update(MovimientoDTO Movimiento, DateTime FechaAnterior, decimal MontoAnterior)
         {
             using (var context = getContext())
             {
@@ -196,7 +196,7 @@ namespace NubeBooks.Core.BL
                     //Actualizar saldos del Libro
                     ActualizarSaldos(Movimiento.IdCuentaBancaria);
                     //Actualizar saldo Bancario en Movimiento
-                    //ActualizarSaldoBancarioEnMovimiento(Movimiento.IdMovimiento);
+                    ActualizarSaldoBancarioEnMovimiento(Movimiento.IdMovimiento, Movimiento.IdCuentaBancaria, FechaAnterior, MontoAnterior, 2);
                     return true;
                 }
                 catch (Exception e)
@@ -224,6 +224,7 @@ namespace NubeBooks.Core.BL
                     context.Movimiento.Remove(row);
                     context.SaveChanges();
                     ActualizarSaldos(idCuenta);
+                    ActualizarSaldoBancarioEnMovimiento(id, idCuenta, null, null, 3);
                     return true;
                 }
                 catch (Exception e)
@@ -349,15 +350,21 @@ namespace NubeBooks.Core.BL
             }
         }
 
-        public void ActualizarSaldoBancarioEnMovimiento(int idMovimiento)
+        public void ActualizarSaldoBancarioEnMovimiento(int idMovimiento, int idCuentaBancaria, DateTime? FechaAnterior, decimal? MontoAnterior, int Accion)
         {
             using (var context = getContext())
             {
                 try
                 {
-                    var obj = context.Movimiento.Where(x => x.IdMovimiento == idMovimiento).SingleOrDefault();
-                    obj.SaldoBancario = obj.CuentaBancaria.SaldoBancario;
-                    context.SaveChanges();
+                    MovimientoDTO oMovimientoDTO = getMovimiento(idMovimiento);
+                    if (Accion == 3)
+                    {
+                        context.USP_ActualizarSaldosMovimientos(idCuentaBancaria, FechaAnterior, null, MontoAnterior, null, Accion, idMovimiento);
+                    }
+                    else
+                    {
+                        context.USP_ActualizarSaldosMovimientos(idCuentaBancaria, FechaAnterior, oMovimientoDTO.Fecha, MontoAnterior, oMovimientoDTO.Monto, Accion, idMovimiento);
+                    }
                 }
                 catch (Exception e)
                 {

@@ -277,6 +277,7 @@
           <Property Name="FechaCreacion" Type="datetime" Nullable="false" />
           <Property Name="SaldoBancario" Type="numeric" Precision="18" Scale="2" />
           <Property Name="IdLogUsuario" Type="int" />
+          <Property Name="SaldoDisponible" Type="numeric" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="MovimientoInv">
           <Key>
@@ -1352,8 +1353,16 @@
         <Function Name="FN_GetSaldoBancarioLibro" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
           <Parameter Name="IdCuentaBancaria" Type="int" Mode="In" />
         </Function>
+        <Function Name="FN_GetSaldoBancarioMovimiento" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
+          <Parameter Name="IdCuentaBancaria" Type="int" Mode="In" />
+          <Parameter Name="IdMovimiento" Type="int" Mode="In" />
+        </Function>
         <Function Name="FN_GetSaldoDisponibleLibro" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
           <Parameter Name="IdCuentaBancaria" Type="int" Mode="In" />
+        </Function>
+        <Function Name="FN_GetSaldoDisponibleMovimiento" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
+          <Parameter Name="IdCuentaBancaria" Type="int" Mode="In" />
+          <Parameter Name="IdMovimiento" Type="int" Mode="In" />
         </Function>
         <Function Name="FN_GetSumaMovsCatEnLibro" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
           <Parameter Name="IdCuentaB" Type="int" Mode="In" />
@@ -1573,6 +1582,15 @@
           <Parameter Name="IdEmpresa" Type="int" Mode="In" />
           <Parameter Name="FechaInicio" Type="datetime" Mode="In" />
           <Parameter Name="FechaFin" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="USP_ActualizarSaldosMovimientos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="IdCuentaBancaria" Type="int" Mode="In" />
+          <Parameter Name="FechaAnterior" Type="datetime" Mode="In" />
+          <Parameter Name="FechaNueva" Type="datetime" Mode="In" />
+          <Parameter Name="MontoAnterior" Type="numeric" Mode="In" />
+          <Parameter Name="MontoNuevo" Type="numeric" Mode="In" />
+          <Parameter Name="IdAccion" Type="int" Mode="In" />
+          <Parameter Name="IdMovimiento" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="LibrosDBModelStoreContainer">
           <EntitySet Name="Area" EntityType="Self.Area" Schema="dbo" store:Type="Tables" />
@@ -2203,6 +2221,7 @@
           <NavigationProperty Name="LogUsuario" Relationship="Self.FK_Movimiento_LogUsuario" FromRole="Movimiento" ToRole="LogUsuario" />
           <NavigationProperty Name="TipoDocumento" Relationship="Self.FK_Movimiento_TipoDocumento" FromRole="Movimiento" ToRole="TipoDocumento" />
           <NavigationProperty Name="Usuario" Relationship="Self.FK_Movimiento_Usuario" FromRole="Movimiento" ToRole="Usuario" />
+          <Property Name="SaldoDisponible" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="MovimientoInv">
           <Key>
@@ -3456,6 +3475,15 @@
             <End Role="Empresa" EntitySet="Empresa" />
             <End Role="Usuario" EntitySet="Usuario" />
           </AssociationSet>
+          <FunctionImport Name="USP_ActualizarSaldosMovimientos">
+            <Parameter Name="IdCuentaBancaria" Mode="In" Type="Int32" />
+            <Parameter Name="FechaAnterior" Mode="In" Type="DateTime" />
+            <Parameter Name="FechaNueva" Mode="In" Type="DateTime" />
+            <Parameter Name="MontoAnterior" Mode="In" Type="Decimal" />
+            <Parameter Name="MontoNuevo" Mode="In" Type="Decimal" />
+            <Parameter Name="IdAccion" Mode="In" Type="Int32" />
+            <Parameter Name="IdMovimiento" Mode="In" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
         <ComplexType Name="SP_Get_Arbol_Categoria_Result">
           <Property Type="Int32" Name="IdCategoria" Nullable="true" />
@@ -4250,6 +4278,7 @@
           <EntitySetMapping Name="Movimiento">
             <EntityTypeMapping TypeName="LibrosDBModel.Movimiento">
               <MappingFragment StoreEntitySet="Movimiento">
+                <ScalarProperty Name="SaldoDisponible" ColumnName="SaldoDisponible" />
                 <ScalarProperty Name="IdMovimiento" ColumnName="IdMovimiento" />
                 <ScalarProperty Name="IdCuentaBancaria" ColumnName="IdCuentaBancaria" />
                 <ScalarProperty Name="IdEntidadResponsable" ColumnName="IdEntidadResponsable" />
@@ -4917,6 +4946,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="USP_ActualizarSaldosMovimientos" FunctionName="LibrosDBModel.Store.USP_ActualizarSaldosMovimientos" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
