@@ -160,8 +160,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
             MenuNavBarSelected(12);
 
             UsuarioDTO user = getCurrentUser();
-
-
+            
             EntidadResponsableBL entBL = new EntidadResponsableBL();
             ViewBag.lstClientes = entBL.getEntidadesResponsablesActivasPorTipoEnEmpresa(user.IdEmpresa, 1);
             EmpresaBL empBL = new EmpresaBL();

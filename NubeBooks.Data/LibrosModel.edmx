@@ -116,6 +116,22 @@
           <Property Name="IdEmpresa" Type="int" Nullable="false" />
           <Property Name="IdTipoCuenta" Type="int" />
         </EntityType>
+        <EntityType Name="DetalleOrdenCompra">
+          <Key>
+            <PropertyRef Name="IdDetalleOrdenCompra" />
+            <PropertyRef Name="IdOrdenCompra" />
+          </Key>
+          <Property Name="IdDetalleOrdenCompra" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdOrdenCompra" Type="int" Nullable="false" />
+          <Property Name="IdItem" Type="int" Nullable="false" />
+          <Property Name="Cantidad" Type="int" Nullable="false" />
+          <Property Name="PrecioUnidad" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MontoTotal" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PorcentajeIgv" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Igv" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="UnidadMedida" Type="nvarchar" MaxLength="50" />
+          <Property Name="ItemServicio" Type="nvarchar" MaxLength="4" Nullable="false" />
+        </EntityType>
         <EntityType Name="DetalleProforma">
           <Key>
             <PropertyRef Name="IdDetalleProforma" />
@@ -300,6 +316,23 @@
           <Property Name="UsuarioCreacion" Type="int" Nullable="false" />
           <Property Name="IdEmpresa" Type="int" Nullable="false" />
           <Property Name="IdLogUsuario" Type="int" />
+        </EntityType>
+        <EntityType Name="OrdenCompra">
+          <Key>
+            <PropertyRef Name="IdOrdenCompra" />
+          </Key>
+          <Property Name="IdOrdenCompra" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CodigoOrdenCompra" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Fecha" Type="datetime" Nullable="false" />
+          <Property Name="IdEmpresa" Type="int" Nullable="false" />
+          <Property Name="IdProveedor" Type="int" Nullable="false" />
+          <Property Name="IdContacto" Type="int" />
+          <Property Name="IdMoneda" Type="int" Nullable="false" />
+          <Property Name="MontoTipoCambio" Type="numeric" Precision="18" Scale="3" Nullable="false" />
+          <Property Name="Consideraciones" Type="nvarchar(max)" />
+          <Property Name="AprobadoPor" Type="int" Nullable="false" />
+          <Property Name="IncluirFirma" Type="bit" Nullable="false" />
+          <Property Name="Comentario" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Parametro">
           <Key>
@@ -762,6 +795,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DetalleOrdenCompra_Item">
+          <End Role="Item" Type="Self.Item" Multiplicity="1" />
+          <End Role="DetalleOrdenCompra" Type="Self.DetalleOrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="IdItem" />
+            </Principal>
+            <Dependent Role="DetalleOrdenCompra">
+              <PropertyRef Name="IdItem" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DetalleOrdenCompra_OrdenCompra">
+          <End Role="OrdenCompra" Type="Self.OrdenCompra" Multiplicity="1" />
+          <End Role="DetalleOrdenCompra" Type="Self.DetalleOrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrdenCompra">
+              <PropertyRef Name="IdOrdenCompra" />
+            </Principal>
+            <Dependent Role="DetalleOrdenCompra">
+              <PropertyRef Name="IdOrdenCompra" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DetalleProforma_Item">
           <End Role="Item" Type="Self.Item" Multiplicity="1" />
           <End Role="DetalleProforma" Type="Self.DetalleProforma" Multiplicity="*" />
@@ -1158,6 +1215,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_OrdenCompra_Contacto">
+          <End Role="Contacto" Type="Self.Contacto" Multiplicity="0..1" />
+          <End Role="OrdenCompra" Type="Self.OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacto">
+              <PropertyRef Name="IdContacto" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdContacto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrdenCompra_Empresa">
+          <End Role="Empresa" Type="Self.Empresa" Multiplicity="1" />
+          <End Role="OrdenCompra" Type="Self.OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Empresa">
+              <PropertyRef Name="IdEmpresa" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdEmpresa" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrdenCompra_EntidadResponsable">
+          <End Role="EntidadResponsable" Type="Self.EntidadResponsable" Multiplicity="1" />
+          <End Role="OrdenCompra" Type="Self.OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EntidadResponsable">
+              <PropertyRef Name="IdEntidadResponsable" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdProveedor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrdenCompra_Moneda">
+          <End Role="Moneda" Type="Self.Moneda" Multiplicity="1" />
+          <End Role="OrdenCompra" Type="Self.OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Moneda">
+              <PropertyRef Name="IdMoneda" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdMoneda" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Proforma_Contacto">
           <End Role="Contacto" Type="Self.Contacto" Multiplicity="1" />
           <End Role="Proforma" Type="Self.Proforma" Multiplicity="*" />
@@ -1424,34 +1529,6 @@
           <Parameter Name="Mes" Type="int" Mode="In" />
           <Parameter Name="Anio" Type="int" Mode="In" />
         </Function>
-        <Function Name="FN_MontoAreaXEntidadEnComp_Empresa" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
-          <Parameter Name="IdArea" Type="int" Mode="In" />
-          <Parameter Name="IdEntidad" Type="int" Mode="In" />
-          <Parameter Name="IdTipoComprobante" Type="int" Mode="In" />
-          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
-          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
-          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
-        </Function>
-        <Function Name="FN_MontoAreaXEntidadEnComp_Empresa_SinIGV" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
-          <Parameter Name="IdArea" Type="int" Mode="In" />
-          <Parameter Name="IdEntidad" Type="int" Mode="In" />
-          <Parameter Name="IdTipoComprobante" Type="int" Mode="In" />
-          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
-          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
-          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
-        </Function>
-        <Function Name="FN_MontoCat_Empresa" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
-          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
-          <Parameter Name="IdCategoria" Type="int" Mode="In" />
-          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
-          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
-        </Function>
-        <Function Name="FN_MontoCatXComp_Empresa" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
-          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
-          <Parameter Name="IdCategoria" Type="int" Mode="In" />
-          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
-          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
-        </Function>
         <Function Name="SP_ActualizarMontos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="IdCuentaB" Type="int" Mode="In" />
         </Function>
@@ -1602,6 +1679,7 @@
           <EntitySet Name="ComprobantePorProyecto" EntityType="Self.ComprobantePorProyecto" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Contacto" EntityType="Self.Contacto" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CuentaBancaria" EntityType="Self.CuentaBancaria" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DetalleOrdenCompra" EntityType="Self.DetalleOrdenCompra" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DetalleProforma" EntityType="Self.DetalleProforma" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Empresa" EntityType="Self.Empresa" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntidadResponsable" EntityType="Self.EntidadResponsable" Schema="dbo" store:Type="Tables" />
@@ -1614,6 +1692,7 @@
           <EntitySet Name="Moneda" EntityType="Self.Moneda" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Movimiento" EntityType="Self.Movimiento" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MovimientoInv" EntityType="Self.MovimientoInv" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrdenCompra" EntityType="Self.OrdenCompra" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Parametro" EntityType="Self.Parametro" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Periodo" EntityType="Self.Periodo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Proforma" EntityType="Self.Proforma" Schema="dbo" store:Type="Tables" />
@@ -1725,6 +1804,14 @@
           <AssociationSet Name="FK_CuentaBancaria_TipoCuenta" Association="Self.FK_CuentaBancaria_TipoCuenta">
             <End Role="TipoCuenta" EntitySet="TipoCuenta" />
             <End Role="CuentaBancaria" EntitySet="CuentaBancaria" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DetalleOrdenCompra_Item" Association="Self.FK_DetalleOrdenCompra_Item">
+            <End Role="Item" EntitySet="Item" />
+            <End Role="DetalleOrdenCompra" EntitySet="DetalleOrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DetalleOrdenCompra_OrdenCompra" Association="Self.FK_DetalleOrdenCompra_OrdenCompra">
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+            <End Role="DetalleOrdenCompra" EntitySet="DetalleOrdenCompra" />
           </AssociationSet>
           <AssociationSet Name="FK_DetalleProforma_Item" Association="Self.FK_DetalleProforma_Item">
             <End Role="Item" EntitySet="Item" />
@@ -1857,6 +1944,22 @@
           <AssociationSet Name="FK_MovimientoInv_Usuario" Association="Self.FK_MovimientoInv_Usuario">
             <End Role="Usuario" EntitySet="Usuario" />
             <End Role="MovimientoInv" EntitySet="MovimientoInv" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdenCompra_Contacto" Association="Self.FK_OrdenCompra_Contacto">
+            <End Role="Contacto" EntitySet="Contacto" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdenCompra_Empresa" Association="Self.FK_OrdenCompra_Empresa">
+            <End Role="Empresa" EntitySet="Empresa" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdenCompra_EntidadResponsable" Association="Self.FK_OrdenCompra_EntidadResponsable">
+            <End Role="EntidadResponsable" EntitySet="EntidadResponsable" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdenCompra_Moneda" Association="Self.FK_OrdenCompra_Moneda">
+            <End Role="Moneda" EntitySet="Moneda" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
           </AssociationSet>
           <AssociationSet Name="FK_Proforma_Contacto" Association="Self.FK_Proforma_Contacto">
             <End Role="Contacto" EntitySet="Contacto" />
@@ -2023,6 +2126,7 @@
           <Property Name="Cargo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EntidadResponsable" Relationship="Self.FK_Contacto_EntidadResponsable1" FromRole="Contacto" ToRole="EntidadResponsable" />
           <NavigationProperty Name="Proforma" Relationship="Self.FK_Proforma_Contacto" FromRole="Contacto" ToRole="Proforma" />
+          <NavigationProperty Name="OrdenCompra" Relationship="LibrosDBModel.FK_OrdenCompra_Contacto" FromRole="Contacto" ToRole="OrdenCompra" />
         </EntityType>
         <EntityType Name="CuentaBancaria">
           <Key>
@@ -2099,6 +2203,7 @@
           <NavigationProperty Name="Proforma" Relationship="Self.FK_Proforma_EntidadResponsable" FromRole="EntidadResponsable" ToRole="Proforma" />
           <NavigationProperty Name="Proyecto" Relationship="Self.FK_Proyecto_EntidadResponsable" FromRole="EntidadResponsable" ToRole="Proyecto" />
           <NavigationProperty Name="Empresa" Relationship="LibrosDBModel.FK_EntidadResponsable_Empresa" FromRole="EntidadResponsable" ToRole="Empresa" />
+          <NavigationProperty Name="OrdenCompra" Relationship="LibrosDBModel.FK_OrdenCompra_EntidadResponsable" FromRole="EntidadResponsable" ToRole="OrdenCompra" />
         </EntityType>
         <EntityType Name="EstadoMovimiento">
           <Key>
@@ -2161,6 +2266,7 @@
           <NavigationProperty Name="Moneda" Relationship="Self.FK_Item_Moneda" FromRole="Item" ToRole="Moneda" />
           <NavigationProperty Name="MovimientoInv" Relationship="Self.FK_MovimientoInv_Item" FromRole="Item" ToRole="MovimientoInv" />
           <NavigationProperty Name="Empresa" Relationship="LibrosDBModel.FK_Item_Empresa" FromRole="Item" ToRole="Empresa" />
+          <NavigationProperty Name="DetalleOrdenCompra" Relationship="LibrosDBModel.FK_DetalleOrdenCompra_Item" FromRole="Item" ToRole="DetalleOrdenCompra" />
         </EntityType>
         <EntityType Name="LogUsuario">
           <Key>
@@ -2187,6 +2293,7 @@
           <NavigationProperty Name="Item" Relationship="Self.FK_Item_Moneda" FromRole="Moneda" ToRole="Item" />
           <NavigationProperty Name="Servicio" Relationship="Self.FK_Servicio_Moneda" FromRole="Moneda" ToRole="Servicio" />
           <NavigationProperty Name="Empresa" Relationship="LibrosDBModel.FK_Empresa_Moneda" FromRole="Moneda" ToRole="Empresa" />
+          <NavigationProperty Name="OrdenCompra" Relationship="LibrosDBModel.FK_OrdenCompra_Moneda" FromRole="Moneda" ToRole="OrdenCompra" />
         </EntityType>
         <EntityType Name="Movimiento">
           <Key>
@@ -3484,6 +3591,32 @@
             <Parameter Name="IdAccion" Mode="In" Type="Int32" />
             <Parameter Name="IdMovimiento" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="DetalleOrdenCompra" EntityType="LibrosDBModel.DetalleOrdenCompra" />
+          <AssociationSet Name="FK_DetalleOrdenCompra_Item" Association="LibrosDBModel.FK_DetalleOrdenCompra_Item">
+            <End Role="Item" EntitySet="Item" />
+            <End Role="DetalleOrdenCompra" EntitySet="DetalleOrdenCompra" />
+          </AssociationSet>
+          <EntitySet Name="OrdenCompra" EntityType="LibrosDBModel.OrdenCompra" />
+          <AssociationSet Name="FK_OrdenCompra_Contacto" Association="LibrosDBModel.FK_OrdenCompra_Contacto">
+            <End Role="Contacto" EntitySet="Contacto" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DetalleOrdenCompra_OrdenCompra" Association="LibrosDBModel.FK_DetalleOrdenCompra_OrdenCompra">
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+            <End Role="DetalleOrdenCompra" EntitySet="DetalleOrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdenCompra_Empresa" Association="LibrosDBModel.FK_OrdenCompra_Empresa">
+            <End Role="Empresa" EntitySet="Empresa" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdenCompra_EntidadResponsable" Association="LibrosDBModel.FK_OrdenCompra_EntidadResponsable">
+            <End Role="EntidadResponsable" EntitySet="EntidadResponsable" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrdenCompra_Moneda" Association="LibrosDBModel.FK_OrdenCompra_Moneda">
+            <End Role="Moneda" EntitySet="Moneda" />
+            <End Role="OrdenCompra" EntitySet="OrdenCompra" />
+          </AssociationSet>
           </EntityContainer>
         <ComplexType Name="SP_Get_Arbol_Categoria_Result">
           <Property Type="Int32" Name="IdCategoria" Nullable="true" />
@@ -3822,6 +3955,7 @@
           <NavigationProperty Name="Responsable" Relationship="LibrosDBModel.FK_Responsable_Empresa" FromRole="Empresa" ToRole="Responsable" />
           <NavigationProperty Name="Ubicacion" Relationship="LibrosDBModel.FK_Ubicacion_Empresa" FromRole="Empresa" ToRole="Ubicacion" />
           <NavigationProperty Name="Usuario" Relationship="LibrosDBModel.FK_Usuario_Empresa" FromRole="Empresa" ToRole="Usuario" />
+          <NavigationProperty Name="OrdenCompra" Relationship="LibrosDBModel.FK_OrdenCompra_Empresa" FromRole="Empresa" ToRole="OrdenCompra" />
         </EntityType>
         <Association Name="FK_Area_Empresa">
           <End Type="LibrosDBModel.Empresa" Role="Empresa" Multiplicity="1" />
@@ -4036,6 +4170,118 @@
             </Principal>
             <Dependent Role="Usuario">
               <PropertyRef Name="IdEmpresa" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DetalleOrdenCompra">
+          <Key>
+            <PropertyRef Name="IdDetalleOrdenCompra" />
+            <PropertyRef Name="IdOrdenCompra" />
+          </Key>
+          <Property Name="IdDetalleOrdenCompra" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdOrdenCompra" Type="Int32" Nullable="false" />
+          <Property Name="IdItem" Type="Int32" Nullable="false" />
+          <Property Name="Cantidad" Type="Int32" Nullable="false" />
+          <Property Name="PrecioUnidad" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="MontoTotal" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="PorcentajeIgv" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Igv" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="UnidadMedida" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemServicio" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Item" Relationship="LibrosDBModel.FK_DetalleOrdenCompra_Item" FromRole="DetalleOrdenCompra" ToRole="Item" />
+          <NavigationProperty Name="OrdenCompra" Relationship="LibrosDBModel.FK_DetalleOrdenCompra_OrdenCompra" FromRole="DetalleOrdenCompra" ToRole="OrdenCompra" />
+        </EntityType>
+        <Association Name="FK_DetalleOrdenCompra_Item">
+          <End Type="LibrosDBModel.Item" Role="Item" Multiplicity="1" />
+          <End Type="LibrosDBModel.DetalleOrdenCompra" Role="DetalleOrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="IdItem" />
+            </Principal>
+            <Dependent Role="DetalleOrdenCompra">
+              <PropertyRef Name="IdItem" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="OrdenCompra">
+          <Key>
+            <PropertyRef Name="IdOrdenCompra" />
+          </Key>
+          <Property Name="IdOrdenCompra" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CodigoOrdenCompra" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Fecha" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IdEmpresa" Type="Int32" Nullable="false" />
+          <Property Name="IdProveedor" Type="Int32" Nullable="false" />
+          <Property Name="IdContacto" Type="Int32" />
+          <Property Name="IdMoneda" Type="Int32" Nullable="false" />
+          <Property Name="MontoTipoCambio" Type="Decimal" Nullable="false" Precision="18" Scale="3" />
+          <Property Name="Consideraciones" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AprobadoPor" Type="Int32" Nullable="false" />
+          <Property Name="IncluirFirma" Type="Boolean" Nullable="false" />
+          <Property Name="Comentario" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Contacto" Relationship="LibrosDBModel.FK_OrdenCompra_Contacto" FromRole="OrdenCompra" ToRole="Contacto" />
+          <NavigationProperty Name="DetalleOrdenCompra" Relationship="LibrosDBModel.FK_DetalleOrdenCompra_OrdenCompra" FromRole="OrdenCompra" ToRole="DetalleOrdenCompra" />
+          <NavigationProperty Name="Empresa" Relationship="LibrosDBModel.FK_OrdenCompra_Empresa" FromRole="OrdenCompra" ToRole="Empresa" />
+          <NavigationProperty Name="EntidadResponsable" Relationship="LibrosDBModel.FK_OrdenCompra_EntidadResponsable" FromRole="OrdenCompra" ToRole="EntidadResponsable" />
+          <NavigationProperty Name="Moneda" Relationship="LibrosDBModel.FK_OrdenCompra_Moneda" FromRole="OrdenCompra" ToRole="Moneda" />
+        </EntityType>
+        <Association Name="FK_OrdenCompra_Contacto">
+          <End Type="LibrosDBModel.Contacto" Role="Contacto" Multiplicity="0..1" />
+          <End Type="LibrosDBModel.OrdenCompra" Role="OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Contacto">
+              <PropertyRef Name="IdContacto" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdContacto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DetalleOrdenCompra_OrdenCompra">
+          <End Type="LibrosDBModel.OrdenCompra" Role="OrdenCompra" Multiplicity="1" />
+          <End Type="LibrosDBModel.DetalleOrdenCompra" Role="DetalleOrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrdenCompra">
+              <PropertyRef Name="IdOrdenCompra" />
+            </Principal>
+            <Dependent Role="DetalleOrdenCompra">
+              <PropertyRef Name="IdOrdenCompra" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrdenCompra_Empresa">
+          <End Type="LibrosDBModel.Empresa" Role="Empresa" Multiplicity="1" />
+          <End Type="LibrosDBModel.OrdenCompra" Role="OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Empresa">
+              <PropertyRef Name="IdEmpresa" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdEmpresa" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrdenCompra_EntidadResponsable">
+          <End Type="LibrosDBModel.EntidadResponsable" Role="EntidadResponsable" Multiplicity="1" />
+          <End Type="LibrosDBModel.OrdenCompra" Role="OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EntidadResponsable">
+              <PropertyRef Name="IdEntidadResponsable" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdProveedor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrdenCompra_Moneda">
+          <End Type="LibrosDBModel.Moneda" Role="Moneda" Multiplicity="1" />
+          <End Type="LibrosDBModel.OrdenCompra" Role="OrdenCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Moneda">
+              <PropertyRef Name="IdMoneda" />
+            </Principal>
+            <Dependent Role="OrdenCompra">
+              <PropertyRef Name="IdMoneda" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4947,6 +5193,40 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="USP_ActualizarSaldosMovimientos" FunctionName="LibrosDBModel.Store.USP_ActualizarSaldosMovimientos" />
+          <EntitySetMapping Name="DetalleOrdenCompra">
+            <EntityTypeMapping TypeName="LibrosDBModel.DetalleOrdenCompra">
+              <MappingFragment StoreEntitySet="DetalleOrdenCompra">
+                <ScalarProperty Name="ItemServicio" ColumnName="ItemServicio" />
+                <ScalarProperty Name="UnidadMedida" ColumnName="UnidadMedida" />
+                <ScalarProperty Name="Igv" ColumnName="Igv" />
+                <ScalarProperty Name="PorcentajeIgv" ColumnName="PorcentajeIgv" />
+                <ScalarProperty Name="MontoTotal" ColumnName="MontoTotal" />
+                <ScalarProperty Name="PrecioUnidad" ColumnName="PrecioUnidad" />
+                <ScalarProperty Name="Cantidad" ColumnName="Cantidad" />
+                <ScalarProperty Name="IdItem" ColumnName="IdItem" />
+                <ScalarProperty Name="IdOrdenCompra" ColumnName="IdOrdenCompra" />
+                <ScalarProperty Name="IdDetalleOrdenCompra" ColumnName="IdDetalleOrdenCompra" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrdenCompra">
+            <EntityTypeMapping TypeName="LibrosDBModel.OrdenCompra">
+              <MappingFragment StoreEntitySet="OrdenCompra">
+                <ScalarProperty Name="Comentario" ColumnName="Comentario" />
+                <ScalarProperty Name="IncluirFirma" ColumnName="IncluirFirma" />
+                <ScalarProperty Name="AprobadoPor" ColumnName="AprobadoPor" />
+                <ScalarProperty Name="Consideraciones" ColumnName="Consideraciones" />
+                <ScalarProperty Name="MontoTipoCambio" ColumnName="MontoTipoCambio" />
+                <ScalarProperty Name="IdMoneda" ColumnName="IdMoneda" />
+                <ScalarProperty Name="IdContacto" ColumnName="IdContacto" />
+                <ScalarProperty Name="IdProveedor" ColumnName="IdProveedor" />
+                <ScalarProperty Name="IdEmpresa" ColumnName="IdEmpresa" />
+                <ScalarProperty Name="Fecha" ColumnName="Fecha" />
+                <ScalarProperty Name="CodigoOrdenCompra" ColumnName="CodigoOrdenCompra" />
+                <ScalarProperty Name="IdOrdenCompra" ColumnName="IdOrdenCompra" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

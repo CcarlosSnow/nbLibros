@@ -17,7 +17,7 @@ namespace NubeBooks.Models
         public Navbar()
         {
             lstOptions = new List<Option>();
-            for (int i = 0; i < 13; i++)
+            for (int i = 0; i < 14; i++)
             {
                 lstOptions.Add(new Option() { cadena = "", lstOptions = new List<Option>() });
             }

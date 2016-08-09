@@ -21,12 +21,20 @@ namespace NubeBooks.Core.Logistics.DTO
         public int? IdCuentaBancaria { get; set; }
         public int ValidezOferta { get; set; }
         public string MetodoPago { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaEntrega { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaProforma { get; set; }
+
         public string LugarEntrega { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaFacturacion { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaCobranza { get; set; }
+
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaRegistro { get; set; }
 

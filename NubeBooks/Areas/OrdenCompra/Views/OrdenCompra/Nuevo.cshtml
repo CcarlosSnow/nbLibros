@@ -1,0 +1,594 @@
+﻿@using NubeBooks.Core.Logistics.DTO
+@using NubeBooks.Core.DTO
+@using NubeBooks.Models;
+@using System.Globalization
+@using System.Web.Script.Serialization;
+@model OrdenCompraDTO
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    CultureInfo[] cultures = { new CultureInfo("es-PE") };
+}
+@section Styles{
+    @Styles.Render("~/Content/themes/admin/js/select2/select2.css")
+    @Styles.Render("~/Content/themes/admin/js/select2/theme.css")
+}
+@section Scripts{
+    @Scripts.Render("~/Content/themes/admin/js/select2/select2.min.js")
+    <script src="~/Scripts/JSLINQ.js"></script>
+    <script type="text/javascript">
+        var miBaseUrl = '';
+
+        var jslstProveedores = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.lstProveedores)))');
+        var jslstContactos = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.lstContactos)))');
+        var jslstItems = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.lstItems)))');
+        var jslstUsuarios = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.lstUsuarios)))');
+        $(document).ready(function () { $('#MontoTipoCambio').val("3.30"); });
+        $(function () {
+            miBaseUrl = baseURL(window.location.pathname);
+
+            $('.miselect2').select2();
+
+            $('.miselect2_clear').select2({
+                allowClear: true,
+                placeholder: "Seleccionar"
+            });
+
+            $('#IdProveedor').select2({ data: ConvertirProveedores(jslstProveedores) });
+            $('#IdContacto').select2({ data: jslstContactos })
+            $('#ddlitem').select2({
+                data: ConvertirItems(jslstItems), placeholder: '', initSelection: function (element, callback) {
+                }
+            });
+            $('#AprobadoPor').select2({ data: ConvertirUsuarios(jslstUsuarios) });
+            ListarContactos(0);
+            jslstItems = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(Model.DetalleOrdenCompra)))');
+
+            $('#ItemPredefinido').css('display', 'block');
+            $('#ItemAbierto').css('display', 'none');
+        });
+
+        function ConvertirProveedores(pLista) {
+            var lstProveedoresAux = [];
+            $.each(pLista, function (index, item) {
+                lstProveedoresAux.push({
+                    'id': item.IdEntidadResponsable,
+                    'text': item.Nombre,
+                    'data': item
+                });
+            });
+            return lstProveedoresAux;
+        }
+
+        function ConvertirItems(pLista) {
+            var lstItemsAux = [];
+            $.each(pLista, function (index, item) {
+                lstItemsAux.push({
+                    'id': item.IdItem,
+                    'text': item.CodigoItem,
+                    'data': item
+                });
+            });
+            return lstItemsAux;
+        }
+
+        function ConvertirContactos(pLista) {
+            var lstContactosAux = [];
+            $.each(pLista, function (index, item) {
+                lstContactosAux.push({
+                    'id': item.IdContacto,
+                    'text': item.Nombre,
+                    'data': item
+                });
+            });
+            return lstContactosAux;
+        }
+
+        function ConvertirUsuarios(pLista) {
+            var lstContactosAux = [];
+            $.each(pLista, function (index, item) {
+                lstContactosAux.push({
+                    'id': item.IdUsuario,
+                    'text': item.Nombre,
+                    'data': item
+                });
+            });
+            return lstContactosAux;
+        }
+
+        function ListarContactos(cambio) {
+            var idEntidad = parseInt($('#IdProveedor').val());
+            if (idEntidad > 0) {
+                if (cambio == 1) {
+                    $('#IdContacto').select2("val", "");
+                }
+
+                GetContactosAjax(idEntidad);
+                $('#IdContacto').select2({
+                    allowClear: true,
+                    data: jslstContactos,
+                    placeholder: "Seleccionar"
+                });
+            }
+        }
+
+        function GetContactosAjax(idEntidad) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetContactos", "OrdenCompra")',
+                async: false,
+                cache: false,
+                data: { idEntidad: idEntidad },
+                dataType: 'json',
+                success: function (data) {
+                    jslstContactos = ConvertirContactos(data.lista);
+                }
+            });
+        }
+
+        function ResetearValoresItems() {
+            $("#txtcantidad").val(1);
+            $("#txtprecio").val("0.00");
+        }
+
+        function InsertarPrecio() {
+            var jsPrecio = parseFloat($("#ddlitem").select2('data').data.PrecioUnidad).toFixed(2);
+            var jsItemServicio = $("#ddlitem").select2('data').data.ItemServicio;
+            $("#txtprecio").val(jsPrecio);
+            $("#hdfItemServicio").val(jsItemServicio);
+        }
+
+        function MuestraItemIngreso(check) {
+            if ($(check).val() == 'Predefinido') {
+                $('#ItemPredefinido').css('display', 'block');
+                $('#ItemAbierto').css('display', 'none');
+            } else if ($(check).val() == 'Abierto') {
+                $('#ItemPredefinido').css('display', 'none');
+                $('#ItemAbierto').css('display', 'block');
+            }
+        }
+
+        function SubirListaItems() {
+            var lista = [];
+            lista = JSON.stringify({ 'lista': jslstItems });
+            @*var miUrl = '@Url.Action("PasslstItems","Proformas")';*@
+            //debugger;
+            $.ajax({
+                type: 'POST',
+                //url: miBaseUrl + '/PasslstItems',
+                url: '@Url.Action("PasslstItems","OrdenCompra")',
+                data: lista,
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    return true;
+                },
+                error: function (xhr, status, error) {
+                    return false;
+                }
+            });
+        }
+
+        function GetDetalle(idordencompra) {
+            $.ajax({
+                url: '/OrdenCompra/OrdenCompra/GetDetalleOrdenCompra',
+                type: "POST",
+                dataType: "json",
+                data: { IdOrdenCompra: idordencompra },
+                success: function (data) {
+                    if (typeof (data) == 'object') {
+                        jslstItems = data;
+                        llenartabla();
+                    }
+                }
+            }).fail(function (jqxhr, textStatus, error) {
+                var err = textStatus + ", " + error;
+                alert(err);
+            }).always(function () {
+            });
+        }
+
+        function AgregarItem() {
+            var jsIdItem = $('#ddlitem').val();
+
+            if (jsIdItem != "") {
+                var cadena = '';
+                if ($("#txtcantidad").val() == "") cadena += "Debe de ingresar una cantidad\n";
+                if ($("#txtprecio").val() == "") cadena += "Debe de ingresar un precio\n";
+                if ($("#txtcantidad").val() == "0.00") cadena += "Debe de ingresar una cantidad mayor a cero\n";
+                if ($("#txtprecio").val() == "0.00") cadena += "Debe de ingresar un precio mayor a cero\n";
+                if (cadena != "") { alert(cadena); return; }
+
+                var precio = parseFloat($("#txtprecio").val());
+                var itemservicio = $("#hdfItemServicio").val();
+
+                var items01 = JSLINQ(jslstItems).Where(function (item) {
+                    return item.IdItem == jsIdItem &&
+                           item.ItemServicio == itemservicio &&
+                           item.PrecioUnidad == precio;
+                }).Select(function (item) { return item; });
+
+                //console.log(items01.items);
+
+                //var items01 = $.grep(jslstItems, function (e, i) {
+                //    return (e.ItemServicio == itemservicio, e.IdItem == jsIdItem, e.PorcentajeDescuento === descuento);
+                //});
+                //, e.PrecioUnidad == precio, e.PorcentajeDescuento == descuento, e.ItemServicio == itemservicio
+                //console.log(items01);
+                //console.log(items01.items.length);
+
+                //if (items01 == undefined) {
+                if (items01.items.length == 0) {
+                    var lista = {};
+                    lista.IdItem = jsIdItem;
+                    lista.NombreItem = $('#ddlitem').select2('data').text;
+                    lista.Cantidad = parseInt($("#txtcantidad").val());
+                    lista.PrecioUnidad = parseFloat($("#txtprecio").val());
+                    lista.UnidadMedida = $("#ddlitem").select2('data').data.UnidadMedida;
+                    //lista.TipoCambio = 3.30;
+                    lista.PorcentajeIgv = 18;
+                    lista.Igv = ((lista.Cantidad * lista.PrecioUnidad) * (lista.PorcentajeIgv / 100)).toFixed(2);
+                    lista.MontoTotal = (lista.Cantidad * lista.PrecioUnidad).toFixed(2);
+                    //lista.MontoTotal = (lista.MontoTotal - lista.Descuento).toFixed(2);
+                    lista.ItemServicio = $('#ddlitem').select2('data').data.ItemServicio;
+                    jslstItems.push(lista);
+                    llenartabla();
+                    $("#ddlitem").select2("val", "");
+                    ResetearValoresItems();
+                }
+                else {
+                    items01 = items01.items[0];
+                    //var descuento = $("#txtdescuento").val();
+                    //var descuentoItem = (items01.Cantidad * items01.PrecioUnidad) / items01.Descuento;
+                    //console.log(descuento);
+                    //console.log(descuentoItem);
+                    //console.log(parseFloat($("#txtprecio").val()));
+                    //console.log(items01.PrecioUnidad);
+
+                    //if (items01.PrecioUnidad == parseFloat($("#txtprecio").val()) && descuentoItem == descuento) {
+                    items01.Cantidad = items01.Cantidad + parseInt($("#txtcantidad").val());
+                    items01.MontoTotal = (items01.Cantidad * items01.PrecioUnidad).toFixed(2);
+                    //items01.Descuento = (items01.MontoTotal * (descuento / 100)).toFixed(2);
+                    items01.MontoTotal = (items01.MontoTotal - items01.Descuento).toFixed(2);
+                    llenartabla();
+                    $("#ddlitem").select2("val", "");
+                    ResetearValoresItems();
+                    alert('Se modificó la cantidad del Item ' + items01.IdItem);
+                    //}
+                    //else {
+                    //    var lista = {};
+                    //    var descuento = $("#txtdescuento").val();
+
+                    //    lista.IdItem = jsIdItem;
+                    //    lista.NombreItem = $('#ddlitem').select2('data').text;
+                    //    lista.Cantidad = parseInt($("#txtcantidad").val());
+                    //    lista.PrecioUnidad = parseFloat($("#txtprecio").val());
+                    //    lista.UnidadMedida = $("#ddlitem").select2('data').data.UnidadMedida;
+                    //    lista.TipoCambio = 3.30;
+                    //    lista.PorcentajeIgv = 18;
+                    //    lista.Igv = ((lista.Cantidad * lista.PrecioUnidad) * (lista.PorcentajeIgv / 100)).toFixed(2);
+                    //    lista.MontoTotal = (lista.Cantidad * lista.PrecioUnidad).toFixed(2);
+                    //    lista.Descuento = (lista.MontoTotal * (descuento / 100)).toFixed(2);
+                    //    lista.MontoTotal = (lista.MontoTotal - lista.Descuento).toFixed(2);
+                    //    jslstItems.push(lista);
+                    //    llenartabla();
+                    //    $("#ddlitem").select2("val", "");
+                    //    ResetearValoresItems();
+                    //}
+                }
+            }
+        }
+        function deleteRow(btn) {
+            jslstItems = $.grep(jslstItems, function (e) {
+                return e.IdItem != $(btn).data("id");
+            });
+            $(btn).closest("tr").remove();
+            //GetTotales();
+        }
+
+        function llenartabla() {
+            $("#tblitem tbody").empty();
+            $.each(jslstItems, function (i, e) {
+                $("#tblitem tbody").append('<tr><td>' + (i + 1) + '</td><td>' + e.IdItem + '</td><td>' + e.NombreItem + '</td><td>' + e.Cantidad
+                    + '</td><td>' + e.UnidadMedida + '</td><td>' + e.PrecioUnidad + '</td><td>' + e.MontoTotal
+                    + '</td><td><span class="glyphicon glyphicon-remove" data-id="' + e.IdItem + '" style="cursor:pointer" onclick="deleteRow(this)"></span></td></tr>');
+            });
+
+            //GetTotales();
+        }
+    </script>
+}
+
+@{var cadena = "";}
+@if (Model == null || Model.IdOrdenCompra == 0) { cadena = "Nueva"; }
+else { cadena = "Actualizar"; }
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">@cadena Orden de Compra</h1>
+</div>
+<div class="wrapper-md" ng-controller="FormDemoCtrl">
+    <!--
+      <div class="panel b-a">
+        <div class="panel-body b-b b-light">
+          <a > Nuevo Cliente </a>&nbsp;|&nbsp;<a> Nuevo Contacto </a>&nbsp;|&nbsp;<a> Nuevo Ítem </a>
+        </div>
+      </div>
+      -->
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @using (Html.BeginForm("AddOrdenCompra", "OrdenCompra", new { Area = "OrdenCompra" }, FormMethod.Post))
+            {
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Número de Orden de Compra</label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(u => u.CodigoOrdenCompra, new { @class = "form-control", @readonly = "readonly" })
+                                @*<input type="text" class="form-control" readonly>*@
+                                <span class="input-group-addon">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Fecha de Orden de Compra</label>
+                            <div class='input-group date' id='datetimepicker1'>
+                                @Html.TextBoxFor(u => u.Fecha, "{0:dd/MM/yyyy}", new { @class = "form-control", placeholder = "dd/mm/yyyy" })
+                                @*<input type='text' class="" placeholder="" />*@
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Proveedor</label>
+                            @Html.TextBoxFor(u => u.IdProveedor, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @required = "", @onchange = "ListarContactos(1)" })
+                            @*<select data-placeholder="Seleccione un Proveedor..." ui-jq="chosen" class="w-full">
+                                    <option selected disabled hidden value=""></option>
+                                    <option value="1">Proveedor 1</option>
+                                    <option value="2">Proveedor 2</option>
+                                    <option value="3">Proveedor 3</option>
+                                    <option value="4">Proveedor 4</option>
+                                </select>*@
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Contacto</label>
+                            @Html.TextBoxFor(u => u.IdContacto, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs" })
+                            @*<select data-placeholder="Seleccione un contacto..." ui-jq="chosen" class="w-full">
+                                    <option selected disabled hidden value=""></option>
+                                    <option value="1">Contacto 1</option>
+                                    <option value="2">Contacto 2</option>
+                                    <option value="3">Contacto 3</option>
+                                    <option value="4">Contacto 4</option>
+                                </select>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Moneda</label>
+                            @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), new { @class = "form-control" })
+                            @*<select name="" class="form-control">
+                                    <option selected disabled hidden value="">Seleccione la moneda...</option>
+                                    <option value="1">Soles</option>
+                                    <option value="2">Dólares</option>
+                                    <option value="2">Euros</option>
+                                </select>*@
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Tipo de Cambio</label>
+                            <div class="input-group bootstrap-touchspin">
+                                @Html.TextBoxFor(u => u.MontoTipoCambio, new { @ui_jq = "TouchSpin", @class = "form-control", @data_min = "0", @data_max = "10", @data_step = "0.01", @data_decimals = "2", @data_prefix = "S/.", @data_initval = "3.35", @style = "display: block;", @value = "3.30" })
+                                @*<input ui-jq="TouchSpin" type="text" value="3.30" class="form-control" data-min="0" data-max="10" data-step="0.01" data-decimals="2" data-prefix="S/." style="display: block;">*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="item" value="Predefinido" checked onchange="MuestraItemIngreso(this);"><i></i> Ítem Predefinido
+                            </label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="item" value="Abierto" onchange="MuestraItemIngreso(this);"><i></i> Ítem Abierto
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="ItemPredefinido">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Ítem / Servicio</label>
+                            @Html.TextBox("ddlitem", "", new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @onchange = "ResetearValoresItems(); InsertarPrecio();" })
+                            @*<select data-placeholder="Seleccione un ítem o servicio..." ui-jq="chosen" class="w-full">
+                                    <option selected disabled hidden value=""></option>
+                                    <option value="1">Código - Ítem 1</option>
+                                    <option value="2">Código - Ítem 2</option>
+                                    <option value="3">Código - Ítem 3</option>
+                                    <option value="4">Código - Ítem 4</option>
+                                </select>*@
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Cantidad</label>
+                            <div class="input-group bootstrap-touchspin">
+                                <input id="txtcantidad" ui-jq="TouchSpin" type="text" value="1.00" class="form-control" data-min="0" data-max="10" data-step="1.00" data-decimals="2" style="display: block;">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Precio Unitario</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">S/.</span>
+                                <input id="txtprecio" type="text" class="form-control" placeholder="0.00">
+                            </div>
+                        </div>
+                        @Html.Hidden("hdfItemServicio", "")
+                        <div class="col-md-3">
+                            <label class="control-label">&nbsp;</label>
+                            <button id="btnagregarpredefinido" type="button" class="form-control btn m-b-xs btn-md btn-default btn-addon" onclick="AgregarItem();"><i class="fa fa-plus"></i>Agregar ítem</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="ItemAbierto">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Ítem / Servicio</label>
+                            <input type="text" class="form-control" placeholder="Ingrese la descripción...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Cantidad</label>
+                            <div class="input-group bootstrap-touchspin">
+                                <input ui-jq="TouchSpin" type="text" value="1.00" class="form-control" data-min="0" data-max="10" data-step="1.00" data-decimals="2" style="display: block;">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Precio Unitario</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">S/.</span>
+                                <input type="text" class="form-control" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">&nbsp;</label>
+                            <button class="form-control btn m-b-xs btn-md btn-default btn-addon"><i class="fa fa-plus"></i>Agregar ítem</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <table id="tblitem" class="table table-striped m-b-none">
+                        <thead>
+                            <tr>
+                                <th>Ítem</th>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Cantidad</th>
+                                <th>U/M</th>
+                                <th>Precio Unitario</th>
+                                <th>Precio Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.DetalleOrdenCompra.Count > 0)
+                            {
+                                int cont = 1;
+                                foreach (var jslstItems in Model.DetalleOrdenCompra)
+                                {
+                                    <tr>
+                                        <td class="text-center">@cont</td>
+                                        <td class="text-center">@jslstItems.IdItem</td>
+                                        <td class="text-left">@jslstItems.NombreItem</td>
+                                        <td class="text-center">@jslstItems.Cantidad</td>
+                                        <td class="text-left">@jslstItems.UnidadMedida</td>
+                                        <td class="text-center">@jslstItems.PrecioUnidad</td>
+                                        <td class="text-center">@jslstItems.MontoTotal.ToString("N2", CultureInfo.InvariantCulture)</td>
+                                        <td><span class="glyphicon glyphicon-remove" data-id="@jslstItems.IdItem" style="cursor:pointer" onclick="deleteRow(this)"></span></td>
+                                    </tr>
+                                    cont++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Notas o Consideraciones Adicionales</label>
+                            @Html.TextAreaFor(u => u.Consideraciones, new { @class = "form-control", @cols = "20", @rows = "3", @style = "resize: none;" })
+                            @*<textarea class="form-control" cols="20" rows="3" style="resize: none;" type="text"></textarea>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Aprobado por</label>
+                            @Html.TextBoxFor(u => u.AprobadoPor, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @required = "" })
+                            @*<select data-placeholder="Seleccione un usuario..." ui-jq="chosen" class="w-full">
+                                    <option selected disabled hidden value=""></option>
+                                    <option value="1">Usuario 1</option>
+                                    <option value="2">Usuario 2</option>
+                                    <option value="3">Usuario 3</option>
+                                    <option value="4">Usuario 4</option>
+                                </select>*@
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Incluir Firma de Usuario</label>
+                            <div class="btn-group m-r w-full" data-toggle="buttons">
+                                <label class="btn btn-default active" style="width: 50%">
+                                    @Html.RadioButtonFor(u => u.IncluirFirma, true, new { @type = "radio", @name = "options", autocomplete = "off", @checked = (Model != null ? (Model.IncluirFirma != null ? (Model.IncluirFirma == true ? "true" : "false") : "false") : "false") }) Sí
+                                    @*<input type="radio" name="options" autocomplete="off" checked>*@
+                                </label>
+                                <label class="btn btn-default" style="width: 50%">
+                                    @Html.RadioButtonFor(u => u.IncluirFirma, true, new { @type = "radio", @name = "options", autocomplete = "off", @checked = (Model != null ? (Model.IncluirFirma != null ? (Model.IncluirFirma == false ? "true" : "false") : "false") : "false") }) No
+                                    @*<input type="radio" name="options" autocomplete="off">*@
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <!--
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <label class="control-label">Estado</label>
+                      <select name="" class="form-control">
+                        <option selected value="Pendiente">Pendiente</option>
+                        <option value="Aprobada">Aprobada</option>
+                        <option value="Rechazada">Rechazada</option>
+                      </select>
+                    </div>
+                    <div class="col-md-3">
+                      <label class="control-label">Orden de Compra del Cliente</label>
+                      <input type="text" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                      <label class="control-label">Fecha Estimada de Facturación</label>
+                      <div class="input-group" id="datetimepicker1">
+                        <input type="text" class="form-control" datepicker-popup="" ng-model="dt" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="dd/mm/yyyy" />
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <label class="control-label">Fecha Estimada de Cobranza</label>
+                      <input type="text" class="form-control" readonly="">
+                    </div>
+                  </div>
+                </div>
+                -->
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Comentarios Internos</label>
+                            @Html.TextAreaFor(u => u.Comentario, new { @class = "form-control", @cols = "20", @rows = "3", @style = "resize: none;" })
+                            @*<textarea class="form-control" cols="20" id="comentario" name="comentario" rows="3" style="resize: none;" type="text"></textarea>*@
+                        </div>
+                    </div>
+                </div>
+                @Html.TextBoxFor(u => u.CodigoOrdenCompra, new { @value = Model.CodigoOrdenCompra, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                @Html.TextBoxFor(u => u.IdOrdenCompra, new { @value = Model.IdOrdenCompra != 0 ? Model.IdOrdenCompra.ToString() : "0", @type = "hidden" })
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success" onclick="return SubirListaItems();">Guardar Cambios</button>
+                            <a class="btn btn-default" href="@Url.Action("Index", "OrdenCompra")">Cancelar</a>
+                            @*<button type="button" >Cancelar</button>*@
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

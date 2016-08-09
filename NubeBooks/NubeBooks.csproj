@@ -215,6 +215,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Empresa\Controllers\EmpresaController.cs" />
     <Compile Include="Areas\Empresa\EmpresaAreaRegistration.cs" />
+    <Compile Include="Areas\OrdenCompra\Controllers\OrdenCompraController.cs" />
+    <Compile Include="Areas\OrdenCompra\OrdenCompraAreaRegistration.cs" />
     <Compile Include="Areas\Proformas\Controllers\ProformasController.cs" />
     <Compile Include="Areas\Proformas\ProformasAreaRegistration.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -944,6 +946,9 @@
     <Content Include="Areas\Proformas\Views\Proformas\Detalle.cshtml" />
     <Content Include="Areas\Empresa\Views\web.config" />
     <Content Include="ImageHandler.ashx" />
+    <Content Include="Areas\OrdenCompra\Views\web.config" />
+    <Content Include="Areas\OrdenCompra\Views\OrdenCompra\Index.cshtml" />
+    <Content Include="Areas\OrdenCompra\Views\OrdenCompra\Nuevo.cshtml" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
     <None Include="Properties\PublishProfiles\NubeBooks.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -1038,6 +1043,9 @@
     <Folder Include="Areas\Empresa\Models\" />
     <Folder Include="Areas\Empresa\Scripts\" />
     <Folder Include="Areas\Empresa\Views\Shared\" />
+    <Folder Include="Areas\OrdenCompra\Models\" />
+    <Folder Include="Areas\OrdenCompra\Scripts\" />
+    <Folder Include="Areas\OrdenCompra\Views\Shared\" />
     <Folder Include="Areas\Proformas\Models\" />
     <Folder Include="Areas\Proformas\Views\Shared\" />
     <Folder Include="Content\themes\admin\less\" />
