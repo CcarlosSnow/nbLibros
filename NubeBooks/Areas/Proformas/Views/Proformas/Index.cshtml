@@ -50,8 +50,10 @@
                    }" class="table table-striped b-t b-b dataTable">
                 <thead>
                     <tr>
+                        <th>@Html.DisplayNameFor(x => x[0].FechaProforma)</th>
                         <th>@Html.DisplayNameFor(x => x[0].CodigoProforma)</th>
                         <th>@Html.DisplayNameFor(x => x[0].Estado)</th>
+                        <th>Usuario</th>
                         <th>Nombre Cliente</th>
                         <th>Lugar Entrega</th>
                         <th></th>
@@ -63,33 +65,19 @@
                         foreach (var item in Model)
                         {
                             <tr>
+                                <td>@Html.DisplayFor(model => item.FechaProforma)</td>
                                 <td>@item.CodigoProforma</td>
-
-                                @{switch (item.Estado)
+                                <td>@item.Estado.Nombre</td>
+                                @{
+                                    if (item.UsuarioRegistro == null)
                                     {
-                                        case 1:
-                                            <td>
-                                                Pendiente
-                                            </td>
-                                            break;
-                                        case 2:
-                                            <td>
-                                                Aprobada
-                                            </td>
-                                            break;
-                                        case 3:
-                                            <td>
-                                                Rechazada
-                                            </td>
-                                            break;
-                                        default:
-                                            <td>
-                                                Pendiente
-                                            </td>
-                                            break;
+                                        <td>&nbsp;</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.UsuarioRegistro.Nombre</td>
                                     }
                                 }
-
                                 <td>@item.EntidadResponsable.Nombre</td>
                                 <td>@item.LugarEntrega</td>
                                 @{ var rIcon = ViewBag.EsUsuarioExterno ? "search" : "pencil"; var rTitle = ViewBag.EsUsuarioExterno ? "Visualizar" : "Editar"; }

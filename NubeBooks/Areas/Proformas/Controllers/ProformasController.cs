@@ -171,6 +171,10 @@ namespace NubeBooks.Areas.Proformas.Controllers
             ViewBag.lstCuentasBancarias = cbBL.getCuentasBancariasActivasPorTipoEnEmpresa(user.IdEmpresa, 1);
             ViewBag.lstContactos = new List<ContactoDTO>();
 
+            ParametroBL oParametroBL = new ParametroBL();
+            ViewBag.lstMotivosRechazo = oParametroBL.ListByCodigo("05");
+            ViewBag.lstEstadosProforma = oParametroBL.ListByCodigo("06");
+
             var objSent = TempData["Proforma"];
             if (objSent != null) { TempData["Proforma"] = null; return View(objSent); }
 
@@ -203,7 +207,8 @@ namespace NubeBooks.Areas.Proformas.Controllers
         public ActionResult AddProforma(ProformaDTO dto)
         {
             if (!this.currentUser()) { return RedirectToAction("Ingresar", "Admin", new { Area = string.Empty }); }
-            if (getCurrentUser().IdRol == 4) { return RedirectToAction("Index", "Proformas"); }
+            UsuarioDTO currentUser = getCurrentUser();
+            if (currentUser.IdRol == 4) { return RedirectToAction("Index", "Proformas"); }
             try
             {
                 if(dto != null)
@@ -215,6 +220,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
 
                 if (dto.IdProforma == 0)
                 {
+                    dto.IdUsuarioRegistro = currentUser.IdUsuario;
                     if (objBL.SaveProforma(dto))
                     {
                         createResponseMessage(CONSTANTES.SUCCESS);
@@ -227,6 +233,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
                 }
                 else if (dto.IdProforma > 0)
                 {
+                    dto.IdUsuarioModifica = currentUser.IdUsuario;
                     if (objBL.SaveProforma(dto))
                     {
                         createResponseMessage(CONSTANTES.SUCCESS);
@@ -317,7 +324,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
                 row["IGV"] = item.DetalleProforma.Sum(x => x.Igv).GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture);
                 row["Total"] = item.DetalleProforma.Sum(x => x.MontoTotal + x.Igv).GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture);
                 row["Cuenta Bancaria"] = item.NombreCuentaBancaria;
-                row["Estado"] = item.Estado == 1 ? "Pendiente" : (item.Estado == 2 ? "Aprobada" : "Rechazada");
+                row["Estado"] = item.Estado.Nombre;
                 row["Orden de Compra"] = item.OrdenCompra;
                 row["Fecha de Facturacion"] = item.FechaFacturacion != null ? item.FechaFacturacion.GetValueOrDefault().ToString("dd/MMM/yyyy", CultureInfo.CreateSpecificCulture("en-GB")) : "";
                 row["Fecha Estimada de Cobro"] = item.FechaCobranza != null ? item.FechaCobranza.GetValueOrDefault().ToString("dd/MMM/yyyy", CultureInfo.CreateSpecificCulture("en-GB")) : "";

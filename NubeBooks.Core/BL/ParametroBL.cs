@@ -23,7 +23,26 @@ namespace NubeBooks.Core.BL
                     UsuarioCreacion = x.UsuarioCreacion,
                     FechaModificacion = x.FechaModificacion,
                     UsuarioModificacion = x.UsuarioModificacion
-                }).OrderBy(x => x.Nombre).ToList();
+                }).OrderBy(x => x.IdParametro).ToList();
+                return result;
+            }
+        }
+
+        public ParametroDTO ListByIdParametro(string Codigo)
+        {
+            using (var context = getContext())
+            {
+                var result = context.Parametro.Where(x => x.IdParametro == Codigo && x.IdParametro != Codigo + "00" && x.Eliminado == false).Select(x => new ParametroDTO
+                {
+                    IdParametro = x.IdParametro,
+                    Nombre = x.Nombre,
+                    Descripcion = x.Descripcion,
+                    Valor = x.Valor,
+                    FechaCreacion = x.FechaCreacion,
+                    UsuarioCreacion = x.UsuarioCreacion,
+                    FechaModificacion = x.FechaModificacion,
+                    UsuarioModificacion = x.UsuarioModificacion
+                }).OrderBy(x => x.IdParametro).SingleOrDefault();
                 return result;
             }
         }

@@ -35,7 +35,10 @@ namespace NubeBooks.Core.Logistics.BL
                     ComentarioAdiccional = x.ComentarioAdiccional,
                     ComentarioProforma = x.ComentarioProforma,
                     OrdenCompra = x.OrdenCompra,
-                    Estado = x.Estado
+                    IdEstado = x.Estado,
+                    IdUsuarioRegistro = x.UsuarioRegistro,
+                    IdUsuarioModifica = x.UsuarioModifica,
+                    FechaModifica = x.FechaModifica
                 }).OrderByDescending(x => x.CodigoProforma).ToList();
 
                 if (idEmpresa > 0)
@@ -46,6 +49,10 @@ namespace NubeBooks.Core.Logistics.BL
                         pro.Empresa = new EmpresaBL().getEmpresa(pro.IdEmpresa);
                         if (pro.IdContacto > 0)
                         { pro.Contacto = new ContactoBL().getContacto((int)pro.IdContacto); }
+                        if (pro.IdUsuarioRegistro > 0)
+                        { pro.UsuarioRegistro = new UsuariosBL().getUsuario((int)pro.IdUsuarioRegistro); }
+                        pro.Estado = new ParametroBL().ListByIdParametro(pro.IdEstado);
+                        pro.MotivoRechazo = new ParametroBL().ListByIdParametro(pro.IdMotivoRechazo);
                     }
                 }
 
@@ -76,7 +83,7 @@ namespace NubeBooks.Core.Logistics.BL
                     ComentarioAdiccional = x.ComentarioAdiccional,
                     ComentarioProforma = x.ComentarioProforma,
                     OrdenCompra = x.OrdenCompra,
-                    Estado = x.Estado,
+                    IdEstado = x.Estado,
                     NombreCuentaBancaria = x.CuentaBancaria.NombreCuenta,
                     DetalleProforma = x.DetalleProforma.Select(r => new DetalleProformaDTO
                     {
@@ -101,6 +108,10 @@ namespace NubeBooks.Core.Logistics.BL
                         pro.Empresa = new EmpresaBL().getEmpresa(pro.IdEmpresa);
                         if (pro.IdContacto > 0)
                         { pro.Contacto = new ContactoBL().getContacto((int)pro.IdContacto); }
+                        if (pro.IdUsuarioRegistro > 0)
+                        { pro.UsuarioRegistro = new UsuariosBL().getUsuario((int)pro.IdUsuarioRegistro); }
+                        pro.Estado = new ParametroBL().ListByIdParametro(pro.IdEstado);
+                        pro.MotivoRechazo = new ParametroBL().ListByIdParametro(pro.IdMotivoRechazo);
                     }
                 }
 
@@ -131,7 +142,7 @@ namespace NubeBooks.Core.Logistics.BL
                     ComentarioAdiccional = x.ComentarioAdiccional,
                     ComentarioProforma = x.ComentarioProforma,
                     OrdenCompra = x.OrdenCompra,
-                    Estado = x.Estado
+                    IdEstado = x.Estado
                 }).OrderByDescending(x => x.FechaRegistro).ToList();
 
                 foreach (var pro in result)
@@ -140,6 +151,10 @@ namespace NubeBooks.Core.Logistics.BL
                     pro.Empresa = new EmpresaBL().getEmpresa(pro.IdEmpresa);
                     if (pro.IdContacto > 0)
                     { pro.Contacto = new ContactoBL().getContacto((int)pro.IdContacto); }
+                    if (pro.IdUsuarioRegistro > 0)
+                    { pro.UsuarioRegistro = new UsuariosBL().getUsuario((int)pro.IdUsuarioRegistro); }
+                    pro.Estado = new ParametroBL().ListByIdParametro(pro.IdEstado);
+                    pro.MotivoRechazo = new ParametroBL().ListByIdParametro(pro.IdMotivoRechazo);
                 }
 
                 return result;
@@ -169,7 +184,7 @@ namespace NubeBooks.Core.Logistics.BL
                     ComentarioAdiccional = x.ComentarioAdiccional,
                     ComentarioProforma = x.ComentarioProforma,
                     OrdenCompra = x.OrdenCompra,
-                    Estado = x.Estado
+                    IdEstado = x.Estado
                 }).SingleOrDefault();
 
                 result.EntidadResponsable = new EntidadResponsableBL().getEntidadResponsableEnEmpresa_Only(result.IdEmpresa, result.IdEntidadResponsable);
@@ -179,6 +194,10 @@ namespace NubeBooks.Core.Logistics.BL
                 { result.Contacto = new ContactoBL().getContacto((int)result.IdContacto); }
                 result.DetalleProforma = getDetalleProformaPorId(result.IdProforma);
                 result.CuentaBancaria = new CuentaBancariaBL().getCuentasBancariasActivasPorTipoEnEmpresa(result.IdEmpresa, 1);
+                if (result.IdUsuarioRegistro > 0)
+                { result.UsuarioRegistro = new UsuariosBL().getUsuario((int)result.IdUsuarioRegistro); }
+                result.Estado = new ParametroBL().ListByIdParametro(result.IdEstado);
+                result.MotivoRechazo = new ParametroBL().ListByIdParametro(result.IdMotivoRechazo);
                 return result;
             }
         }
@@ -237,8 +256,14 @@ namespace NubeBooks.Core.Logistics.BL
                     if (proforma.IdProforma != 0)
                     {
                         nuevo = context.Proforma.Where(c => c.IdProforma == proforma.IdProforma).SingleOrDefault();
+                        nuevo.UsuarioModifica = proforma.IdUsuarioModifica;
+                        nuevo.FechaModifica = DateTime.Now;
                     }
-                    else { nuevo.FechaRegistro = DateTime.Now; }
+                    else
+                    {
+                        nuevo.FechaRegistro = DateTime.Now;
+                        nuevo.UsuarioRegistro = proforma.IdUsuarioRegistro;
+                    }
                     nuevo.IdProforma = proforma.IdProforma;
                     if (proforma.CodigoProforma == null || proforma.CodigoProforma == "") { nuevo.CodigoProforma = CodigoProforma(proforma.IdEmpresa); }
                     //else { nuevo.CodigoProforma = proforma.CodigoProforma; }
@@ -258,7 +283,8 @@ namespace NubeBooks.Core.Logistics.BL
                     nuevo.ComentarioAdiccional = proforma.ComentarioAdiccional;
                     nuevo.ComentarioProforma = proforma.ComentarioProforma;
                     nuevo.OrdenCompra = proforma.OrdenCompra;
-                    nuevo.Estado = proforma.Estado;
+                    nuevo.Estado = proforma.IdEstado;
+                    nuevo.MotivoRechazo = proforma.IdMotivoRechazo;
                     if (nuevo.IdProforma == 0)
                     {
                         context.Proforma.Add(nuevo);

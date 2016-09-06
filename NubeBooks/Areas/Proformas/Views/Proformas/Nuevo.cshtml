@@ -60,6 +60,7 @@
 
                 $("#FechaCobranza").val(convertDate(jsFechaNeo));
             });
+            activarOrdenDeCompra();
         })
 
         function ResetearValoresItems() {
@@ -207,11 +208,8 @@
         function SubirListaItems() {
             var lista = [];
             lista = JSON.stringify({ 'lista': jslstItems });
-            @*var miUrl = '@Url.Action("PasslstItems","Proformas")';*@
-            //debugger;
             $.ajax({
                 type: 'POST',
-                //url: miBaseUrl + '/PasslstItems',
                 url: '@Url.Action("PasslstItems","Proformas")',
                 data: lista,
                 contentType: 'application/json',
@@ -265,14 +263,17 @@
         }
 
         function activarOrdenDeCompra() {
-            if ($('#Estado').val() == 2) {
+            $('#divOrdenCompra').addClass('hidden');
+            $('#divFechaFacturacion').addClass('hidden');
+            $('#divFechaCobranza').addClass('hidden');
+            $('#divMotivoRechazo').addClass('hidden');
+
+            if ($('#IdEstado').val() == '0602') {
                 $('#divOrdenCompra').removeClass('hidden');
                 $('#divFechaFacturacion').removeClass('hidden');
                 $('#divFechaCobranza').removeClass('hidden');
-            } else {
-                $('#divOrdenCompra').addClass('hidden');
-                $('#divFechaFacturacion').addClass('hidden');
-                $('#divFechaCobranza').addClass('hidden');
+            } else if ($('#IdEstado').val() == '0603') {
+                $('#divMotivoRechazo').removeClass('hidden');
             }
         }
 
@@ -308,6 +309,15 @@ else { cadena = "Actualizar"; }
                 <div class="form-group">
                     <div class="row">
                         <div class="col-md-3">
+                            <label class="control-label">Número de Proforma</label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(u => u.CodigoProforma, new { @class = "form-control", @type = "text", @readonly = "" })
+                                <span class="input-group-addon">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <label class="control-label">Fecha de Proforma</label>
                             <div class="input-group date">
                                 @Html.TextBoxFor(u => u.FechaProforma, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/mm/yyyy", @type = "text", @required = "" })
@@ -316,17 +326,6 @@ else { cadena = "Actualizar"; }
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Cliente</label>
-                            @*<select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" onchange="ListarContactos(1)"
-                                        id="IdEntidadResponsable" name="IdEntidadResponsable" required>
-                                    @{ var pCliente = Model != null ? Model.IdEntidadResponsable : 0;
-                                        List<EntidadResponsableDTO> listaClientes = ViewBag.lstClientes;
-                                    }
-                                    <option value=""></option>
-                                    @foreach (var ent in listaClientes)
-                                    {
-                                        <option value="@ent.IdEntidadResponsable" @(ent.IdEntidadResponsable == pCliente ? "selected=selected" : "")>@ent.Nombre</option>
-                                    }
-                                </select>*@
                             @Html.TextBoxFor(u => u.IdEntidadResponsable, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @required = "", @onchange = "ListarContactos(1)" })
                         </div>
                         <div class="col-md-3">
@@ -336,6 +335,10 @@ else { cadena = "Actualizar"; }
                                     <option value="">Seleccione un contacto...</option>
                                 </select>*@
                         </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
                         <div class="col-md-3">
                             <label class="control-label">Validez de Oferta</label>
                             <select class="form-control col-xs-12 col-sm-12 col-md-12 no-padder rol-accs" id="ValidezOferta" name="ValidezOferta" required>
@@ -348,14 +351,10 @@ else { cadena = "Actualizar"; }
                                 }
                                 @foreach (var jslstItems in lstValidezOferta)
                                 {
-                                    <option value="@jslstItems.valor" @(jslstItems.valor == pValidezOferta ? "selected=selected" : "")>@jslstItems.nombre</option>
+                                <option value="@jslstItems.valor" @(jslstItems.valor == pValidezOferta ? "selected=selected" : "")>@jslstItems.nombre</option>
                                 }
                             </select>
                         </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="row">
                         <div class="col-md-3">
                             <label class="control-label">Método de Pago</label>
                             @Html.TextBoxFor(u => u.MetodoPago, new { @class = "form-control", @placeholder = "Metodo de Pago", @type = "text" })
@@ -371,6 +370,10 @@ else { cadena = "Actualizar"; }
                             <label class="control-label">Lugar de Entrega</label>
                             @Html.TextBoxFor(u => u.LugarEntrega, new { @class = "form-control", @placeholder = "Lugar", @type = "text" })
                         </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
                         <div class="col-md-3">
                             <label class="control-label">Moneda</label>
                             @Html.DropDownListFor(u => u.IdMoneda, new SelectList(ViewBag.lstMonedas, "IdMoneda", "Nombre", Model != null ? (Model.IdMoneda != 0 ? Model.IdMoneda : 0) : 0), new { @class = "form-control" })
@@ -382,13 +385,6 @@ else { cadena = "Actualizar"; }
                     <div class="row">
                         <div class="col-md-3">
                             <label class="control-label">Ítem / Servicio</label>
-                            @*<select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" id="ddlitem" name="ddlitem" onchange="ResetearValoresItems(); InsertarPrecio();">
-                                    <option value=""></option>
-                                    @foreach (var nItem in (List<ItemDTO>)ViewBag.lstItems)
-                                    {
-                                        <option value="@nItem.IdItem" data-precio="@nItem.Precio.GetValueOrDefault()">@nItem.Codigo</option>
-                                    }
-                                </select>*@
                             @Html.TextBox("ddlitem", "", new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @onchange = "ResetearValoresItems(); InsertarPrecio();" })
                         </div>
                         <div class="col-md-3">
@@ -478,95 +474,78 @@ else { cadena = "Actualizar"; }
                         </div>
                     </div>
                 </div>
-                <div class="line line-dashed b-b line-lg pull-in"></div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label>Cuentas Bancarias</label>
-                            <select id="IdCuentaBancaria" name="IdCuentaBancaria" multiple ui-jq="chosen" class="w-full" data-placeholder="Seleccione las cuentas bancarias...">
-                                @{ var pCuenta = Model != null ? Model.IdCuentaBancaria : 0; }
-                                @*<option value=""></option>*@
-                                @foreach (var nCuenta in (List<CuentaBancariaDTO>)ViewBag.lstCuentasBancarias)
-                                {
-                                    <option value="@nCuenta.IdCuentaBancaria" @(nCuenta.IdCuentaBancaria == pCuenta ? "selected=selected" : "")>@nCuenta.NombreCuenta</option>
-                                }
-                            </select>
-                            @*<select data-placeholder="Seleccione las cuentas bancarias..." ui-jq="chosen" multiple class="w-full">
-                                    <option value="1">BBVA Continental SOLES 0011-0760-0200035723</option>
-                                    <option value="2">Interbank SOLES 417-3075885320</option>
-                                    <option value="3">Interbank DÓLARES 417-3075884993</option>
-                                </select>*@
-                        </div>
-                    </div>
-                </div>
-                <div class="line line-dashed b-b line-lg pull-in"></div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label class="control-label">Estado</label>
-                            <select class="form-control col-xs-12 col-sm-12 col-md-12 no-padder rol-accs" id="Estado" name="Estado" onchange="activarOrdenDeCompra()">
-                                @{
-                                    List<SelectItem> lstEstados = new List<SelectItem>();
-                                    lstEstados.Add(new SelectItem { valor = 1, nombre = "Pendiente" });
-                                    lstEstados.Add(new SelectItem { valor = 2, nombre = "Aprobada" });
-                                    lstEstados.Add(new SelectItem { valor = 3, nombre = "Rechazada" });
-                                    var pEstado = Model != null ? Model.Estado : 1;
-                                }
-                                @foreach (var jslstItems in lstEstados)
-                                {
-                                    <option value="@jslstItems.valor" @(jslstItems.valor == pEstado ? "selected=selected" : "")>@jslstItems.nombre</option>
-                                }
-                            </select>
-                        </div>
-                        @{
-                            var cOCompra = Model.Estado.GetValueOrDefault() == 2 ? "" : "hidden";
-                        }
-                        <div id="divOrdenCompra" class="col-md-3 @cOCompra">
-                            <label class="control-label">Orden de Compra del Cliente</label>
-                            @Html.TextBoxFor(u => u.OrdenCompra, new { @class = "form-control", @placeholder = "Orden de Compra", @type = "text" })
-                        </div>
-                        <div id="divFechaFacturacion" class="col-md-3 @cOCompra">
-                            <label class="control-label">Fecha Estimada de Facturación</label>
-                            <div id="calendarFechaFacturacion" class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaFacturacion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text" })
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                            </div>
-                        </div>
-                        <div id="divFechaCobranza" class="col-md-3 @cOCompra">
-                            <label class="control-label">Fecha Estimada de Cobranza</label>
-                            <div class="input-group">
-                                @Html.TextBoxFor(u => u.FechaCobranza, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text", @readonly = "" })
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Cuentas Bancarias</label>
+                                <select id="IdCuentaBancaria" name="IdCuentaBancaria" multiple ui-jq="chosen" class="w-full" data-placeholder="Seleccione las cuentas bancarias...">
+                                    @{ var pCuenta = Model != null ? Model.IdCuentaBancaria : 0; }
+                                    @foreach (var nCuenta in (List<CuentaBancariaDTO>)ViewBag.lstCuentasBancarias)
+                                    {
+                                        <option value="@nCuenta.IdCuentaBancaria" @(nCuenta.IdCuentaBancaria == pCuenta ? "selected=selected" : "")>@nCuenta.NombreCuenta</option>
+                                    }
+                                </select>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="line line-dashed b-b line-lg pull-in"></div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <label>Comentarios Adicionales</label>
-                            @Html.TextAreaFor(u => u.ComentarioAdiccional, new { @class = "form-control", @placeholder = "Comentarios", @type = "text", @rows = "3", @style = "resize: none;" })
-                        </div>
-                    </div>
-                </div>
-
-                @Html.TextBoxFor(u => u.CodigoProforma, new { @value = Model.CodigoProforma, @type = "hidden" })
-                            @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
-                            @Html.TextBoxFor(u => u.IdProforma, new { @value = Model.IdProforma != 0 ? Model.IdProforma.ToString() : "0", @type = "hidden" })
-                            <div class="line line-dashed b-b line-lg pull-in"></div>
-
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        @{var btnName = (Model != null && Model.IdProforma > 0) ? "Guardar Cambios" : "Crear";}
-                                        @if (!ViewBag.EsUsuarioExterno)
-                                        {<button type="submit" class="btn btn-success" onclick="return SubirListaItems();">@btnName</button>}
-                                        <a class="btn btn-default" href="@Url.Action("Index", "Proformas")">Cancelar</a>
-                                    </div>
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label">Estado</label>
+                                @Html.DropDownListFor(u => u.IdEstado, new SelectList(ViewBag.lstEstadosProforma, "IdParametro", "Nombre", Model != null ? (Model.IdEstado != "0" ? Model.IdEstado : "0") : "0"), new { @class = "form-control", @onchange = "activarOrdenDeCompra()" })
+                            </div>
+                            <div id="divOrdenCompra" class="col-md-3">
+                                <label class="control-label">Orden de Compra del Cliente</label>
+                                @Html.TextBoxFor(u => u.OrdenCompra, new { @class = "form-control", @placeholder = "Orden de Compra", @type = "text" })
+                            </div>
+                            <div id="divFechaFacturacion" class="col-md-3">
+                                <label class="control-label">Fecha Estimada de Facturación</label>
+                                <div id="calendarFechaFacturacion" class="input-group date">
+                                    @Html.TextBoxFor(u => u.FechaFacturacion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text" })
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
-                                            }
+                            <div id="divFechaCobranza" class="col-md-3">
+                                <label class="control-label">Fecha Estimada de Cobranza</label>
+                                <div class="input-group">
+                                    @Html.TextBoxFor(u => u.FechaCobranza, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text", @readonly = "" })
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div id="divMotivoRechazo" class="col-md-3">
+                                <label class="control-label">Motivo</label>
+                                @Html.DropDownListFor(u => u.IdMotivoRechazo, new SelectList(ViewBag.lstMotivosRechazo, "IdParametro", "Nombre", Model != null ? (Model.IdMotivoRechazo != "0" ? Model.IdMotivoRechazo : "0") : ""), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Comentarios Adicionales</label>
+                                @Html.TextAreaFor(u => u.ComentarioAdiccional, new { @class = "form-control", @placeholder = "Comentarios", @type = "text", @rows = "3", @style = "resize: none;" })
+                            </div>
+                        </div>
+                    </div>
+
+                    @*@Html.TextBoxFor(u => u.CodigoProforma, new { @value = Model.CodigoProforma, @type = "hidden" })*@
+                                        @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                                        @Html.TextBoxFor(u => u.IdProforma, new { @value = Model.IdProforma != 0 ? Model.IdProforma.ToString() : "0", @type = "hidden" })
+                                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    @{var btnName = (Model != null && Model.IdProforma > 0) ? "Guardar Cambios" : "Crear";}
+                                                    @if (!ViewBag.EsUsuarioExterno)
+                                                    {<button type="submit" class="btn btn-success" onclick="return SubirListaItems();">@btnName</button>}
+                                                    <a class="btn btn-default" href="@Url.Action("Index", "Proformas")">Cancelar</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                                        }
         </div>
     </div>
 </div>

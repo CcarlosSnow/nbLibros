@@ -21,6 +21,7 @@ namespace NubeBooks.Core.Logistics.DTO
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaEntrega { get; set; }
 
+        [Display(Name = "Fecha")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? FechaProforma { get; set; }
 
@@ -41,7 +42,7 @@ namespace NubeBooks.Core.Logistics.DTO
         public string OrdenCompra { get; set; }
 
         [Display(Name = "Estado")]
-        public int? Estado { get; set; }
+        public string IdEstado { get; set; }
         public List<DetalleProformaDTO> DetalleProforma { get; set; }
         public EmpresaDTO Empresa { get; set; }
         public ContactoDTO Contacto { get; set; }
@@ -50,5 +51,15 @@ namespace NubeBooks.Core.Logistics.DTO
         public List<CuentaBancariaDTO> CuentaBancaria { get; set; }
 
         public string NombreCuentaBancaria { get; set; }
+
+        public int? IdUsuarioRegistro { get; set; }
+        public int? IdUsuarioModifica { get; set; }
+        public DateTime? FechaModifica { get; set; }
+        public UsuarioDTO UsuarioRegistro { get; set; }
+
+        public string IdMotivoRechazo { get; set; }
+
+        public ParametroDTO Estado { get; set; }
+        public ParametroDTO MotivoRechazo { get; set; }
     }
 }

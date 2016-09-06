@@ -29,17 +29,12 @@
                         <p>Atención:</p>
                         <p>Cargo:</p>
                         <p>Email:</p>
-                        @*<label class="col-md-4"></label>
-                            <label class="col-md-2">Fecha:</label>
-                            <label class="col-md-4"></label>*@
                     </div>
                     <div class="col-xs-4">
                         <p><strong>@Model.EntidadResponsable.Nombre</strong></p>
                         <p><strong>@Model.Contacto.Nombre</strong></p>
                         <p><strong>@Model.Contacto.Cargo</strong></p>
                         <p><strong>@Model.Contacto.Email</strong></p>
-                        @*<label class="col-md-2">Teléfono(s):</label>*@
-                        @*<label class="col-md-4"></label>*@
                     </div>
                     <div class="col-xs-2">
                         <p>Fecha:</p>
@@ -50,15 +45,19 @@
                     <div class="col-xs-4">
                         <p><strong>@Html.DisplayFor(x => x.FechaRegistro)</strong></p>
                         <p><strong>@Model.Contacto.Telefono &nbsp; @Model.Contacto.Celular</strong></p>
-                        <p><strong>@Model.EntidadResponsable.Direccion</strong></p>
+                        @{
+                            string Direccion = Model.EntidadResponsable.Direccion;
+                            if (Direccion == null || Direccion.Length == 0)
+                            {
+                                <p><strong>&nbsp;</strong></p>
+                            }
+                            else
+                            {
+                                <p><strong>@Model.EntidadResponsable.Direccion</strong></p>
+                            }
+                        }
                         <p><strong>@Model.ValidezOferta día(s)</strong></p>
                     </div>
-                    @*<div class="row">
-                            <label class="col-md-2">Email:</label>
-
-                            <label class="col-md-2">Validez:</label>
-                            <label class="col-md-4"></label>
-                        </div>*@
                 </div>
             </div>
             <p>Método de Pago: <strong>@Model.MetodoPago</strong></p>
@@ -110,14 +109,10 @@
                         <td class="text-right"><strong>@(total + igv)</strong></td>
                     </tr>
                 </tbody>
-                @*<tfoot>
-
-                    </tfoot>*@
             </table>
             <p>
                 <strong>DATOS BANCARIOS</strong><br>
                 @Model.Empresa.Nombre<br>
-                @*RUC: 2055712848*@
             </p>
             <p>
                 <strong>Cuentas Bancarias</strong><br>
