@@ -24,7 +24,7 @@ namespace NubeBooks.Core.Logistics.BL
                     IdProveedor = x.IdProveedor,
                     IdContacto = x.IdContacto,
                     IdMoneda = x.IdMoneda,
-                    MontoTipoCambio = x.MontoTipoCambio,
+                    //MontoTipoCambio = x.MontoTipoCambio,
                     Consideraciones = x.Consideraciones,
                     AprobadoPor = x.AprobadoPor,
                     IncluirFirma = x.IncluirFirma,
@@ -59,7 +59,7 @@ namespace NubeBooks.Core.Logistics.BL
                     IdContacto = x.IdContacto,
                     IdProveedor = x.IdProveedor,
                     IdMoneda = x.IdMoneda,
-                    MontoTipoCambio = x.MontoTipoCambio,
+                    //MontoTipoCambio = x.MontoTipoCambio,
                     Consideraciones = x.Consideraciones,
                     AprobadoPor = x.AprobadoPor,
                     IncluirFirma = x.IncluirFirma,
@@ -136,7 +136,7 @@ namespace NubeBooks.Core.Logistics.BL
                     nuevo.IdContacto = OrdenCompra.IdContacto == 0 ? null : OrdenCompra.IdContacto;
                     nuevo.IdProveedor = OrdenCompra.IdProveedor;
                     nuevo.IdMoneda = OrdenCompra.IdMoneda;
-                    nuevo.MontoTipoCambio = OrdenCompra.MontoTipoCambio;
+                    //nuevo.MontoTipoCambio = OrdenCompra.MontoTipoCambio;
                     nuevo.Consideraciones = OrdenCompra.Consideraciones;
                     nuevo.Comentario = OrdenCompra.Comentario;
                     nuevo.AprobadoPor = OrdenCompra.AprobadoPor;
@@ -194,6 +194,52 @@ namespace NubeBooks.Core.Logistics.BL
                 {
                     throw e;
                 }
+            }
+        }
+
+        public List<OrdenCompraDTO> getOrdenCompraExportarEnEmpresa(int idEmpresa)
+        {
+            using (var context = getContext())
+            {
+                var result = context.OrdenCompra.Where(x => x.IdEmpresa == idEmpresa).Select(x => new OrdenCompraDTO
+                {
+                    IdOrdenCompra = x.IdOrdenCompra,
+                    CodigoOrdenCompra = x.CodigoOrdenCompra,
+                    Fecha = x.Fecha,
+                    IdEmpresa = x.IdEmpresa,
+                    IdContacto = x.IdContacto,
+                    IdProveedor = x.IdProveedor,
+                    IdMoneda = x.IdMoneda,
+                    Consideraciones = x.Consideraciones,
+                    AprobadoPor = x.AprobadoPor,
+                    IncluirFirma = x.IncluirFirma,
+                    Comentario = x.Comentario,
+                    DetalleOrdenCompra = x.DetalleOrdenCompra.Select(r => new DetalleOrdenCompraDTO
+                    {
+                        IdDetalleOrdenCompra = r.IdDetalleOrdenCompra,
+                        IdItem = r.IdItem,
+                        Cantidad = r.Cantidad,
+                        PrecioUnidad = r.PrecioUnidad,
+                        MontoTotal = r.MontoTotal,
+                        PorcentajeIGV = r.PorcentajeIgv,
+                        IGV = r.Igv,
+                        UnidadMedida = r.UnidadMedida,
+                        ItemServicio = r.ItemServicio
+                    }).ToList()
+                }).OrderByDescending(x => x.CodigoOrdenCompra).ToList();
+
+                if (idEmpresa > 0)
+                {
+                    foreach (var pro in result)
+                    {
+                        pro.Proveedor = new EntidadResponsableBL().getEntidadResponsableEnEmpresa_Only(pro.IdEmpresa, pro.IdProveedor);
+                        pro.Empresa = new EmpresaBL().getEmpresa(pro.IdEmpresa);
+                        if (pro.IdContacto > 0)
+                        { pro.Contacto = new ContactoBL().getContacto((int)pro.IdContacto); }
+                    }
+                }
+
+                return result;
             }
         }
 

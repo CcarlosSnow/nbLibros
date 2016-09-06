@@ -1,10 +1,6 @@
 ﻿using NubeBooks.Core.DTO;
-using NubeBooks.Data;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 namespace NubeBooks.Core.Logistics.DTO
@@ -13,6 +9,7 @@ namespace NubeBooks.Core.Logistics.DTO
     public class ProformaDTO
     {
         public int IdProforma { get; set; }
+        [Display(Name = "Número de Proforma")]
         public string CodigoProforma { get; set; }
         public int IdEmpresa { get; set; }
         public int IdContacto { get; set; }
@@ -43,12 +40,13 @@ namespace NubeBooks.Core.Logistics.DTO
 
         public string OrdenCompra { get; set; }
 
+        [Display(Name = "Estado")]
         public int? Estado { get; set; }
         public List<DetalleProformaDTO> DetalleProforma { get; set; }
         public EmpresaDTO Empresa { get; set; }
         public ContactoDTO Contacto { get; set; }
         public EntidadResponsableDTO EntidadResponsable { get; set; }
-        
+
         public List<CuentaBancariaDTO> CuentaBancaria { get; set; }
 
         public string NombreCuentaBancaria { get; set; }

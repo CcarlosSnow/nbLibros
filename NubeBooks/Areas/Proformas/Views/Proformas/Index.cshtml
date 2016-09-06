@@ -44,15 +44,16 @@
         oPaginate: {
             sPrevious: 'Anterior',
             sNext: 'Siguiente'
-        }
-    }
-}" class="table table-striped b-t b-b dataTable">
+        },
+        sOrder = [[1, 'desc']]
+            }
+                   }" class="table table-striped b-t b-b dataTable">
                 <thead>
                     <tr>
-                        <th>Codigo</th>
+                        <th>@Html.DisplayNameFor(x => x[0].CodigoProforma)</th>
+                        <th>@Html.DisplayNameFor(x => x[0].Estado)</th>
                         <th>Nombre Cliente</th>
                         <th>Lugar Entrega</th>
-                        <th>Estado</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -63,9 +64,34 @@
                         {
                             <tr>
                                 <td>@item.CodigoProforma</td>
+
+                                @{switch (item.Estado)
+                                    {
+                                        case 1:
+                                            <td>
+                                                Pendiente
+                                            </td>
+                                            break;
+                                        case 2:
+                                            <td>
+                                                Aprobada
+                                            </td>
+                                            break;
+                                        case 3:
+                                            <td>
+                                                Rechazada
+                                            </td>
+                                            break;
+                                        default:
+                                            <td>
+                                                Pendiente
+                                            </td>
+                                            break;
+                                    }
+                                }
+
                                 <td>@item.EntidadResponsable.Nombre</td>
                                 <td>@item.LugarEntrega</td>
-                                <td>@(item.Estado == 1 ? "Activo" : "Inactivo" )</td>
                                 @{ var rIcon = ViewBag.EsUsuarioExterno ? "search" : "pencil"; var rTitle = ViewBag.EsUsuarioExterno ? "Visualizar" : "Editar"; }
                                 <td class="text-center">
                                     <a href="@Url.Action("Nuevo", "Proformas", new { id = item.IdProforma })"><i class="fa fa-@rIcon" title="@rTitle"></i>&nbsp;&nbsp;</a>

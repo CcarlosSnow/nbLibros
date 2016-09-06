@@ -22,7 +22,7 @@
         var jslstContactos = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.lstContactos)))');
         var jslstItems = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.lstItems)))');
         var jslstUsuarios = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.lstUsuarios)))');
-        $(document).ready(function () { $('#MontoTipoCambio').val("3.30"); });
+        //$(document).ready(function () { $('#MontoTipoCambio').val("3.30"); });
         $(function () {
             miBaseUrl = baseURL(window.location.pathname);
 
@@ -130,12 +130,12 @@
             $("#txtprecio").val("0.00");
         }
 
-        function InsertarPrecio() {
-            var jsPrecio = parseFloat($("#ddlitem").select2('data').data.PrecioUnidad).toFixed(2);
-            var jsItemServicio = $("#ddlitem").select2('data').data.ItemServicio;
-            $("#txtprecio").val(jsPrecio);
-            $("#hdfItemServicio").val(jsItemServicio);
-        }
+        //function InsertarPrecio() {
+        //    var jsPrecio = parseFloat($("#ddlitem").select2('data').data.PrecioUnidad).toFixed(2);
+        //    var jsItemServicio = $("#ddlitem").select2('data').data.ItemServicio;
+        //    $("#txtprecio").val(jsPrecio);
+        //    $("#hdfItemServicio").val(jsItemServicio);
+        //}
 
         function MuestraItemIngreso(check) {
             if ($(check).val() == 'Predefinido') {
@@ -374,13 +374,12 @@ else { cadena = "Actualizar"; }
                                     <option value="2">Euros</option>
                                 </select>*@
                         </div>
-                        <div class="col-md-3">
-                            <label class="control-label">Tipo de Cambio</label>
-                            <div class="input-group bootstrap-touchspin">
-                                @Html.TextBoxFor(u => u.MontoTipoCambio, new { @ui_jq = "TouchSpin", @class = "form-control", @data_min = "0", @data_max = "10", @data_step = "0.01", @data_decimals = "2", @data_prefix = "S/.", @data_initval = "3.35", @style = "display: block;", @value = "3.30" })
-                                @*<input ui-jq="TouchSpin" type="text" value="3.30" class="form-control" data-min="0" data-max="10" data-step="0.01" data-decimals="2" data-prefix="S/." style="display: block;">*@
-                            </div>
-                        </div>
+                        @*<div class="col-md-3">
+                                <label class="control-label">Tipo de Cambio</label>
+                                <div class="input-group bootstrap-touchspin">
+                                    @Html.TextBoxFor(u => u.MontoTipoCambio, new { @ui_jq = "TouchSpin", @class = "form-control", @data_min = "0", @data_max = "10", @data_step = "0.01", @data_decimals = "2", @data_prefix = "S/.", @data_initval = "3.35", @style = "display: block;", @value = "3.30" })
+                                </div>
+                            </div>*@
                     </div>
                 </div>
                 <div class="line line-dashed b-b line-lg pull-in"></div>
@@ -402,7 +401,7 @@ else { cadena = "Actualizar"; }
                     <div class="row">
                         <div class="col-md-3">
                             <label class="control-label">Ítem / Servicio</label>
-                            @Html.TextBox("ddlitem", "", new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @onchange = "ResetearValoresItems(); InsertarPrecio();" })
+                            @Html.TextBox("ddlitem", "", new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs", @onchange = "ResetearValoresItems();" })
                             @*<select data-placeholder="Seleccione un ítem o servicio..." ui-jq="chosen" class="w-full">
                                     <option selected disabled hidden value=""></option>
                                     <option value="1">Código - Ítem 1</option>

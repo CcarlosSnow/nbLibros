@@ -328,7 +328,6 @@
           <Property Name="IdProveedor" Type="int" Nullable="false" />
           <Property Name="IdContacto" Type="int" />
           <Property Name="IdMoneda" Type="int" Nullable="false" />
-          <Property Name="MontoTipoCambio" Type="numeric" Precision="18" Scale="3" Nullable="false" />
           <Property Name="Consideraciones" Type="nvarchar(max)" />
           <Property Name="AprobadoPor" Type="int" Nullable="false" />
           <Property Name="IncluirFirma" Type="bit" Nullable="false" />
@@ -1528,6 +1527,34 @@
           <Parameter Name="IdEmpresa" Type="int" Mode="In" />
           <Parameter Name="Mes" Type="int" Mode="In" />
           <Parameter Name="Anio" Type="int" Mode="In" />
+        </Function>
+        <Function Name="FN_MontoAreaXEntidadEnComp_Empresa" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
+          <Parameter Name="IdArea" Type="int" Mode="In" />
+          <Parameter Name="IdEntidad" Type="int" Mode="In" />
+          <Parameter Name="IdTipoComprobante" Type="int" Mode="In" />
+          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
+          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
+          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="FN_MontoAreaXEntidadEnComp_Empresa_SinIGV" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
+          <Parameter Name="IdArea" Type="int" Mode="In" />
+          <Parameter Name="IdEntidad" Type="int" Mode="In" />
+          <Parameter Name="IdTipoComprobante" Type="int" Mode="In" />
+          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
+          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
+          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="FN_MontoCat_Empresa" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
+          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
+          <Parameter Name="IdCategoria" Type="int" Mode="In" />
+          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
+          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="FN_MontoCatXComp_Empresa" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="decimal">
+          <Parameter Name="IdEmpresa" Type="int" Mode="In" />
+          <Parameter Name="IdCategoria" Type="int" Mode="In" />
+          <Parameter Name="FechaIni" Type="datetime" Mode="In" />
+          <Parameter Name="FechaFin" Type="datetime" Mode="In" />
         </Function>
         <Function Name="SP_ActualizarMontos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="IdCuentaB" Type="int" Mode="In" />
@@ -4214,7 +4241,6 @@
           <Property Name="IdProveedor" Type="Int32" Nullable="false" />
           <Property Name="IdContacto" Type="Int32" />
           <Property Name="IdMoneda" Type="Int32" Nullable="false" />
-          <Property Name="MontoTipoCambio" Type="Decimal" Nullable="false" Precision="18" Scale="3" />
           <Property Name="Consideraciones" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="AprobadoPor" Type="Int32" Nullable="false" />
           <Property Name="IncluirFirma" Type="Boolean" Nullable="false" />
@@ -5216,7 +5242,6 @@
                 <ScalarProperty Name="IncluirFirma" ColumnName="IncluirFirma" />
                 <ScalarProperty Name="AprobadoPor" ColumnName="AprobadoPor" />
                 <ScalarProperty Name="Consideraciones" ColumnName="Consideraciones" />
-                <ScalarProperty Name="MontoTipoCambio" ColumnName="MontoTipoCambio" />
                 <ScalarProperty Name="IdMoneda" ColumnName="IdMoneda" />
                 <ScalarProperty Name="IdContacto" ColumnName="IdContacto" />
                 <ScalarProperty Name="IdProveedor" ColumnName="IdProveedor" />

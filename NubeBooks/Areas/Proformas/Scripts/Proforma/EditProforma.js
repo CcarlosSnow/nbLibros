@@ -8,7 +8,8 @@ $(function () {
     getItems();
     $("#ddlitem").on('change', function () { $("#txtcantidad").val(1); $("#txtprecio").val("0.00"); $("#txtdescuento").val('0.00'); });
     $("#btnagregar").on('click', AgregarItem);
-    $('.input-group.date').datepicker();
+    $('.input-group.date')
+();
     GetDetalle(Proforma.IdProforma);
     LlenarData();
 

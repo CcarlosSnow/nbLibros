@@ -19,7 +19,7 @@ namespace NubeBooks.Core.Logistics.DTO
         public int IdProveedor { get; set; }
         public int? IdContacto { get; set; }
         public int IdMoneda { get; set; }
-        public decimal MontoTipoCambio { get; set; }
+        //public decimal MontoTipoCambio { get; set; }
         public string Consideraciones { get; set; }
         public int AprobadoPor { get; set; }
         public bool IncluirFirma { get; set; }

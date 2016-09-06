@@ -27,7 +27,7 @@
 
         $(function () {
             miBaseUrl = baseURL(window.location.pathname);
-            $('.input-group.date').datepicker();
+            //$('.input-group.date').datepicker();
             $('.miselect2').select2();
 
             $('.miselect2_clear').select2({
@@ -47,11 +47,11 @@
             BloquearTDocumentos();
 
             if(jsTipoCmp == 1 || jsTipoCmp == 3) {
-                ListarProyectos(0); 
+                ListarProyectos(0);
             } else {
                 ListarProyectos2(0);
             }
-            
+
 
             $('.rol-accs').each(function () {
                 if (jUserExt == 'True') $(this).prop('disabled', true);
@@ -60,7 +60,7 @@
 
         $("#add-monto").click(function () {
             var existe = false;
-            
+
             var valorArea = $('#IdAreaX :selected').val();
             if (valorArea > 0) {
                 var txtArea = $('#IdAreaX :selected').text();
@@ -111,7 +111,7 @@
 
         function ActualizarMontoSinIGV() {
             var montoSinIGV = 0;
-            
+
             if($('#chkIGV').is(':checked'))
             { montoSinIGV = Math.round(($('#Monto').val() / 1.18) * 100) / 100;}
             else
@@ -140,7 +140,7 @@
 
         function ActualizarMontoConIGV_X() {
             var montoConIGV = 0;
-            
+
             montoConIGV = Math.round(($('#MontoSinIGVX').val() * 1.18) * 100) / 100;
 
             $('#MontoX').val(montoConIGV);
@@ -253,13 +253,13 @@
         function CambiarCredito() {
             var nCredito = $("#IdEntidadResponsable").select2().find(":selected").data("credito");
 
-            var jsFechaInicio = $("#FechaEmision").val().split("/"); 
+            var jsFechaInicio = $("#FechaEmision").val().split("/");
             jsFechaInicio = jsFechaInicio[2] + "/" + jsFechaInicio[1] + "/" + jsFechaInicio[0];
 
             var jsFechaNeo = new Date(jsFechaInicio);
             jsFechaNeo.setDate(jsFechaNeo.getDate() + nCredito);
-
-            $("#FechaConclusion").datepicker('setDate', jsFechaNeo);
+            var jsFechaConclusion = convertDate(jsFechaNeo);
+            $('#FechaConclusion').val(jsFechaConclusion);
         }
 
         function CambiarConsultor() {
@@ -398,13 +398,13 @@
                         <div class="col-md-3">
                             <label class="control-label">@strFechaIni</label>
                             <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaEmision, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text", @readonly = "true" })
+                                @Html.TextBoxFor(u => u.FechaEmision, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Documento</label>
-                            <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" onchange = "ActualizarIGV(); ActualizarMontoConIGV();"
+                            <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" onchange="ActualizarIGV(); ActualizarMontoConIGV();"
                                     id="IdTipoDocumento" name="IdTipoDocumento" required>
                                 @{ var pTipoDoc = Model != null ? Model.IdTipoDocumento : 0;}
                                 <option value=""></option>
@@ -442,7 +442,7 @@
                         <div class="col-md-3">
                             <label>Fecha @strFechaFin</label>
                             <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaConclusion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha de cancelación", @type = "text", @readonly = "true" })
+                                @Html.TextBoxFor(u => u.FechaConclusion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha de cancelación", @type = "text" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
                         </div>
@@ -509,7 +509,7 @@
                                 @Html.TextBoxFor(u => u.TipoCambio, "{0:0.00}", new { @class = "form-control rol-accs", @placeholder = "Tipo de Cambio", @type = "text", @onkeypress = "return CheckNumericValue(event)" })
                                 @Html.ValidationMessageFor(u => u.TipoCambio, "", new { @style = "color:red;" })
                             </div>
-                                        }
+                        }
                         <div class="col-md-3">
                             <label class="control-label">Área</label>
                             <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs"
@@ -543,7 +543,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Afecto al IGV</label>
-                            @{ 
+                            @{
                                 bool miChk = true;
                                 if (Model.IdComprobante != 0)
                                 {
@@ -662,7 +662,7 @@
                                     }
                                 </select>
                             </div>
-                        }
+                                        }
                         <div class="col-md-3 @eProyecto">
                             <label class="control-label">Proyecto</label>
                             @Html.TextBoxFor(u => u.IdProyecto, new { @class = "col-xs-12 col-sm-12 col-md-12 no-padder rol-accs" })
@@ -688,23 +688,23 @@
                 </div>
 
                 @Html.TextBoxFor(u => u.Estado, new { @value = true, @type = "hidden" })
-                @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
-                @Html.TextBoxFor(u => u.IdTipoComprobante, new { @value = Model.IdTipoComprobante != 0 ? Model.IdTipoComprobante.ToString() : "", @type = "hidden" })
-                @Html.TextBoxFor(u => u.IdComprobante, new { @value = Model.IdComprobante != 0 ? Model.IdComprobante.ToString() : "", @type = "hidden" })
-                @Html.TextBoxFor(u => u.UsuarioCreacion, new { @value = Model != null ? Model.UsuarioCreacion.ToString() : "", @type = "hidden" })
-                <div class="line line-dashed b-b line-lg pull-in"></div>
+                                        @Html.TextBoxFor(u => u.IdEmpresa, new { @value = Model.IdEmpresa, @type = "hidden" })
+                                        @Html.TextBoxFor(u => u.IdTipoComprobante, new { @value = Model.IdTipoComprobante != 0 ? Model.IdTipoComprobante.ToString() : "", @type = "hidden" })
+                                        @Html.TextBoxFor(u => u.IdComprobante, new { @value = Model.IdComprobante != 0 ? Model.IdComprobante.ToString() : "", @type = "hidden" })
+                                        @Html.TextBoxFor(u => u.UsuarioCreacion, new { @value = Model != null ? Model.UsuarioCreacion.ToString() : "", @type = "hidden" })
+                                        <div class="line line-dashed b-b line-lg pull-in"></div>
 
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            @{var btnName = (Model != null && Model.IdComprobante > 0) ? "Guardar Cambios" : "Crear";}
-                            @if (!ViewBag.EsUsuarioExterno && Model.IdTipoComprobante < 3)
-                            {<button type="submit" class="btn btn-success" onclick="return ListaMontosAreas();">@btnName</button>}
-                            @{string tipo = (Model.IdTipoComprobante == 1) ? "Ingreso" : (Model.IdTipoComprobante == 2) ? "Egreso" : "Anulados"; }
-                            <a class="btn btn-default" href="@Url.Action("Comprobantes" + tipo, "Admin")">Cancelar</a>
-                        </div>
-                    </div>
-                </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    @{var btnName = (Model != null && Model.IdComprobante > 0) ? "Guardar Cambios" : "Crear";}
+                                                    @if (!ViewBag.EsUsuarioExterno && Model.IdTipoComprobante < 3)
+                                                    {<button type="submit" class="btn btn-success" onclick="return ListaMontosAreas();">@btnName</button>}
+                                                    @{string tipo = (Model.IdTipoComprobante == 1) ? "Ingreso" : (Model.IdTipoComprobante == 2) ? "Egreso" : "Anulados"; }
+                                                    <a class="btn btn-default" href="@Url.Action("Comprobantes" + tipo, "Admin")">Cancelar</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                                         }
         </div>
     </div>

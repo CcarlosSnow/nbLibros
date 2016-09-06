@@ -9,10 +9,10 @@
         var miBaseUrl = '';
         $(function () {
             miBaseUrl = baseURL(window.location.pathname);
-            $('.input-group.date').datepicker();
+            //$('.input-group.date').datepicker();
             
-            $('#fechaInicio').datepicker({ format: 'dd/mm/yyyy' });
-            $('#fechaFin').datepicker({ format: 'dd/mm/yyyy' });
+            //$('#fechaInicio').datepicker({ format: 'dd/mm/yyyy' });
+            //$('#fechaFin').datepicker({ format: 'dd/mm/yyyy' });
         });
 
         $('#modal-form2').on('show.bs.modal', function (e) {
@@ -218,7 +218,7 @@
                             <label for="fechaInicio">Fecha Inicio:</label>
                             <div class="form-group">
                                 <div class="input-group date">
-                                    <input type="text" name="fechaInicio" id="fechaInicio" readonly="readonly" class="form-control" value="@(new DateTime(DateTime.Now.Year, 1, 1).ToString("dd/MM/yyyy"))">
+                                    <input type="text" name="fechaInicio" id="fechaInicio" class="form-control" value="@(new DateTime(DateTime.Now.Year, 1, 1).ToString("dd/MM/yyyy"))">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
@@ -227,7 +227,7 @@
                             <label for="fechaFin">Fecha Fin:</label>
                             <div class="form-group date">
                                 <div class="input-group">
-                                    <input type="text" name="fechaFin" id="fechaFin" readonly="readonly" class="form-control" value="@(new DateTime(DateTime.Now.Year, 12, 31).ToString("dd/MM/yyyy"))">
+                                    <input type="text" name="fechaFin" id="fechaFin" class="form-control" value="@(new DateTime(DateTime.Now.Year, 12, 31).ToString("dd/MM/yyyy"))">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>

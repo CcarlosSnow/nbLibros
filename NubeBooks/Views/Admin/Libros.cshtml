@@ -14,7 +14,7 @@
     @Scripts.Render("~/Content/themes/admin/js/fuelux/fuelux.js")
     @Scripts.Render("~/Content/themes/admin/js/datatables/js/jquery.dataTables.min.js")
     @Scripts.Render("~/Content/themes/admin/js/datatables/languageConf.js")
-    
+
     <script type="text/javascript">
         var totalConSoles = '';
         var totalConDolares = '';
@@ -28,7 +28,7 @@
 
             $('#idreporte').click(function () {
                 var miURL = miBaseUrl + "/Libros";
-                $('.titulo').each(function(index){
+                $('.titulo').each(function (index) {
                     if ($(this).hasClass('active'))
                     { miURL = exportarDetalle(index + 1); }
                 })
@@ -100,11 +100,10 @@
                 dataType: 'text'
             });
         }
-        function exportarDetalle(tipoCuenta)
-        {
+        function exportarDetalle(tipoCuenta) {
             var FechaInicio = $("#FechaInicio").val().split("/"); FechaInicio = FechaInicio[2] + "/" + FechaInicio[1] + "/" + FechaInicio[0];
             var FechaFin = $("#FechaFin").val().split("/"); FechaFin = FechaFin[2] + "/" + FechaFin[1] + "/" + FechaFin[0];
-            
+
             return miBaseUrl + "/ExportarLibros/?idTipoCuenta=" + tipoCuenta + "&" + "FechaInicio=" + encodeURIComponent(FechaInicio) + "&" + "FechaFin=" + encodeURIComponent(FechaFin);
         }
     </script>
@@ -120,7 +119,7 @@
                     <header class="panel-heading bg-light">
                         <ul class="nav nav-tabs nav-justified">
                             @{bool idnull1 = false;
-                            string cadena1 = "";}
+                                string cadena1 = "";}
                             @foreach (var item in (List<TipoCuentaDTO>)ViewBag.lstTipoCuentas)
                             {
                                 if (ViewBag.idTipoCuenta != null)
@@ -137,7 +136,7 @@
                     <div class="panel-body">
                         <div class="tab-content">
                             @{bool idnull2 = false;
-                            string cadena2 = "";}
+                                string cadena2 = "";}
                             @foreach (var item in (List<TipoCuentaDTO>)ViewBag.lstTipoCuentas)
                             {
                                 if (ViewBag.idTipoCuenta != null)
@@ -210,18 +209,18 @@
                                     <section class="panel panel-default">
                                         @if (ViewBag.EsAdmin)
                                         {
-                                        <header class="panel-heading">
-                                            <div class="row text-sm">
-                                                <div class="col-sm-8 col-xs-8">
-                                                    <div class="btn-group">
-                                                        <label><input class="btn-showInactive" type="checkbox" id="btn-showInactive@("-" + item.IdTipoCuenta)" style="margin-left: 13px;" /> Mostrar Inactivos</label>
+                                            <header class="panel-heading">
+                                                <div class="row text-sm">
+                                                    <div class="col-sm-8 col-xs-8">
+                                                        <div class="btn-group">
+                                                            <label><input class="btn-showInactive" type="checkbox" id="btn-showInactive@("-" + item.IdTipoCuenta)" style="margin-left: 13px;" /> Mostrar Inactivos</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 col-xs-4">
+                                                        <a class="btn btn-sm btn-success pull-right" href="@Url.Action("Libro", "Admin", new { id = 0, idTipoCuenta = item.IdTipoCuenta })"><i class="fa fa-plus"></i> Crear nueva cuenta</a>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4 col-xs-4">
-                                                    <a class="btn btn-sm btn-success pull-right" href="@Url.Action("Libro", "Admin", new { id = 0, idTipoCuenta = item.IdTipoCuenta })"><i class="fa fa-plus"></i> Crear nueva cuenta</a>
-                                                </div>
-                                            </div>
-                                        </header>
+                                            </header>
                                         }
                                         <div class="table-responsive">
                                             <table class="table table-striped m-b-none dataTable no-footer">
@@ -233,7 +232,7 @@
                                                         <th class="text-center">@miSaldo</th>
                                                         @if (item.IdTipoCuenta == 1)
                                                         {
-                                                        <th class="text-center" width="15%">Saldo Bancario</th>}
+                                                            <th class="text-center" width="15%">Saldo Bancario</th>}
                                                         <th class="text-center" width="10%">Estado</th>
                                                         <th style="width:8%"></th>
                                                     </tr>
@@ -246,36 +245,36 @@
                                                             if (item.IdTipoCuenta == obj.IdTipoCuenta)
                                                             {
                                                                 var classInactive = (!obj.Estado) ? "class='inactive'" : "";
-                                                    <tr @Html.Raw(classInactive)>
-                                                        <td width="30%">@obj.NombreCuenta</td>
-                                                        <td class="text-center" width="20%">@obj.FechaConciliacion.ToString("yyyy/MM/dd", CultureInfo.CreateSpecificCulture("es-PE"))</td>
-                                                        <td class="text-right">@obj.SimboloMoneda @obj.SaldoDisponible.ToString("N2", CultureInfo.InvariantCulture)</td>
-                                                        @if (item.IdTipoCuenta == 1)
+                                                                <tr @Html.Raw(classInactive)>
+                                                                    <td width="30%">@obj.NombreCuenta</td>
+                                                                    <td class="text-center" width="20%">@obj.FechaConciliacion.ToString("yyyy/MM/dd", CultureInfo.CreateSpecificCulture("es-PE"))</td>
+                                                                    <td class="text-right">@obj.SimboloMoneda @obj.SaldoDisponible.ToString("N2", CultureInfo.InvariantCulture)</td>
+                                                                    @if (item.IdTipoCuenta == 1)
                                                                     {
-                                                                    <td class="text-right" width="15%">@obj.SimboloMoneda @obj.SaldoBancario.ToString("N2", CultureInfo.InvariantCulture)</td>}
-                                                        @if (obj.Estado == true)
+                                                                        <td class="text-right" width="15%">@obj.SimboloMoneda @obj.SaldoBancario.ToString("N2", CultureInfo.InvariantCulture)</td>}
+                                                                    @if (obj.Estado == true)
                                                                     {
-                                                                    <td class="text-center" width="10%">Activo</td>}
+                                                                        <td class="text-center" width="10%">Activo</td>}
                                                                     else
                                                                     {
-                                                                    <td class="text-center" width="10%">Inactivo</td>}
-                                                        @{var rIcon = ViewBag.EsUsuarioExterno == true ? "search" : "pencil"; }
-                                                        <td class="text-center"><a href="@Url.Action("Libro", new { id = obj.IdCuentaBancaria })"><i class="fa fa-@rIcon"></i></a></td>
-                                                        @*else
-                                                            {
-                                                                <td align="center" width="10%"><a href="@Url.Action("LibroVista", new { id = obj.IdCuentaBancaria })"><i class="fa fa-search"></i></a></td>
-                                                            }*@
-                                                    </tr>
-                                                            }
-                                                        }
-                                                    }
+                                                                        <td class="text-center" width="10%">Inactivo</td>}
+                                                                    @{var rIcon = ViewBag.EsUsuarioExterno == true ? "search" : "pencil"; }
+                                                                    <td class="text-center"><a href="@Url.Action("Libro", new { id = obj.IdCuentaBancaria })"><i class="fa fa-@rIcon"></i></a></td>
+                                                                    @*else
+                                                                        {
+                                                                            <td align="center" width="10%"><a href="@Url.Action("LibroVista", new { id = obj.IdCuentaBancaria })"><i class="fa fa-search"></i></a></td>
+                                                                        }*@
+                                                                </tr>
+                                                                                }
+                                                                            }
+                                                                        }
                                                 </tbody>
                                             </table>
                                         </div>
                                     </section>
                                 </div>
-                                                    if (idnull2) { cadena2 = ""; }
-                            }
+                                                                            if (idnull2) { cadena2 = ""; }
+                                                                        }
                         </div>
                     </div>
                     <footer class="panel-footer">

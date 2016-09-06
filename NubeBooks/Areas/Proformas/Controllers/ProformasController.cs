@@ -273,7 +273,7 @@ namespace NubeBooks.Areas.Proformas.Controllers
             System.Data.DataTable dt = new System.Data.DataTable();
             dt.Clear();
 
-            dt.Columns.Add("Codigo de Proforma");
+            dt.Columns.Add("Codigo de Proforma", typeof(String));
             dt.Columns.Add("Nombre Cliente");
             dt.Columns.Add("Atención");
             dt.Columns.Add("Cargo");
@@ -291,6 +291,9 @@ namespace NubeBooks.Areas.Proformas.Controllers
             dt.Columns.Add("Total");
             dt.Columns.Add("Cuenta Bancaria");
             dt.Columns.Add("Estado");
+            dt.Columns.Add("Orden de Compra", typeof(String));
+            dt.Columns.Add("Fecha de Facturacion");
+            dt.Columns.Add("Fecha Estimada de Cobro");
             dt.Columns.Add("Observaciones de la Proforma");
             dt.Columns.Add("Comentarios adicionales");
 
@@ -315,6 +318,9 @@ namespace NubeBooks.Areas.Proformas.Controllers
                 row["Total"] = item.DetalleProforma.Sum(x => x.MontoTotal + x.Igv).GetValueOrDefault().ToString("N2", CultureInfo.InvariantCulture);
                 row["Cuenta Bancaria"] = item.NombreCuentaBancaria;
                 row["Estado"] = item.Estado == 1 ? "Pendiente" : (item.Estado == 2 ? "Aprobada" : "Rechazada");
+                row["Orden de Compra"] = item.OrdenCompra;
+                row["Fecha de Facturacion"] = item.FechaFacturacion != null ? item.FechaFacturacion.GetValueOrDefault().ToString("dd/MMM/yyyy", CultureInfo.CreateSpecificCulture("en-GB")) : "";
+                row["Fecha Estimada de Cobro"] = item.FechaCobranza != null ? item.FechaCobranza.GetValueOrDefault().ToString("dd/MMM/yyyy", CultureInfo.CreateSpecificCulture("en-GB")) : "";
                 row["Observaciones de la Proforma"] = item.ComentarioProforma;
                 row["Comentarios adicionales"] = item.ComentarioAdiccional;
                 dt.Rows.Add(row);

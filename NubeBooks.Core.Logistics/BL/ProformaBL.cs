@@ -36,7 +36,7 @@ namespace NubeBooks.Core.Logistics.BL
                     ComentarioProforma = x.ComentarioProforma,
                     OrdenCompra = x.OrdenCompra,
                     Estado = x.Estado
-                }).OrderByDescending(x => x.FechaRegistro).ToList();
+                }).OrderByDescending(x => x.CodigoProforma).ToList();
 
                 if (idEmpresa > 0)
                 {
@@ -91,7 +91,7 @@ namespace NubeBooks.Core.Logistics.BL
                         Igv = r.Igv,
                         PorcentajeIgv = r.PorcentajeIgv
                     }).ToList()
-                }).OrderByDescending(x => x.FechaRegistro).ToList();
+                }).OrderByDescending(x => x.CodigoProforma).ToList();
 
                 if (idEmpresa > 0)
                 {

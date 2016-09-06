@@ -23,7 +23,7 @@
         var miBaseUrl = '';
         $(function () {
             miBaseUrl = baseURL(window.location.pathname);
-            $('.input-group.date').datepicker();
+            //$('.input-group.date').datepicker();
             $('.miselect2').select2();
             $('.miselect2_clear').select2({
                 allowClear: true,
@@ -196,7 +196,7 @@ else { cadena = "Actualizar"; }
                         <div class="col-md-4">
                             <label>Fecha</label>
                             <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaInicial, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text", @readonly = "true" })
+                                @Html.TextBoxFor(u => u.FechaInicial, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Fecha", @type = "text" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 @Html.ValidationMessageFor(u => u.FechaInicial, "", new { @style = "color:red;" })
                             </div>
@@ -301,7 +301,7 @@ else { cadena = "Actualizar"; }
                             <div class="col-md-4">
                                 <label>Fecha de Vencimiento</label>
                                 <div class="input-group date">
-                                    @Html.TextBoxFor(u => u.FechaFin, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Vencimiento", @type = "text", @readonly = "true" })
+                                    @Html.TextBoxFor(u => u.FechaFin, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "Vencimiento", @type = "text" })
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                     @Html.ValidationMessageFor(u => u.FechaFin, "", new { @style = "color:red;" })
                                 </div>

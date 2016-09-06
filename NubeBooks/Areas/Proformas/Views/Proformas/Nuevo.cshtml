@@ -48,6 +48,18 @@
             });
             ListarContactos(0);
             jslstItems = JSON.parse('@(Html.Raw(new JavaScriptSerializer().Serialize(Model.DetalleProforma)))');
+
+            $('#calendarFechaFacturacion').on('dp.change', function (e) {
+                var nCredito = $("#IdEntidadResponsable").select2('data').data.Credito;
+
+                var jsFechaInicio = $("#FechaFacturacion").val().split("/");
+                jsFechaInicio = jsFechaInicio[2] + "/" + jsFechaInicio[1] + "/" + jsFechaInicio[0];
+
+                var jsFechaNeo = new Date(jsFechaInicio);
+                jsFechaNeo.setDate(jsFechaNeo.getDate() + nCredito);
+
+                $("#FechaCobranza").val(convertDate(jsFechaNeo));
+            });
         })
 
         function ResetearValoresItems() {
@@ -144,11 +156,6 @@
                 var descuento = parseFloat($("#txtdescuento").val());
                 var itemservicio = $("#hdfItemServicio").val();
 
-                //console.log(jsIdItem);
-                //console.log(descuento);
-                //console.log(precio);
-                //console.log(itemservicio);
-
                 var items01 = JSLINQ(jslstItems).Where(function (item) {
                     return item.IdItem == jsIdItem &&
                            item.ItemServicio == itemservicio &&
@@ -156,16 +163,6 @@
                            item.PorcentajeDescuento == descuento;
                 }).Select(function (item) { return item; });
 
-                //console.log(items01.items);
-
-                //var items01 = $.grep(jslstItems, function (e, i) {
-                //    return (e.ItemServicio == itemservicio, e.IdItem == jsIdItem, e.PorcentajeDescuento === descuento);
-                //});
-                //, e.PrecioUnidad == precio, e.PorcentajeDescuento == descuento, e.ItemServicio == itemservicio
-                //console.log(items01);
-                //console.log(items01.items.length);
-
-                //if (items01 == undefined) {
                 if (items01.items.length == 0) {
                     var lista = {};
                     lista.IdItem = jsIdItem;
@@ -188,14 +185,6 @@
                 }
                 else {
                     items01 = items01.items[0];
-                    //var descuento = $("#txtdescuento").val();
-                    //var descuentoItem = (items01.Cantidad * items01.PrecioUnidad) / items01.Descuento;
-                    //console.log(descuento);
-                    //console.log(descuentoItem);
-                    //console.log(parseFloat($("#txtprecio").val()));
-                    //console.log(items01.PrecioUnidad);
-
-                    //if (items01.PrecioUnidad == parseFloat($("#txtprecio").val()) && descuentoItem == descuento) {
                     items01.Cantidad = items01.Cantidad + parseInt($("#txtcantidad").val());
                     items01.MontoTotal = (items01.Cantidad * items01.PrecioUnidad).toFixed(2);
                     items01.Descuento = (items01.MontoTotal * (descuento / 100)).toFixed(2);
@@ -204,27 +193,6 @@
                     $("#ddlitem").select2("val", "");
                     ResetearValoresItems();
                     alert('Se modificó la cantidad del Item ' + items01.IdItem);
-                    //}
-                    //else {
-                    //    var lista = {};
-                    //    var descuento = $("#txtdescuento").val();
-
-                    //    lista.IdItem = jsIdItem;
-                    //    lista.NombreItem = $('#ddlitem').select2('data').text;
-                    //    lista.Cantidad = parseInt($("#txtcantidad").val());
-                    //    lista.PrecioUnidad = parseFloat($("#txtprecio").val());
-                    //    lista.UnidadMedida = $("#ddlitem").select2('data').data.UnidadMedida;
-                    //    lista.TipoCambio = 3.30;
-                    //    lista.PorcentajeIgv = 18;
-                    //    lista.Igv = ((lista.Cantidad * lista.PrecioUnidad) * (lista.PorcentajeIgv / 100)).toFixed(2);
-                    //    lista.MontoTotal = (lista.Cantidad * lista.PrecioUnidad).toFixed(2);
-                    //    lista.Descuento = (lista.MontoTotal * (descuento / 100)).toFixed(2);
-                    //    lista.MontoTotal = (lista.MontoTotal - lista.Descuento).toFixed(2);
-                    //    jslstItems.push(lista);
-                    //    llenartabla();
-                    //    $("#ddlitem").select2("val", "");
-                    //    ResetearValoresItems();
-                    //}
                 }
             }
         }
@@ -311,16 +279,16 @@
         function ActualizarFechaCobranza() {
             var nCredito = $("#IdEntidadResponsable").select2('data').data.Credito;
 
+            console.log(nCredito);
+
             var jsFechaInicio = $("#FechaFacturacion").val().split("/");
             jsFechaInicio = jsFechaInicio[2] + "/" + jsFechaInicio[1] + "/" + jsFechaInicio[0];
 
             var jsFechaNeo = new Date(jsFechaInicio);
             jsFechaNeo.setDate(jsFechaNeo.getDate() + nCredito);
 
-            $("#FechaCobranza").datepicker('setDate', jsFechaNeo);
+            $("#FechaCobranza").val(convertDate(jsFechaNeo));
         }
-
-
     </script>
 }
 @{var cadena = "";}
@@ -506,7 +474,7 @@ else { cadena = "Actualizar"; }
                     <div class="row">
                         <div class="col-sm-12">
                             <label>Observaciones de la Proforma</label>
-                            @Html.TextAreaFor(u => u.ComentarioProforma, new { @class = "form-control", @placeholder = "Comentarios", @type = "text", @rows = "3", @style = "resize: none;" })
+                            @Html.TextAreaFor(u => u.ComentarioProforma, new { @class = "form-control", @placeholder = "Observaciones", @type = "text", @rows = "3", @style = "resize: none;" })
                         </div>
                     </div>
                 </div>
@@ -515,9 +483,9 @@ else { cadena = "Actualizar"; }
                     <div class="row">
                         <div class="col-md-12">
                             <label>Cuentas Bancarias</label>
-                            <select class="col-xs-12 col-sm-12 col-md-12 no-padder miselect2_clear rol-accs" id="IdCuentaBancaria" name="IdCuentaBancaria">
+                            <select id="IdCuentaBancaria" name="IdCuentaBancaria" multiple ui-jq="chosen" class="w-full" data-placeholder="Seleccione las cuentas bancarias...">
                                 @{ var pCuenta = Model != null ? Model.IdCuentaBancaria : 0; }
-                                <option value=""></option>
+                                @*<option value=""></option>*@
                                 @foreach (var nCuenta in (List<CuentaBancariaDTO>)ViewBag.lstCuentasBancarias)
                                 {
                                     <option value="@nCuenta.IdCuentaBancaria" @(nCuenta.IdCuentaBancaria == pCuenta ? "selected=selected" : "")>@nCuenta.NombreCuenta</option>
@@ -559,14 +527,14 @@ else { cadena = "Actualizar"; }
                         </div>
                         <div id="divFechaFacturacion" class="col-md-3 @cOCompra">
                             <label class="control-label">Fecha Estimada de Facturación</label>
-                            <div class="input-group date">
-                                @Html.TextBoxFor(u => u.FechaFacturacion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text", @readonly = "", @onchange = "ActualizarFechaCobranza()" })
+                            <div id="calendarFechaFacturacion" class="input-group date">
+                                @Html.TextBoxFor(u => u.FechaFacturacion, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>
                         </div>
                         <div id="divFechaCobranza" class="col-md-3 @cOCompra">
                             <label class="control-label">Fecha Estimada de Cobranza</label>
-                            <div class="input-group date">
+                            <div class="input-group">
                                 @Html.TextBoxFor(u => u.FechaCobranza, "{0:dd/MM/yyyy}", new { @class = "form-control rol-accs", @placeholder = "dd/mm/yyyy", @type = "text", @readonly = "" })
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                             </div>

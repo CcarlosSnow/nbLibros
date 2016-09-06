@@ -406,7 +406,7 @@
                             }
                             <li class="line dk hidden-folded"></li>
                             <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-                                <span>Archivos</span>
+                                <span>Otros</span>
                             </li>
                             @*<li>
                                     <a href="@Url.Action("Index", "Proforma",new { Area="Proformas"})">
@@ -521,6 +521,12 @@
                 },
             });
         });
+
+        function convertDate(inputFormat) {
+            function pad(s) { return (s < 10) ? '0' + s : s; }
+            var d = new Date(inputFormat);
+            return [pad(d.getDate()), pad(d.getMonth() + 1), d.getFullYear()].join('/');
+        }
 
         $("#miBuscador").on('select2-selecting', function (e) {
             console.log(e.object.data);

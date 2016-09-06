@@ -248,5 +248,71 @@ namespace NubeBooks.Areas.OrdenCompra.Controllers
             TempData["lstDetalleOrdenCompra"] = lista;
             return Json(new { success = true, mensaje = "Si funciona" }, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult ExportarOrdenCompra()
+        {
+            EmpresaDTO empresa = (new EmpresaBL()).getEmpresa(getCurrentUser().IdEmpresa);
+
+            OrdenCompraBL objBL = new OrdenCompraBL();
+            List<OrdenCompraDTO> lista = objBL.getOrdenCompraExportarEnEmpresa(empresa.IdEmpresa);
+
+            System.Data.DataTable dt = new System.Data.DataTable();
+            dt.Clear();
+
+            dt.Columns.Add("Codigo de Orden de Compra", typeof(String));
+            dt.Columns.Add("Fecha");
+            dt.Columns.Add("Proveedor", typeof(String));
+            dt.Columns.Add("Contacto", typeof(String));
+            dt.Columns.Add("Consideraciones", typeof(String));
+            dt.Columns.Add("Comentario", typeof(String));
+
+            foreach (var item in lista)
+            {
+                System.Data.DataRow row = dt.NewRow();
+                row["Codigo de Orden de Compra"] = item.CodigoOrdenCompra;
+                row["Fecha"] = item.Fecha;
+                row["Proveedor"] = item.Proveedor.Nombre;
+                row["Contacto"] = item.Contacto == null ? "" : item.Contacto.Nombre;
+                row["Consideraciones"] = item.Consideraciones;
+                row["Comentario"] = item.Comentario;
+                dt.Rows.Add(row);
+            }
+
+            GenerarOrdenCompraPdf(dt, "Detalle de Ordenes de Compra", "Detalle_de_Ordenes_Compra", empresa, Response);
+            createResponseMessage(CONSTANTES.SUCCESS, CONSTANTES.SUCCESS_FILE);
+            return RedirectToAction("Index", "OrdenCompra"); ;
+        }
+        private static void GenerarOrdenCompraPdf(DataTable dt, string titulo, string nombreDoc, EmpresaDTO objEmpresa, HttpResponseBase Response)
+        {
+            GridView gv = new GridView();
+
+            gv.DataSource = dt;
+            gv.AllowPaging = false;
+            gv.DataBind();
+
+            if (dt.Rows.Count > 0)
+            {
+                PintarCabeceraTabla(gv);
+                //PintarIntercaladoCategorias(gv);
+
+                AddSuperHeader(gv, titulo + " - Empresa:" + objEmpresa.Nombre);
+                AddWhiteHeader(gv, 1, "RUC: " + objEmpresa.RUC);
+
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.AddHeader("content-disposition", "attachment; filename=" + nombreDoc + "_" + objEmpresa.Nombre + "_" + DateTime.Now.ToString("dd-MM-yyyy") + ".xls");
+                Response.ContentType = "application/ms-excel";
+                Response.Charset = "";
+
+                System.IO.StringWriter sw = new System.IO.StringWriter();
+                HtmlTextWriter htw = new HtmlTextWriter(sw);
+                gv.RenderControl(htw);
+                Response.Output.Write(sw.ToString());
+                Response.Flush();
+                Response.End();
+                htw.Close();
+                sw.Close();
+            }
+        }
     }
 }

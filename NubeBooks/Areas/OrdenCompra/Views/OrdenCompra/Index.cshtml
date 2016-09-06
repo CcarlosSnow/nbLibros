@@ -5,6 +5,19 @@
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
+@section scripts{
+    <script type="text/javascript">
+        var miBaseUrl = '';
+        $(function () {
+            miBaseUrl = baseURL(window.location.pathname);
+        });
+
+        $('#exportar').click(function () {
+            window.location.href = '@Url.Action("ExportarOrdenCompra", "OrdenCompra")';
+            $('.alert.alert-success').removeClass('hidden');
+        });
+    </script>
+}
 
 <div class="bg-light lter b-b wrapper-md">
     <button id="exportar" class="btn m-b-xs btn-sm btn-info btn-addon pull-right m-l open-modal" data-toggle="modal" data-target="#modal-form-exportar"><i class="fa fa-cloud-download"></i>Exportar</button>

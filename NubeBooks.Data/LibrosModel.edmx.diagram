@@ -110,7 +110,7 @@
         <AssociationConnector Association="LibrosDBModel.FK_Usuario_Empresa" />
         <EntityTypeShape EntityType="LibrosDBModel.DetalleOrdenCompra" Width="1.5" PointX="21" PointY="28.5" />
         <AssociationConnector Association="LibrosDBModel.FK_DetalleOrdenCompra_Item" />
-        <EntityTypeShape EntityType="LibrosDBModel.OrdenCompra" Width="1.5" PointX="18.75" PointY="26.875" />
+        <EntityTypeShape EntityType="LibrosDBModel.OrdenCompra" Width="1.5" PointX="18.75" PointY="27" />
         <AssociationConnector Association="LibrosDBModel.FK_OrdenCompra_Contacto" />
         <AssociationConnector Association="LibrosDBModel.FK_DetalleOrdenCompra_OrdenCompra" />
         <AssociationConnector Association="LibrosDBModel.FK_OrdenCompra_Empresa" />
